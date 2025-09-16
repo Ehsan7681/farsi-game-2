@@ -1,0 +1,986 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>مدرسه الفبا - نسخه دمو</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Vazirmatn', sans-serif;
+            touch-action: manipulation;
+            background-color: #f0f9ff;
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+        }
+        .card { transition: transform 0.2s, box-shadow 0.2s; }
+        .card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
+        .lesson-card {
+            background: linear-gradient(135deg, #38bdf8, #6366f1);
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+        }
+        .lesson-card.locked {
+            background: linear-gradient(135deg, #BDBDBD, #9E9E9E);
+            cursor: not-allowed;
+            filter: grayscale(80%);
+        }
+        .letter-bubble {
+            cursor: grab;
+            user-select: none;
+            -webkit-user-select: none;
+            -webkit-touch-callout: none;
+            touch-action: none;
+            transition: transform 0.1s, opacity 0.2s;
+            position: relative;
+            z-index: 10;
+            width: 50px;
+            height: 50px;
+            min-width: 50px;
+            min-height: 50px;
+        }
+        .letter-bubble.dragging { 
+            opacity: 0.8; 
+            transform: scale(1.1); 
+            cursor: grabbing;
+            z-index: 1000;
+            position: absolute;
+            pointer-events: none;
+        }
+        .letter-bubble:active { cursor: grabbing; }
+        .drop-zone { 
+            border: 2px dashed #94a3b8;
+            min-width: 50px;
+            min-height: 50px;
+            width: 50px;
+            height: 50px;
+            transition: all 0.2s;
+            background-color: #e2e8f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin: 5px;
+            border-radius: 0.5rem;
+        }
+        .drop-zone.drag-over {
+            background-color: #bfdbfe;
+            border-color: #3b82f6;
+        }
+        .drop-zone.filled {
+            background-color: #dcfce7;
+            border-color: #22c55e;
+            color: #15803d;
+            animation: pop-in 0.3s ease-out;
+        }
+        @keyframes pop-in {
+            0% { transform: scale(0.5); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        .shake { animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both; }
+        @keyframes shake {
+          10%, 90% { transform: translate3d(-1px, 0, 0); }
+          20%, 80% { transform: translate3d(2px, 0, 0); }
+          30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+          40%, 60% { transform: translate3d(4px, 0, 0); }
+        }
+        #success-modal.show > div { transform: scale(1); }
+        .choice-btn.correct { animation: correct-pulse 0.5s ease; }
+        .choice-btn.incorrect { animation: shake 0.5s ease; }
+        @keyframes correct-pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); background-color: #4ade80; }
+            100% { transform: scale(1); }
+        }
+        .drag-clone {
+            position: absolute;
+            pointer-events: none;
+            z-index: 9999;
+            opacity: 0.8;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+        .back-button-icon {
+            background: none;
+            border: none;
+            padding: 0;
+            margin: 0;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.2s;
+        }
+        .back-button-icon:hover {
+            transform: scale(1.1);
+        }
+        .back-button-icon img {
+            width: 24px;
+            height: 24px;
+        }
+        #build-word-game, #choice-game, #read-game {
+            max-width: 100%;
+            overflow-x: hidden;
+        }
+        #drop-zones {
+            max-width: 100%;
+            overflow-x: auto;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 5px 0;
+            flex-wrap: wrap;
+        }
+        #letter-bubbles {
+            max-width: 100%;
+            overflow-x: hidden;
+        }
+        .lesson-title-header {
+            text-align: center;
+            margin-top: 10px;
+            margin-bottom: 10px;
+        }
+        @media (max-width: 640px) {
+            .drop-zone, .letter-bubble {
+                width: 40px;
+                height: 40px;
+                min-width: 40px;
+                min-height: 40px;
+                font-size: 1.25rem;
+            }
+            #drop-zones {
+                gap: 1px;
+            }
+        }
+        /* استایل برای ایده و تولید */
+        .creator-info {
+            text-align: center;
+            font-size: 0.75rem;
+            color: #64748b;
+            margin-top: 1rem;
+            padding: 0.5rem;
+        }
+    </style>
+</head>
+<body class="text-gray-800 flex items-center justify-center min-h-screen">
+    <div id="app-container" class="w-full max-w-md mx-auto p-4">
+        <!-- Activation Screen -->
+        <div id="activation-screen" class="w-full">
+            <header class="text-center mb-8">
+                <h1 class="text-4xl font-bold text-sky-700">فعال‌سازی مدرسه الفبا</h1>
+                <p class="text-sky-600 text-lg mt-2">نسخه دمو - 5 درس اول رایگان</p>
+            </header>
+            <div class="bg-white rounded-2xl shadow-lg p-6">
+                <div class="mb-6">
+                    <label for="activation-code" class="block text-gray-700 text-sm font-bold mb-2">کد فعال‌سازی را وارد کنید:</label>
+                    <input type="text" id="activation-code" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" placeholder="مثال: ACT-12345-ABCDE">
+                </div>
+                <button id="activate-btn" class="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-4 rounded-full focus:outline-none focus:shadow-outline">فعال‌سازی</button>
+                <button id="demo-btn" class="w-full mt-4 bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-4 rounded-full focus:outline-none focus:shadow-outline">ورود به نسخه دمو</button>
+                <div id="activation-message" class="mt-4 text-center text-red-500 hidden"></div>
+            </div>
+            <div class="mt-6 text-center text-sm text-gray-500">
+                <p>نسخه دمو شامل 5 درس اول به صورت رایگان است.</p>
+                <p>برای دسترسی به تمام درس‌ها، کد فعال‌سازی را خریداری کنید.</p>
+            </div>
+        </div>
+        <!-- Main Menu Screen -->
+        <div id="main-menu" class="w-full hidden">
+            <header class="text-center mb-8">
+                <h1 class="text-5xl font-bold text-sky-700">مدرسه الفبا</h1>
+                 <p class="text-sky-600 text-lg mt-2 flex justify-center"><img src="sun.png" class="w-10 h-10 text-yellow-400" alt="آفتاب"></p>
+            </header>
+            <div id="lessons-grid" class="space-y-4"></div>
+        </div>
+        <!-- Lesson Sections Screen -->
+        <div id="lesson-sections-screen" class="hidden w-full">
+             <header class="flex items-center justify-between mb-6">
+                <button id="back-to-main-menu" class="back-button-icon">
+                    <img src="back_arrow.png" alt="بازگشت">
+                </button>
+                <h2 id="sections-lesson-title" class="text-2xl font-bold text-sky-700 lesson-title-header"></h2>
+                <div class="w-12"></div>
+            </header>
+            <div id="sections-grid" class="space-y-4"></div>
+            <div class="creator-info">ایده و تولید: احسان شمسی</div>
+        </div>
+        <!-- Game Screen -->
+        <div id="game-screen" class="hidden w-full text-center">
+            <header class="flex items-center justify-between mb-6">
+                <button id="back-to-sections" class="back-button-icon">
+                    <img src="back_arrow.png" alt="بازگشت">
+                </button>
+                <h2 id="game-lesson-title" class="text-xl font-bold text-sky-700 lesson-title-header"></h2>
+                <div class="w-12"></div>
+            </header>
+            <div class="bg-white rounded-2xl shadow-lg p-6">
+                <div id="word-image-container" class="mb-6 h-32 flex items-center justify-center"></div>
+                <div id="build-word-game">
+                    <div id="drop-zones" class="flex flex-row-reverse flex-wrap justify-center items-center gap-2 mb-6" dir="ltr"></div>
+                    <div id="letter-bubbles" class="flex justify-center items-center flex-wrap gap-3 p-4 bg-sky-50 rounded-lg min-h-[80px]"></div>
+                </div>
+                <div id="choice-game" class="hidden">
+                     <p class="text-xl text-gray-600 mb-6">کدام کلمه درست است؟</p>
+                     <div id="choice-options" class="grid grid-cols-1 gap-4"></div>
+                </div>
+                <div id="read-game" class="hidden">
+                    <p class="text-5xl font-bold text-gray-800 mb-6" id="read-word"></p>
+                    <button id="read-aloud-btn" class="bg-cyan-500 hover:bg-cyan-600 text-white p-4 rounded-full"><img src="speaker.png" class="w-8 h-8" alt="بلندگو"></button>
+                    <button id="reading-done-btn" class="mt-6 w-full bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-6 rounded-full">خواندم</button>
+                </div>
+            </div>
+            <div class="creator-info">ایده و تولید: احسان شمسی</div>
+        </div>
+        <!-- Success Modal -->
+        <div id="success-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+            <div class="bg-white rounded-2xl shadow-2xl p-8 text-center transform scale-95 transition-transform duration-300">
+                <div class="text-7xl mb-4"><img src="star.png" class="w-16 h-16 text-yellow-400 mx-auto" alt="ستاره"></div>
+                <h3 class="text-4xl font-bold text-green-500 mb-4">آفرین!</h3>
+                <p id="modal-word" class="text-2xl text-gray-700 mb-6"></p>
+                <button id="next-exercise-btn" class="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-6 rounded-full">بعدی</button>
+            </div>
+        </div>
+        <!-- Lesson Complete Modal -->
+        <div id="lesson-complete-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+            <div class="bg-white rounded-2xl shadow-2xl p-8 text-center">
+                 <div class="text-7xl mb-4"><img src="hat.png" class="w-16 h-16 text-amber-400 mx-auto" alt="کلاه"></div>
+                 <h3 class="text-4xl font-bold text-amber-500 mb-4">بخش کامل شد!</h3>
+                 <p class="text-xl text-gray-600 mb-8">عالی بود! این بخش را با موفقیت تمام کردی.</p>
+                 <button id="back-to-sections-from-complete" class="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-6 rounded-full">بازگشت به درس</button>
+            </div>
+        </div>
+        <!-- Activation Warning Modal -->
+        <div id="activation-warning-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+            <div class="bg-white rounded-2xl shadow-2xl p-8 text-center">
+                <div class="text-7xl mb-4 text-red-500">⚠️</div>
+                <h3 class="text-3xl font-bold text-red-500 mb-4">هشدار!</h3>
+                <p class="text-xl text-gray-700 mb-6">از به اشتراک گذاری کد فعال‌سازی خودداری کنید زیرا نرم‌افزار شما غیرفعال خواهد شد.</p>
+                <button id="close-warning-modal" class="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-6 rounded-full">متوجه شدم</button>
+            </div>
+        </div>
+    </div>
+    <script>
+        // --- DATA ---
+        const lessons = [
+             {
+                id: 1, title: "درس اول: آ ا ، بـ ب", unlocked: true,
+                sections: [
+                    { title: "ترکیب صداها", exercises: [ { type: 'build', word: "آب" }, { type: 'build', word: "بابا" } ] },
+                    { title: "کلمه‌یابی", exercises: [ { type: 'choice', correct: "بابا", options: ["بابا", "باب", "آبا"] }, { type: 'choice', correct: "آب", options: ["آب", "اب", "اَب"] } ] },
+                    { title: "روان‌خوانی", exercises: [ { type: 'read', word: "آب" }, { type: 'read', word: "بابا" } ] }
+                ]
+            },
+            {
+                id: 2, title: "درس دوم: اَ َ ، د", unlocked: true,
+                sections: [
+                    { title: "ترکیب صداها", exercises: [ { type: 'build', word: "باد" }, { type: 'build', word: "داد" }, { type: 'build', word: "ادب" }, { type: 'build', word: "آباد" }, { type: 'build', word: "بَد" } ] },
+                    { title: "کلمه‌یابی", exercises: [ { type: 'choice', correct: "آباد", options: ["آباد", "آبد", "اباد"] }, { type: 'choice', correct: "داد", options: ["داد", "داب", "دَد"] }, { type: 'choice', correct: "ادب", options: ["ادب", "اد", "اَدب"] } ] },
+                    { title: "روان‌خوانی", exercises: [ { type: 'read', word: "باد" }, { type: 'read', word: "ادب" }, { type: 'read', word: "آباد" }, { type: 'read', word: "داد" }, { type: 'read', word: "بَد" } ] }
+                ]
+            },
+            {
+                id: 3, title: "درس سوم: مـ م ، سـ س", unlocked: true,
+                sections: [
+                     { title: "ترکیب صداها", exercises: [ { type: 'build', word: "اسب" }, { type: 'build', word: "سبد" }, { type: 'build', word: "آمد" }, { type: 'build', word: "بادام" }, { type: 'build', word: "داس" }, { type: 'build', word: "سام" } ] },
+                     { title: "کلمه‌یابی", exercises: [ { type: 'choice', correct: "بادام", options: ["بادام", "بادم", "بدام"] }, { type: 'choice', correct: "اسب", options: ["اسب", "اصب", "اسبِ"] }, { type: 'choice', correct: "سبد", options: ["سبد", "سد", "سب"] }, { type: 'choice', correct: "آمد", options: ["آمد", "امد", "اَمد"] } ] },
+                     { title: "روان‌خوانی", exercises: [ { type: 'read', word: "آباد" }, { type: 'read', word: "آمد" }, { type: 'read', word: "اسب" }, { type: 'read', word: "سبد" }, { type: 'read', word: "بادام" }, { type: 'read', word: "داس" } ] }
+                ]
+            },
+            { 
+                id: 4, title: "درس چهارم: او و ، تـ ت", unlocked: true,
+                sections: [
+                     { title: "ترکیب صداها", exercises: [ { type: 'build', word: "توت" }, { type: 'build', word: "دوست" }, { type: 'build', word: "دست" }, { type: 'build', word: "تاب" }, { type: 'build', word: "سوت" }, { type: 'build', word: "بود" } ] },
+                     { title: "کلمه‌یابی", exercises: [ { type: 'choice', correct: "دست", options: ["دست", "دسط", "دثت"] }, { type: 'choice', correct: "دوست", options: ["دوست", "دوت", "دوثت"] }, { type: 'choice', correct: "تاب", options: ["تاب", "تَاب", "طاب"] }, { type: 'choice', correct: "توت", options: ["توت", "تت", "تود"] } ] },
+                     { title: "روان‌خوانی", exercises: [ { type: 'read', word: "توت" }, { type: 'read', word: "سوت" }, { type: 'read', word: "دوست" }, { type: 'read', word: "دست" }, { type: 'read', word: "بود" }, { type: 'read', word: "تاب" } ] }
+                ] 
+            },
+            { 
+                id: 5, title: "درس پنجم: ر ، نـ ن", unlocked: true,
+                sections: [
+                     { title: "ترکیب صداها", exercises: [ { type: 'build', word: "انار" }, { type: 'build', word: "نان" }, { type: 'build', word: "باران" }, { type: 'build', word: "مادر" }, { type: 'build', word: "برادر" }, { type: 'build', word: "نَر" } ] },
+                     { title: "کلمه‌یابی", exercises: [ { type: 'choice', correct: "انار", options: ["انار", "عنار", "اَنار"] }, { type: 'choice', correct: "باران", options: ["باران", "بارن", "بران"] }, { type: 'choice', correct: "مادر", options: ["مادر", "ماد", "مَدر"] } ] },
+                     { title: "روان‌خوانی", exercises: [ { type: 'read', word: "انار" }, { type: 'read', word: "نان" }, { type: 'read', word: "باران" }, { type: 'read', word: "مادر" }, { type: 'read', word: "برادر" }, { type: 'read', word: "نَر" } ] }
+                ] 
+            },
+            {
+                id: 6, title: "درس ششم: ایـ یـ ی ای ، ز", unlocked: false,
+                sections: [
+                     { title: "ترکیب صداها", exercises: [ { type: 'build', word: "ایران" }, { type: 'build', word: "سیب" }, { type: 'build', word: "میز" }, { type: 'build', word: "زیبا" }, { type: 'build', word: "بازی" } ] },
+                     { title: "کلمه‌یابی", exercises: [ { type: 'choice', correct: "میز", options: ["میز", "میض", "میظ"] }, { type: 'choice', correct: "زیبا", options: ["زیبا", "ذیبا", "ظیبا"] }, { type: 'choice', correct: "ایران", options: ["ایران", "عیران", "اران"] } ] },
+                     { title: "روان‌خوانی", exercises: [ { type: 'read', word: "ایران" }, { type: 'read', word: "سیب" }, { type: 'read', word: "میز" }, { type: 'read', word: "زیبا" }, { type: 'read', word: "بازی" }, { type: 'read', word: "آزاد" } ] }
+                ]
+            },
+            {
+                id: 7, title: "درس هفتم: اِ ـِ ـﻪ ﻪ ، شـ ش", unlocked: false,
+                sections: [
+                     { title: "ترکیب صداها", exercises: [ { type: 'build', word: "شانه" }, { type: 'build', word: "تراش" }, { type: 'build', word: "آش" }, { type: 'build', word: "امشب" }, { type: 'build', word: "ستاره" } ] },
+                     { title: "کلمه‌یابی", exercises: [ { type: 'choice', correct: "شانه", options: ["شانه", "شونه", "شامه"] }, { type: 'choice', correct: "تراش", options: ["تراش", "طراش", "تدراس"] }, { type: 'choice', correct: "ستاره", options: ["ستاره", "سطاره", "ثتاره"] } ] },
+                     { title: "روان‌خوانی", exercises: [ { type: 'read', word: "شانه" }, { type: 'read', word: "تراش" }, { type: 'read', word: "آش" }, { type: 'read', word: "امشب" }, { type: 'read', word: "ستاره" }, { type: 'read', word: "ماشین" } ] }
+                ]
+            },
+            {
+                id: 8, title: "درس هشتم: یُ ، اُ ـُ", unlocked: false,
+                sections: [
+                     { title: "ترکیب صداها", exercises: [ { type: 'build', word: "امید" }, { type: 'build', word: "بُرد" }, { type: 'build', word: "سُرمه" }, { type: 'build', word: "کُشت" }, { type: 'build', word: "مُژه" } ] },
+                     { title: "کلمه‌یابی", exercises: [ { type: 'choice', correct: "امید", options: ["امید", "عمید", "امیت"] }, { type: 'choice', correct: "سُرمه", options: ["سُرمه", "سورمه", "صُرمه"] } ] },
+                     { title: "روان‌خوانی", exercises: [ { type: 'read', word: "امید" }, { type: 'read', word: "بُرد" }, { type: 'read', word: "سُرمه" }, { type: 'read', word: "مُژه" }, { type: 'read', word: "اُرْدَک" } ] }
+                ]
+            },
+            {
+                id: 9, title: "درس نهم: کـ ک، گـ گ", unlocked: false,
+                sections: [
+                    { title: "ترکیب صداها", exercises: [ { type: 'build', word: "کتاب" }, { type: 'build', word: "کفش" }, { type: 'build', word: "کمر" }, { type: 'build', word: "گل" }, { type: 'build', word: "گربه" }, { type: 'build', word: "گاو" } ] },
+                    { title: "کلمه‌یابی", exercises: [ { type: 'choice', correct: "کتاب", options: ["کتاب", "کتپ", "کتب"] }, { type: 'choice', correct: "گل", options: ["گل", "غل", "گِل"] } ] },
+                    { title: "روان‌خوانی", exercises: [ { type: 'read', word: "کتاب" }, { type: 'read', word: "کفش" }, { type: 'read', word: "گل" }, { type: 'read', word: "گربه" } ] }
+                ]
+            },
+            {
+                id: 10, title: "درس دهم: لـ ل، مـ م", unlocked: false,
+                sections: [
+                    { title: "ترکیب صداها", exercises: [ { type: 'build', word: "لاله" }, { type: 'build', word: "لیوان" }, { type: 'build', word: "ماه" }, { type: 'build', word: "ماشین" } ] },
+                    { title: "کلمه‌یابی", exercises: [ { type: 'choice', correct: "لاله", options: ["لاله", "لله", "لالِه"] }, { type: 'choice', correct: "ماه", options: ["ماه", "مه", "مَه"] } ] },
+                    { title: "روان‌خوانی", exercises: [ { type: 'read', word: "لاله" }, { type: 'read', word: "لیوان" }, { type: 'read', word: "ماه" }, { type: 'read', word: "ماشین" } ] }
+                ]
+            },
+            {
+                id: 11, title: "درس یازدهم: نـ ن، و", unlocked: false,
+                sections: [
+                    { title: "ترکیب صداها", exercises: [ { type: 'build', word: "نوزاد" }, { type: 'build', word: "نخل" }, { type: 'build', word: "وزن" }, { type: 'build', word: "ویلا" } ] },
+                    { title: "کلمه‌یابی", exercises: [ { type: 'choice', correct: "نوزاد", options: ["نوزاد", "نوزد", "نوزَد"] }, { type: 'choice', correct: "وزن", options: ["وزن", "وز", "وَزن"] } ] },
+                    { title: "روان‌خوانی", exercises: [ { type: 'read', word: "نوزاد" }, { type: 'read', word: "نخل" }, { type: 'read', word: "وزن" }, { type: 'read', word: "ویلا" } ] }
+                ]
+            },
+            {
+                id: 12, title: "درس دوازدهم: هـ ه، یـ ی", unlocked: false,
+                sections: [
+                    { title: "ترکیب صداها", exercises: [ { type: 'build', word: "هوا" }, { type: 'build', word: "هیچ" }, { type: 'build', word: "یخ" }, { type: 'build', word: "یار" } ] },
+                    { title: "کلمه‌یابی", exercises: [ { type: 'choice', correct: "هوا", options: ["هوا", "هَوا", "هِوا"] }, { type: 'choice', correct: "یخ", options: ["یخ", "یَخ", "یِخ"] } ] },
+                    { title: "روان‌خوانی", exercises: [ { type: 'read', word: "هوا" }, { type: 'read', word: "هیچ" }, { type: 'read', word: "یخ" }, { type: 'read', word: "یار" } ] }
+                ]
+            },
+            {
+                id: 13, title: "درس سیزدهم: چـ چ، حـ ح", unlocked: false,
+                sections: [
+                    { title: "ترکیب صداها", exercises: [ { type: 'build', word: "چشم" }, { type: 'build', word: "چرخ" }, { type: 'build', word: "حیاط" }, { type: 'build', word: "حل" } ] },
+                    { title: "کلمه‌یابی", exercises: [ { type: 'choice', correct: "چشم", options: ["چشم", "چشمِ", "چِشم"] }, { type: 'choice', correct: "حیاط", options: ["حیاط", "حیَاط", "حیِاط"] } ] },
+                    { title: "روان‌خوانی", exercises: [ { type: 'read', word: "چشم" }, { type: 'read', word: "چرخ" }, { type: 'read', word: "حیاط" }, { type: 'read', word: "حل" } ] }
+                ]
+            },
+            {
+                id: 14, title: "درس چهاردهم: خـ خ، جـ ج", unlocked: false,
+                sections: [
+                    { title: "ترکیب صداها", exercises: [ { type: 'build', word: "خرس" }, { type: 'build', word: "خانه" }, { type: 'build', word: "جارو" }, { type: 'build', word: "جوجه" } ] },
+                    { title: "کلمه‌یابی", exercises: [ { type: 'choice', correct: "خرس", options: ["خرس", "خَرس", "خِرس"] }, { type: 'choice', correct: "جارو", options: ["جارو", "جَارو", "جِارو"] } ] },
+                    { title: "روان‌خوانی", exercises: [ { type: 'read', word: "خرس" }, { type: 'read', word: "خانه" }, { type: 'read', word: "جارو" }, { type: 'read', word: "جوجه" } ] }
+                ]
+            },
+            {
+                id: 15, title: "درس پانزدهم: ثـ ث، صـ ص", unlocked: false,
+                sections: [
+                    { title: "ترکیب صداها", exercises: [ { type: 'build', word: "ثمر" }, { type: 'build', word: "ثابت" }, { type: 'build', word: "صندوق" }, { type: 'build', word: "صبح" } ] },
+                    { title: "کلمه‌یابی", exercises: [ { type: 'choice', correct: "ثمر", options: ["ثمر", "ثَمر", "ثِمر"] }, { type: 'choice', correct: "صندوق", options: ["صندوق", "صَندوق", "صِندوق"] } ] },
+                    { title: "روان‌خوانی", exercises: [ { type: 'read', word: "ثمر" }, { type: 'read', word: "ثابت" }, { type: 'read', word: "صندوق" }, { type: 'read', word: "صبح" } ] }
+                ]
+            },
+            {
+                id: 16, title: "درس شانزدهم: ضـ ض، طـ ط", unlocked: false,
+                sections: [
+                    { title: "ترکیب صداها", exercises: [ { type: 'build', word: "ضامن" }, { type: 'build', word: "ضبط" }, { type: 'build', word: "طلا" }, { type: 'build', word: "طلب" } ] },
+                    { title: "کلمه‌یابی", exercises: [ { type: 'choice', correct: "ضامن", options: ["ضامن", "ضَامن", "ضِامن"] }, { type: 'choice', correct: "طلا", options: ["طلا", "طَلا", "طِلا"] } ] },
+                    { title: "روان‌خوانی", exercises: [ { type: 'read', word: "ضامن" }, { type: 'read', word: "ضبط" }, { type: 'read', word: "طلا" }, { type: 'read', word: "طلب" } ] }
+                ]
+            },
+            {
+                id: 17, title: "درس هفدهم: ظـ ظ، عـ ع", unlocked: false,
+                sections: [
+                    { title: "ترکیب صداها", exercises: [ { type: 'build', word: "ظرف" }, { type: 'build', word: "ظروف" }, { type: 'build', word: "عسل" }, { type: 'build', word: "عمر" } ] },
+                    { title: "کلمه‌یابی", exercises: [ { type: 'choice', correct: "ظرف", options: ["ظرف", "ظَرف", "ظِرف"] }, { type: 'choice', correct: "عسل", options: ["عسل", "عَسل", "عِسل"] } ] },
+                    { title: "روان‌خوانی", exercises: [ { type: 'read', word: "ظرف" }, { type: 'read', word: "ظروف" }, { type: 'read', word: "عسل" }, { type: 'read', word: "عمر" } ] }
+                ]
+            },
+            {
+                id: 18, title: "درس هجدهم: غـ غ، فـ ف", unlocked: false,
+                sections: [
+                    { title: "ترکیب صداها", exercises: [ { type: 'build', word: "غذا" }, { type: 'build', word: "غریبه" }, { type: 'build', word: "فنجان" }, { type: 'build', word: "فیلم" } ] },
+                    { title: "کلمه‌یابی", exercises: [ { type: 'choice', correct: "غذا", options: ["غذا", "غَذا", "غِذا"] }, { type: 'choice', correct: "فنجان", options: ["فنجان", "فَنجان", "فِنجان"] } ] },
+                    { title: "روان‌خوانی", exercises: [ { type: 'read', word: "غذا" }, { type: 'read', word: "غریبه" }, { type: 'read', word: "فنجان" }, { type: 'read', word: "فیلم" } ] }
+                ]
+            },
+            {
+                id: 19, title: "درس نوزدهم: قـ ق، ژ", unlocked: false,
+                sections: [
+                    { title: "ترکیب صداها", exercises: [ { type: 'build', word: "قلم" }, { type: 'build', word: "قهوه" }, { type: 'build', word: "ژیلت" }, { type: 'build', word: "ژله" } ] },
+                    { title: "کلمه‌یابی", exercises: [ { type: 'choice', correct: "قلم", options: ["قلم", "قَلم", "قِلم"] }, { type: 'choice', correct: "ژیلت", options: ["ژیلت", "ژیلِت", "ژیلَت"] } ] },
+                    { title: "روان‌خوانی", exercises: [ { type: 'read', word: "قلم" }, { type: 'read', word: "قهوه" }, { type: 'read', word: "ژیلت" }, { type: 'read', word: "ژله" } ] }
+                ]
+            }
+        ];
+        // --- STATE ---
+        let currentLesson = null;
+        let currentExercises = [];
+        let currentExerciseIndex = 0;
+        let draggedElement = null;
+        let dragClone = null;
+        let dragOffsetX = 0;
+        let dragOffsetY = 0;
+        let isDragging = false;
+        let audioContext = null;
+        let usedSuccessSounds = [];
+        const successSounds = ["bravo1.mp3", "bravo2.mp3", "bravo3.mp3", "bravo4.mp3"];
+        // --- DOM Elements ---
+        const activationScreen = document.getElementById('activation-screen');
+        const mainMenu = document.getElementById('main-menu');
+        const lessonSectionsScreen = document.getElementById('lesson-sections-screen');
+        const gameScreen = document.getElementById('game-screen');
+        const lessonsGrid = document.getElementById('lessons-grid');
+        const sectionsGrid = document.getElementById('sections-grid');
+        const backToMainMenuBtn = document.getElementById('back-to-main-menu');
+        const sectionsLessonTitle = document.getElementById('sections-lesson-title');
+        const backToSectionsBtn = document.getElementById('back-to-sections');
+        const gameLessonTitle = document.getElementById('game-lesson-title');
+        const wordImageContainer = document.getElementById('word-image-container');
+        const buildWordGameEl = document.getElementById('build-word-game');
+        const dropZonesContainer = document.getElementById('drop-zones');
+        const letterBubblesContainer = document.getElementById('letter-bubbles');
+        const choiceGameEl = document.getElementById('choice-game');
+        const choiceOptionsContainer = document.getElementById('choice-options');
+        const readGameEl = document.getElementById('read-game');
+        const readWordEl = document.getElementById('read-word');
+        const readAloudBtn = document.getElementById('read-aloud-btn');
+        const readingDoneBtn = document.getElementById('reading-done-btn');
+        const successModal = document.getElementById('success-modal');
+        const modalWordEl = document.getElementById('modal-word');
+        const nextExerciseBtn = document.getElementById('next-exercise-btn');
+        const lessonCompleteModal = document.getElementById('lesson-complete-modal');
+        const backToSectionsFromCompleteBtn = document.getElementById('back-to-sections-from-complete');
+        const activationCodeInput = document.getElementById('activation-code');
+        const activateBtn = document.getElementById('activate-btn');
+        const demoBtn = document.getElementById('demo-btn');
+        const activationMessage = document.getElementById('activation-message');
+        const activationWarningModal = document.getElementById('activation-warning-modal');
+        const closeWarningModalBtn = document.getElementById('close-warning-modal');
+        // --- Images/Icons Data ---
+        const exerciseImages = {
+            "آب": `<img src="water.png" class="w-28 h-28 object-contain" alt="آب">`,
+            "بابا": `<img src="father.png" class="w-32 h-32 object-contain" alt="بابا">`,
+            "باد": `<img src="wind.png" class="w-28 h-28 object-contain" alt="باد">`,
+            "داد": `<img src="justice.png" class="w-28 h-28 object-contain" alt="داد">`,
+            "ادب": `<img src="manners.png" class="w-28 h-28 object-contain" alt="ادب">`,
+            "آباد": `<img src="inhabited.png" class="w-28 h-28 object-contain" alt="آباد">`,
+            "بَد": `<img src="bad.png" class="w-28 h-28 object-contain" alt="بَد">`,
+            "اسب": `<img src="horse.png" class="w-28 h-28 object-contain" alt="اسب">`,
+            "سبد": `<img src="basket.png" class="w-28 h-28 object-contain" alt="سبد">`,
+            "آمد": `<img src="came.png" class="w-28 h-28 object-contain" alt="آمد">`,
+            "بادام": `<img src="almond.png" class="w-28 h-28 object-contain" alt="بادام">`,
+            "داس": `<img src="scythe.png" class="w-28 h-28 object-contain" alt="داس">`,
+            "سام": `<img src="name_sam.png" class="w-28 h-28 object-contain" alt="سام">`,
+            "توت": `<img src="mulberry.png" class="w-28 h-28 object-contain" alt="توت">`,
+            "دوست": `<img src="friend.png" class="w-28 h-28 object-contain" alt="دوست">`,
+            "دست": `<img src="hand.png" class="w-28 h-28 object-contain" alt="دست">`,
+            "تاب": `<img src="spring_coil.png" class="w-28 h-28 object-contain" alt="تاب">`,
+            "سوت": `<img src="whistle.png" class="w-28 h-28 object-contain" alt="سوت">`,
+            "بود": `<img src="was.png" class="w-28 h-28 object-contain" alt="بود">`,
+            "انار": `<img src="pomegranate.png" class="w-28 h-28 object-contain" alt="انار">`,
+            "نان": `<img src="bread.png" class="w-28 h-28 object-contain" alt="نان">`,
+            "باران": `<img src="rain.png" class="w-28 h-28 object-contain" alt="باران">`,
+            "مادر": `<img src="mother.png" class="w-28 h-28 object-contain" alt="مادر">`,
+            "برادر": `<img src="brother.png" class="w-28 h-28 object-contain" alt="برادر">`,
+            "نَر": `<img src="male.png" class="w-28 h-28 object-contain" alt="نَر">`,
+            "ایران": `<img src="iran.png" class="w-28 h-28 object-contain" alt="ایران">`,
+            "سیب": `<img src="apple.png" class="w-28 h-28 object-contain" alt="سیب">`,
+            "میز": `<img src="table.png" class="w-28 h-28 object-contain" alt="میز">`,
+            "زیبا": `<img src="beautiful.png" class="w-28 h-28 object-contain" alt="زیبا">`,
+            "بازی": `<img src="game.png" class="w-28 h-28 object-contain" alt="بازی">`,
+            "آزاد": `<img src="free.png" class="w-28 h-28 object-contain" alt="آزاد">`,
+            "شانه": `<img src="shoulder.png" class="w-28 h-28 object-contain" alt="شانه">`,
+            "تراش": `<img src="shave.png" class="w-28 h-28 object-contain" alt="تراش">`,
+            "آش": `<img src="ash_food.png" class="w-28 h-28 object-contain" alt="آش">`,
+            "امشب": `<img src="tonight.png" class="w-28 h-28 object-contain" alt="امشب">`,
+            "ستاره": `<img src="star.png" class="w-28 h-28 object-contain" alt="ستاره">`,
+            "ماشین": `<img src="machine.png" class="w-28 h-28 object-contain" alt="ماشین">`,
+            "امید": `<img src="hope.png" class="w-28 h-28 object-contain" alt="امید">`,
+            "بُرد": `<img src="took.png" class="w-28 h-28 object-contain" alt="بُرد">`,
+            "سُرمه": `<img src="kohl.png" class="w-28 h-28 object-contain" alt="سُرمه">`,
+            "کُشت": `<img src="killed.png" class="w-28 h-28 object-contain" alt="کُشت">`,
+            "مُژه": `<img src="eyelash.png" class="w-28 h-28 object-contain" alt="مُژه">`,
+            "اُرْدَک": `<img src="duck.png" class="w-28 h-28 object-contain" alt="اُرْدَک">`,
+            "کتاب": `<img src="book.png" class="w-28 h-28 object-contain" alt="کتاب">`,
+            "کفش": `<img src="shoe.png" class="w-28 h-28 object-contain" alt="کفش">`,
+            "کمر": `<img src="waist.png" class="w-28 h-28 object-contain" alt="کمر">`,
+            "گل": `<img src="flower.png" class="w-28 h-28 object-contain" alt="گل">`,
+            "گربه": `<img src="cat.png" class="w-28 h-28 object-contain" alt="گربه">`,
+            "گاو": `<img src="cow.png" class="w-28 h-28 object-contain" alt="گاو">`,
+            "لاله": `<img src="tulip.png" class="w-28 h-28 object-contain" alt="لاله">`,
+            "لیوان": `<img src="glass.png" class="w-28 h-28 object-contain" alt="لیوان">`,
+            "ماه": `<img src="moon.png" class="w-28 h-28 object-contain" alt="ماه">`,
+            "نوزاد": `<img src="baby.png" class="w-28 h-28 object-contain" alt="نوزاد">`,
+            "نخل": `<img src="palm_tree.png" class="w-28 h-28 object-contain" alt="نخل">`,
+            "وزن": `<img src="weight.png" class="w-28 h-28 object-contain" alt="وزن">`,
+            "ویلا": `<img src="villa.png" class="w-28 h-28 object-contain" alt="ویلا">`,
+            "هوا": `<img src="air.png" class="w-28 h-28 object-contain" alt="هوا">`,
+            "هیچ": `<img src="nothing.png" class="w-28 h-28 object-contain" alt="هیچ">`,
+            "یخ": `<img src="ice.png" class="w-28 h-28 object-contain" alt="یخ">`,
+            "یار": `<img src="friend_companion.png" class="w-28 h-28 object-contain" alt="یار">`,
+            "چشم": `<img src="eye.png" class="w-28 h-28 object-contain" alt="چشم">`,
+            "چرخ": `<img src="wheel.png" class="w-28 h-28 object-contain" alt="چرخ">`,
+            "حیاط": `<img src="courtyard.png" class="w-28 h-28 object-contain" alt="حیاط">`,
+            "حل": `<img src="solution.png" class="w-28 h-28 object-contain" alt="حل">`,
+            "خرس": `<img src="bear.png" class="w-28 h-28 object-contain" alt="خرس">`,
+            "خانه": `<img src="house.png" class="w-28 h-28 object-contain" alt="خانه">`,
+            "جارو": `<img src="broom.png" class="w-28 h-28 object-contain" alt="جارو">`,
+            "جوجه": `<img src="chick.png" class="w-28 h-28 object-contain" alt="جوجه">`,
+            "ثمر": `<img src="fruit_samr.png" class="w-28 h-28 object-contain" alt="ثمر">`,
+            "ثابت": `<img src="stable.png" class="w-28 h-28 object-contain" alt="ثابت">`,
+            "صندوق": `<img src="box.png" class="w-28 h-28 object-contain" alt="صندوق">`,
+            "صبح": `<img src="morning.png" class="w-28 h-28 object-contain" alt="صبح">`,
+            "ضامن": `<img src="guarantor.png" class="w-28 h-28 object-contain" alt="ضامن">`,
+            "ضبط": `<img src="record.png" class="w-28 h-28 object-contain" alt="ضبط">`,
+            "طلا": `<img src="gold.png" class="w-28 h-28 object-contain" alt="طلا">`,
+            "طلب": `<img src="request.png" class="w-28 h-28 object-contain" alt="طلب">`,
+            "ظرف": `<img src="dish.png" class="w-28 h-28 object-contain" alt="ظرف">`,
+            "ظروف": `<img src="dishes.png" class="w-28 h-28 object-contain" alt="ظروف">`,
+            "عسل": `<img src="honey.png" class="w-28 h-28 object-contain" alt="عسل">`,
+            "عمر": `<img src="age.png" class="w-28 h-28 object-contain" alt="عمر">`,
+            "غذا": `<img src="food.png" class="w-28 h-28 object-contain" alt="غذا">`,
+            "غریبه": `<img src="stranger.png" class="w-28 h-28 object-contain" alt="غریبه">`,
+            "فنجان": `<img src="cup.png" class="w-28 h-28 object-contain" alt="فنجان">`,
+            "فیلم": `<img src="movie.png" class="w-28 h-28 object-contain" alt="فیلم">`,
+            "قلم": `<img src="pen.png" class="w-28 h-28 object-contain" alt="قلم">`,
+            "قهوه": `<img src="coffee.png" class="w-28 h-28 object-contain" alt="قهوه">`,
+            "ژیلت": `<img src="razor.png" class="w-28 h-28 object-contain" alt="ژیلت">`,
+            "ژله": `<img src="jelly.png" class="w-28 h-28 object-contain" alt="ژله">`,
+            "default": `<div class="w-28 h-28 bg-gray-200 rounded-lg flex items-center justify-center text-gray-400">?</div>`
+        };
+        const sectionIcons = {
+            "ترکیب صداها": `<img src="build_word.png" class="w-10 h-10" alt="ترکیب صداها">`,
+            "کلمه‌یابی": `<img src="find_word.png" class="w-10 h-10" alt="کلمه‌یابی">`,
+            "روان‌خوانی": `<img src="read_aloud.png" class="w-10 h-10" alt="روان‌خوانی">`
+        };
+        const arrowIcon = `<img src="arrow_back.png" class="w-8 h-8 text-indigo-300" alt="بازگشت">`;
+        const lockIcon = `<img src="lock.png" class="w-8 h-8" alt="قفل">`;
+        // --- Valid License Keys ---
+        // --- Valid License Keys (به صورت تصادفی تولید شده) ---
+const validLicenseKeys = [
+    "ACT-K7M9P-QR2X4", "ACT-3N8VW-BJ5ZF", "ACT-D4H6Y-LM9C1", "ACT-R2T8U-EW4Q7", "ACT-5F9G3-HJ8K2",
+    "ACT-A1S6D-ZX4CV", "ACT-W3E7R-TY5UI", "ACT-Q9O2P-LK6JM", "ACT-I8U4Y-NB3VH", "ACT-X5C1V-BN7QM",
+    "ACT-M6K9J-HU4RF", "ACT-L2P5T-YG8WE", "ACT-F8D3S-AZ1XC", "ACT-V7B4N-QW6ER", "ACT-G5H2J-KL9PO",
+    "ACT-U4Y1I-MN6BT", "ACT-E3R7T-YU8OP", "ACT-Z9X2C-VB4NM", "ACT-C1V5B-QA3ZW", "ACT-N8M6L-KJ9HU",
+    "ACT-H4J7G-FD2SA", "ACT-J6K3L-PO9IY", "ACT-K2L8M-NB4VX", "ACT-P9O1I-UH7TY", "ACT-T5Y4R-EW3QA",
+    "ACT-Y8U7T-RS2DF", "ACT-Q3W6E-AZ9XC", "ACT-A7S2D-CV4BN", "ACT-S4D9F-GH5JK", "ACT-D1F5G-HJ6KL",
+    "ACT-F9G8H-JK7LM", "ACT-G6H5J-KL4MN", "ACT-H3J2K-LM5NP", "ACT-J7K6L-MN8OP", "ACT-K4L3M-NP9QR",
+    "ACT-L8M7N-PQ2RS", "ACT-M5N4P-QR5ST", "ACT-N2P8Q-ST9UV", "ACT-P6Q5R-TU2VW", "ACT-Q3R2S-UV5WX",
+    "ACT-R7S6T-VW8XY", "ACT-S4T3U-WX9YZ", "ACT-T8U7V-XY2ZA", "ACT-U5V4W-YZ5AB", "ACT-V2W8X-ZA8BC",
+    "ACT-W6X5Y-AB1CD", "ACT-X3Y2Z-BC4DE", "ACT-Y7Z6A-CD7EF", "ACT-Z4A3B-DE0FG", "ACT-A8B7C-EF3GH",
+    "ACT-B5C4D-FG6HI", "ACT-C2D8E-GH9IJ", "ACT-D6E5F-HI2JK", "ACT-E3F2G-IJ5KL", "ACT-F7G6H-JK8LM",
+    "ACT-G4H3J-KL1MN", "ACT-H8J7K-LM4NP", "ACT-J5K4L-MN7PQ", "ACT-K2L8M-NP0QR", "ACT-L6M5N-PQ3RS",
+    "ACT-M3N2P-QR6ST", "ACT-N7P6Q-ST9UV", "ACT-P4Q3R-TU2VW", "ACT-Q8R7S-UV5WX", "ACT-R5S4T-VW8XY",
+    "ACT-S2T8U-WX9YZ", "ACT-T6U5V-XY2ZA", "ACT-U3V2W-YZ5AB", "ACT-V7W6X-ZA8BC", "ACT-W4X3Y-AB1CD",
+    "ACT-X8Y7Z-BC4DE", "ACT-Y5Z4A-CD7EF", "ACT-Z2A8B-DE0FG", "ACT-A6B5C-EF3GH", "ACT-B3C2D-FG6HI",
+    "ACT-C7D6E-GH9IJ", "ACT-D4E3F-HI2JK", "ACT-E8F7G-IJ5KL", "ACT-F5G4H-JK8LM", "ACT-G2H8J-KL1MN",
+    "ACT-H6J5K-LM4NP", "ACT-J3K2L-MN7PQ", "ACT-K7L6M-NP0QR", "ACT-L4M3N-PQ3RS", "ACT-M8N7P-QR6ST",
+    "ACT-N5P4Q-ST9UV", "ACT-P2Q8R-TU2VW", "ACT-Q6R5S-UV5WX", "ACT-R3S2T-VW8XY", "ACT-S7T6U-WX9YZ",
+    "ACT-T4U3V-XY2ZA", "ACT-U8V7W-YZ5AB", "ACT-V5W4X-ZA8BC", "ACT-W2X8Y-AB1CD", "ACT-X6Y5Z-BC4DE",
+    "ACT-Y3Z2A-CD7EF", "ACT-Z7A6B-DE0FG", "ACT-A4B3C-EF3GH", "ACT-B8C7D-FG6HI", "ACT-C5D4E-GH9IJ",
+    "ACT-D2E8F-HI2JK", "ACT-E6F5G-IJ5KL", "ACT-F3G2H-JK8LM", "ACT-G7H6J-KL1MN", "ACT-H4J3K-LM4NP",
+    "ACT-J8K7L-MN7PQ", "ACT-K5L4M-NP0QR", "ACT-L2M8N-PQ3RS", "ACT-M6N5P-QR6ST", "ACT-N3P2Q-ST9UV"
+];
+        // --- Navigation & Render ---
+        function showScreen(screen) {
+            [activationScreen, mainMenu, lessonSectionsScreen, gameScreen].forEach(s => s.classList.add('hidden'));
+            screen.classList.remove('hidden');
+        }
+        function renderMainMenu() {
+            lessonsGrid.innerHTML = '';
+            lessons.forEach(lesson => {
+                 const isLocked = !lesson.unlocked;
+                 const card = document.createElement('div');
+                 card.className = `lesson-card p-6 rounded-2xl text-white font-bold text-2xl shadow-lg cursor-pointer flex justify-between items-center card ${isLocked ? 'locked' : ''}`;
+                 const playIcon = `<img src="play.png" class="w-8 h-8" alt="پخش">`;
+                 card.innerHTML = `<span>${lesson.title}</span> <span>${isLocked ? lockIcon : playIcon}</span>`;
+                 if (!isLocked) {
+                    card.onclick = () => showLessonSections(lesson.id);
+                 } else {
+                    card.onclick = () => {
+                        activationMessage.textContent = "این درس قفل شده است. برای دسترسی به تمام درس‌ها، کد فعال‌سازی را وارد کنید.";
+                        activationMessage.classList.remove('hidden');
+                        setTimeout(() => activationMessage.classList.add('hidden'), 3000);
+                    };
+                 }
+                 lessonsGrid.appendChild(card);
+            });
+        }
+        function showLessonSections(lessonId) {
+            currentLesson = lessons.find(l => l.id === lessonId);
+            sectionsLessonTitle.textContent = currentLesson.title;
+            sectionsGrid.innerHTML = '';
+            currentLesson.sections.forEach(section => {
+                const card = document.createElement('div');
+                card.className = 'card bg-white p-5 rounded-2xl shadow-md cursor-pointer flex items-center gap-4';
+                card.innerHTML = `
+                    <div class="text-3xl">${sectionIcons[section.title]}</div>
+                    <div class="flex-1"><h3 class="font-bold text-xl text-gray-700">${section.title}</h3></div>
+                    <div>${arrowIcon}</div>`;
+                card.onclick = () => startSection(section.exercises);
+                sectionsGrid.appendChild(card);
+            });
+            showScreen(lessonSectionsScreen);
+        }
+        // --- Game Logic ---
+        function startSection(exercises) {
+            currentExercises = shuffle([...exercises]);
+            currentExerciseIndex = 0;
+            gameLessonTitle.textContent = currentLesson.title;
+            loadExercise(currentExerciseIndex);
+            showScreen(gameScreen);
+        }
+        function shuffle(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+        function loadExercise(index) {
+            const exercise = currentExercises[index];
+            const wordKey = exercise.word || exercise.correct;
+            wordImageContainer.innerHTML = exerciseImages[wordKey] || exerciseImages["default"];
+            [buildWordGameEl, choiceGameEl, readGameEl].forEach(el => el.classList.add('hidden'));
+            if (exercise.type === 'build') loadBuildExercise(exercise);
+            else if (exercise.type === 'choice') loadChoiceExercise(exercise);
+            else if (exercise.type === 'read') loadReadExercise(exercise);
+        }
+        function loadBuildExercise(exercise) {
+            buildWordGameEl.classList.remove('hidden');
+            const wordLetters = exercise.word.split('');
+            dropZonesContainer.innerHTML = '';
+            letterBubblesContainer.innerHTML = '';
+            wordLetters.forEach((letter, index) => {
+                const dropZone = document.createElement('div');
+                dropZone.className = 'drop-zone flex items-center justify-center w-16 h-16 bg-gray-200 rounded-lg border-2 border-gray-400 text-transparent';
+                dropZone.dataset.letter = letter;
+                dropZone.dataset.index = index;
+                dropZone.textContent = letter;
+                dropZonesContainer.appendChild(dropZone);
+            });
+            shuffle([...wordLetters]).forEach(letter => {
+                const bubble = document.createElement('div');
+                bubble.className = 'letter-bubble w-16 h-16 bg-yellow-300 flex items-center justify-center text-3xl font-bold shadow-md';
+                bubble.textContent = letter;
+                bubble.draggable = true;
+                bubble.dataset.letter = letter;
+                letterBubblesContainer.appendChild(bubble);
+            });
+            addDragDropListeners();
+        }
+        function loadChoiceExercise(exercise) {
+            choiceGameEl.classList.remove('hidden');
+            choiceOptionsContainer.innerHTML = '';
+            shuffle([...exercise.options]).forEach(option => {
+                const button = document.createElement('button');
+                button.className = 'choice-btn w-full bg-blue-400 text-white font-bold text-2xl py-4 rounded-xl shadow-md hover:bg-blue-500 transition-all card';
+                button.textContent = option;
+                button.onclick = (e) => handleChoiceSelection(e, option, exercise.correct);
+                choiceOptionsContainer.appendChild(button);
+            });
+        }
+        // --- Audio Playback Logic ---
+        function playSound(filename) {
+            if (!audioContext) {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            const audio = new Audio(`sounds/${filename}`);
+            if (audioContext.state === 'suspended') {
+                audioContext.resume().then(() => {
+                    audio.play().catch(e => console.log("خطا در پخش صوت:", e));
+                });
+            } else {
+                audio.play().catch(e => console.log("خطا در پخش صوت:", e));
+            }
+        }
+        function playRandomSuccessSound() {
+            if (usedSuccessSounds.length === successSounds.length) {
+                usedSuccessSounds = [];
+            }
+            const availableSounds = successSounds.filter(sound => !usedSuccessSounds.includes(sound));
+            const randomIndex = Math.floor(Math.random() * availableSounds.length);
+            const selectedSound = availableSounds[randomIndex];
+            usedSuccessSounds.push(selectedSound);
+            playSound(selectedSound);
+        }
+        // --- Read Exercise Logic ---
+        function loadReadExercise(exercise) {
+            readGameEl.classList.remove('hidden');
+            readWordEl.textContent = exercise.word;
+            readAloudBtn.onclick = () => {
+                playSound(`${exercise.word}.mp3`);
+            };
+            readingDoneBtn.onclick = () => {
+                playRandomSuccessSound();
+                setTimeout(() => showSuccessModal(), 1000);
+            };
+        }
+        function handleChoiceSelection(event, selectedOption, correctOption) {
+            const button = event.target;
+            choiceOptionsContainer.querySelectorAll('button').forEach(btn => btn.disabled = true);
+            if (selectedOption === correctOption) {
+                button.classList.add('correct', 'bg-green-500');
+                playRandomSuccessSound();
+                setTimeout(showSuccessModal, 1000);
+            } else {
+                button.classList.add('incorrect', 'bg-red-500');
+                choiceOptionsContainer.querySelectorAll('button').forEach(btn => {
+                    if (btn.textContent === correctOption) btn.classList.add('bg-green-500');
+                });
+                setTimeout(() => loadExercise(currentExerciseIndex), 1500);
+            }
+        }
+        // --- Drag & Drop Logic (Mouse & Touch) ---
+        function addDragDropListeners() {
+            const bubbles = document.querySelectorAll('.letter-bubble');
+            const dropZones = document.querySelectorAll('.drop-zone:not(.filled)');
+            bubbles.forEach(bubble => {
+                bubble.addEventListener('mousedown', startDrag);
+                bubble.addEventListener('touchstart', handleTouchStart, { passive: false });
+            });
+            dropZones.forEach(zone => {
+                zone.addEventListener('dragover', e => e.preventDefault());
+                zone.addEventListener('drop', handleDrop);
+                zone.addEventListener('touchend', handleTouchDrop);
+            });
+            document.addEventListener('contextmenu', (e) => {
+                if (isDragging) {
+                    e.preventDefault();
+                }
+            });
+        }
+        function startDrag(e) {
+            if (e.button !== 0) return;
+            e.preventDefault();
+            startDragProcess(e.target, e.clientX, e.clientY);
+            document.addEventListener('mousemove', drag);
+            document.addEventListener('mouseup', stopDrag);
+        }
+        function drag(e) {
+            if (!isDragging) return;
+            e.preventDefault();
+            moveDrag(e.clientX, e.clientY);
+        }
+        function stopDrag(e) {
+            if (!isDragging) return;
+            e.preventDefault();
+            endDrag(e.clientX, e.clientY);
+            document.removeEventListener('mousemove', drag);
+            document.removeEventListener('mouseup', stopDrag);
+        }
+        function handleTouchStart(e) {
+            if (e.touches.length > 1) return;
+            e.preventDefault();
+            const touch = e.touches[0];
+            startDragProcess(e.target, touch.clientX, touch.clientY);
+            document.addEventListener('touchmove', handleTouchMove, { passive: false });
+            document.addEventListener('touchend', handleTouchEnd);
+        }
+        function handleTouchMove(e) {
+            if (!isDragging || e.touches.length > 1) return;
+            e.preventDefault();
+            const touch = e.touches[0];
+            moveDrag(touch.clientX, touch.clientY);
+        }
+        function handleTouchEnd(e) {
+            if (!isDragging) return;
+            e.preventDefault();
+            endDrag(parseInt(dragClone.style.left) || 0, parseInt(dragClone.style.top) || 0);
+            document.removeEventListener('touchmove', handleTouchMove);
+            document.removeEventListener('touchend', handleTouchEnd);
+        }
+        function startDragProcess(element, clientX, clientY) {
+            draggedElement = element;
+            isDragging = true;
+            draggedElement.classList.add('dragging');
+            dragClone = draggedElement.cloneNode(true);
+            dragClone.classList.add('drag-clone');
+            document.body.appendChild(dragClone);
+            const rect = draggedElement.getBoundingClientRect();
+            dragOffsetX = clientX - rect.left;
+            dragOffsetY = clientY - rect.top;
+            dragClone.style.width = `${rect.width}px`;
+            dragClone.style.height = `${rect.height}px`;
+            dragClone.style.left = `${rect.left}px`;
+            dragClone.style.top = `${rect.top}px`;
+            document.body.style.userSelect = 'none';
+            document.body.style.webkitUserSelect = 'none';
+        }
+        function moveDrag(clientX, clientY) {
+            if (!isDragging || !dragClone) return;
+            dragClone.style.left = `${clientX - dragOffsetX}px`;
+            dragClone.style.top = `${clientY - dragOffsetY}px`;
+        }
+        function endDrag(clientX, clientY) {
+            if (!isDragging) return;
+            isDragging = false;
+            let dropTarget = null;
+            const dropZones = document.querySelectorAll('.drop-zone:not(.filled)');
+            for (const zone of dropZones) {
+                const rect = zone.getBoundingClientRect();
+                const zoneCenterX = rect.left + rect.width / 2;
+                const zoneCenterY = rect.top + rect.height / 2;
+                const distance = Math.sqrt(Math.pow(clientX - zoneCenterX, 2) + Math.pow(clientY - zoneCenterY, 2));
+                const zoneRadius = Math.sqrt(Math.pow(rect.width, 2) + Math.pow(rect.height, 2)) / 2;
+                if (distance < zoneRadius * 1.5) {
+                    dropTarget = zone;
+                    break;
+                }
+            }
+            if (dropTarget) {
+                dropLetter(dropTarget, draggedElement);
+            } else {
+                 if (draggedElement) {
+                    draggedElement.classList.add('shake');
+                    setTimeout(() => draggedElement.classList.remove('shake'), 500);
+                 }
+            }
+            if (dragClone) {
+                document.body.removeChild(dragClone);
+                dragClone = null;
+            }
+            if (draggedElement) {
+                draggedElement.classList.remove('dragging');
+                draggedElement = null;
+            }
+            document.body.style.userSelect = '';
+            document.body.style.webkitUserSelect = '';
+        }
+        function handleDrop(e) {
+            e.preventDefault();
+            const dropZone = e.target.closest('.drop-zone');
+            if (dropZone && draggedElement) {
+                dropLetter(dropZone, draggedElement);
+            }
+        }
+        function handleTouchDrop(e) {
+            const dropZone = e.target.closest('.drop-zone');
+            if (dropZone && draggedElement) {
+                const touch = e.changedTouches[0];
+                const elementFromPoint = document.elementFromPoint(touch.clientX, touch.clientY);
+                if (elementFromPoint && elementFromPoint.classList.contains('letter-bubble') && elementFromPoint.classList.contains('dragging')) {
+                    dropLetter(dropZone, elementFromPoint);
+                }
+            }
+        }
+        function dropLetter(dropZone, letterElement) {
+            if (dropZone.classList.contains('filled')) {
+                letterElement.classList.add('shake');
+                setTimeout(() => letterElement.classList.remove('shake'), 500);
+                return;
+            }
+            const allZones = Array.from(dropZonesContainer.children);
+            const nextEmptyZoneIndex = allZones.findIndex(z => !z.classList.contains('filled'));
+            const dropIndex = allZones.indexOf(dropZone);
+            if (dropIndex !== nextEmptyZoneIndex) {
+                letterElement.classList.add('shake');
+                setTimeout(() => letterElement.classList.remove('shake'), 500);
+                return;
+            }
+            if (letterElement.dataset.letter === dropZone.dataset.letter) {
+                dropZone.textContent = letterElement.textContent;
+                dropZone.classList.add('filled');
+                dropZone.classList.remove('text-transparent');
+                letterElement.style.display = 'none';
+                checkWordCompletion();
+            } else {
+                letterElement.classList.add('shake');
+                setTimeout(() => letterElement.classList.remove('shake'), 500);
+            }
+        }
+        function checkWordCompletion() {
+            const isComplete = Array.from(dropZonesContainer.children).every(z => z.classList.contains('filled'));
+            if (isComplete) {
+                playRandomSuccessSound();
+                setTimeout(showSuccessModal, 1000);
+            }
+        }
+        function showSuccessModal() {
+            const exercise = currentExercises[currentExerciseIndex];
+            const word = exercise.word || exercise.correct;
+            modalWordEl.textContent = `«${word}» عالی بود!`;
+            if (currentExerciseIndex >= currentExercises.length - 1) {
+                setTimeout(() => {
+                    successModal.classList.add('hidden');
+                    lessonCompleteModal.classList.remove('hidden');
+                }, 500);
+            } else {
+                 successModal.classList.remove('hidden');
+                 successModal.classList.add('flex', 'show');
+            }
+        }
+        // --- Activation Logic ---
+        function activateApp() {
+            const code = activationCodeInput.value.trim();
+            if (validLicenseKeys.includes(code)) {
+                // ذخیره کد فعال‌سازی در localStorage
+                localStorage.setItem('app_license_key', code);
+                // باز کردن قفل درس‌های 6 تا 19
+                lessons.forEach(lesson => {
+                    if (lesson.id > 5) {
+                        lesson.unlocked = true;
+                    }
+                });
+                // نمایش هشدار
+                activationWarningModal.classList.remove('hidden');
+                // رفتن به صفحه اصلی انجام نمی‌شود تا کاربر هشدار را ببیند
+            } else {
+                activationMessage.textContent = "کد فعال‌سازی نامعتبر است.";
+                activationMessage.classList.remove('hidden');
+                setTimeout(() => activationMessage.classList.add('hidden'), 3000);
+            }
+        }
+        function enterDemoMode() {
+            // فقط درس‌های 1 تا 5 فعال هستند (که از قبل true هستند)
+            // پس نیاز به تغییر نیست
+            showScreen(mainMenu);
+            renderMainMenu();
+        }
+        // --- Event Listeners ---
+        activateBtn.addEventListener('click', activateApp);
+        demoBtn.addEventListener('click', enterDemoMode);
+        backToMainMenuBtn.addEventListener('click', () => showScreen(mainMenu));
+        backToSectionsBtn.addEventListener('click', () => showLessonSections(currentLesson.id));
+        backToSectionsFromCompleteBtn.addEventListener('click', () => {
+            lessonCompleteModal.classList.add('hidden');
+            showLessonSections(currentLesson.id);
+        });
+        nextExerciseBtn.addEventListener('click', () => {
+            currentExerciseIndex++;
+            successModal.classList.add('hidden');
+            loadExercise(currentExerciseIndex);
+        });
+        closeWarningModalBtn.addEventListener('click', () => {
+            activationWarningModal.classList.add('hidden');
+            showScreen(mainMenu);
+            renderMainMenu();
+        });
+        // --- Initialization ---
+        document.addEventListener('DOMContentLoaded', () => {
+            // بررسی اینکه آیا کد فعال‌سازی قبلاً وارد شده است یا نه
+            const savedLicenseKey = localStorage.getItem('app_license_key');
+            if (savedLicenseKey && validLicenseKeys.includes(savedLicenseKey)) {
+                // اگر کد معتبر بود، درس‌های 6 تا 19 را باز کن
+                lessons.forEach(lesson => {
+                    if (lesson.id > 5) {
+                        lesson.unlocked = true;
+                    }
+                });
+                showScreen(mainMenu);
+                renderMainMenu();
+            } else {
+                // اگر کد معتبر نبود یا وجود نداشت، به صفحه فعال‌سازی برو
+                showScreen(activationScreen);
+            }
+        });
+    </script>
+</body>
+</html>
