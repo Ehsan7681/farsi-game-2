@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>مدرسه الفبا - نسخه دمو</title>
+    <title>مدرسه الفبا</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -11,16 +11,16 @@
     <style>
         body {
             font-family: 'Vazirmatn', sans-serif;
-            touch-action: manipulation;
-            background-color: #f0f9ff;
+            touch-action: manipulation; /* بهترین practice برای touch */
+            background-color: #f0f9ff; /* bg-sky-50 */
             margin: 0;
             padding: 0;
-            overflow-x: hidden;
+            overflow-x: hidden; /* جلوگیری از اسکرول افقی */
         }
         .card { transition: transform 0.2s, box-shadow 0.2s; }
         .card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
         .lesson-card {
-            background: linear-gradient(135deg, #38bdf8, #6366f1);
+            background: linear-gradient(135deg, #38bdf8, #6366f1); /* sky-500 to indigo-500 */
             text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
         }
         .lesson-card.locked {
@@ -33,48 +33,54 @@
             user-select: none;
             -webkit-user-select: none;
             -webkit-touch-callout: none;
-            touch-action: none;
+            touch-action: none; /* جلوگیری از اسکرول در حین drag */
             transition: transform 0.1s, opacity 0.2s;
-            position: relative;
-            z-index: 10;
+            position: relative; /* برای absolute positioning در حین drag */
+            z-index: 10; /* مقدار اولیه z-index */
+            /* اطمینان از اندازه مناسب */
             width: 50px;
             height: 50px;
             min-width: 50px;
             min-height: 50px;
+            /* حذف border-radius برای مربع شدن - تغییر اصلی */
+            /* border-radius: 9999px; <-- این خط حذف شد */
         }
         .letter-bubble.dragging { 
             opacity: 0.8; 
             transform: scale(1.1); 
             cursor: grabbing;
-            z-index: 1000;
-            position: absolute;
-            pointer-events: none;
+            z-index: 1000; /* در بالای همه چیز در حین drag */
+            position: absolute; /* برای حرکت آزاد */
+            pointer-events: none; /* جلوگیری از eventهای موس روی خود عنصر در حین drag */
         }
         .letter-bubble:active { cursor: grabbing; }
         .drop-zone { 
-            border: 2px dashed #94a3b8;
+            border: 2px dashed #94a3b8; /* slate-400 */
+            /* کاهش اندازه برای جا شدن بهتر */
             min-width: 50px;
             min-height: 50px;
             width: 50px;
             height: 50px;
             transition: all 0.2s;
-            background-color: #e2e8f0;
+            background-color: #e2e8f0; /* slate-200 */
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.5rem;
+            font-size: 1.5rem; /* کاهش اندازه فونت */
             font-weight: bold;
+            /* افزایش فاصله با margin برای جلوگیری از چسبیدن */
             margin: 5px;
-            border-radius: 0.5rem;
+            /* اطمینان از مربع بودن - تغییر اصلی */
+            border-radius: 0.5rem; /* گوشه‌های کمی گرد */
         }
         .drop-zone.drag-over {
-            background-color: #bfdbfe;
-            border-color: #3b82f6;
+            background-color: #bfdbfe; /* blue-200 */
+            border-color: #3b82f6; /* blue-500 */
         }
         .drop-zone.filled {
-            background-color: #dcfce7;
-            border-color: #22c55e;
-            color: #15803d;
+            background-color: #dcfce7; /* green-100 */
+            border-color: #22c55e; /* green-500 */
+            color: #15803d; /* green-700 */
             animation: pop-in 0.3s ease-out;
         }
         @keyframes pop-in {
@@ -93,18 +99,21 @@
         .choice-btn.incorrect { animation: shake 0.5s ease; }
         @keyframes correct-pulse {
             0% { transform: scale(1); }
-            50% { transform: scale(1.1); background-color: #4ade80; }
+            50% { transform: scale(1.1); background-color: #4ade80; } /* green-400 */
             100% { transform: scale(1); }
         }
+        /* استایل برای drag clone */
         .drag-clone {
             position: absolute;
-            pointer-events: none;
+            pointer-events: none; /* جلوگیری از eventهای موس روی کپی */
             z-index: 9999;
             opacity: 0.8;
             user-select: none;
             -webkit-user-select: none;
         }
+        /* استایل برای دکمه بازگشت (فقط آیکون بدون کادر) */
         .back-button-icon {
+            /* حذف تمام استایل‌های قبلی مربوط به دکمه */
             background: none;
             border: none;
             padding: 0;
@@ -119,31 +128,37 @@
             transform: scale(1.1);
         }
         .back-button-icon img {
+            /* اطمینان از اندازه مناسب آیکون */
             width: 24px;
             height: 24px;
         }
-        #build-word-game, #choice-game, #read-game {
+        /* استایل برای containerهای بازی برای جلوگیری از overflow */
+        #build-word-game, #choice-game, #read-game, #picture-guess-game, #fill-blank-game {
             max-width: 100%;
             overflow-x: hidden;
         }
+        /* استایل برای drop zones container برای جلوگیری از overflow */
         #drop-zones {
             max-width: 100%;
-            overflow-x: auto;
+            overflow-x: auto; /* اجازه اسکرول افقی در صورت نیاز */
             display: flex;
             justify-content: center;
             align-items: center;
-            padding: 5px 0;
-            flex-wrap: wrap;
+            padding: 5px 0; /* کمی padding برای جلوگیری از چسبیدن به لبه */
+            flex-wrap: wrap; /* رفتن به خط بعد در صورت نبود فضا */
         }
+        /* استایل برای letter bubbles container */
         #letter-bubbles {
             max-width: 100%;
             overflow-x: hidden;
         }
+        /* استایل برای تیتر درس */
         .lesson-title-header {
             text-align: center;
             margin-top: 10px;
             margin-bottom: 10px;
         }
+        /* استایل برای حالت موبایل */
         @media (max-width: 640px) {
             .drop-zone, .letter-bubble {
                 width: 40px;
@@ -153,43 +168,44 @@
                 font-size: 1.25rem;
             }
             #drop-zones {
-                gap: 1px;
+                gap: 1px; /* کاهش فاصله بین خانه‌ها در موبایل */
             }
+        }
+        /* استایل برای نشانگر تمرین انجام شده */
+        .completed-indicator {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background-color: #10b981; /* emerald-500 */
+            color: white;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: bold;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        .section-card-container {
+            position: relative;
         }
         /* استایل برای ایده و تولید */
         .creator-info {
             text-align: center;
-            font-size: 0.75rem;
-            color: #64748b;
+            font-size: 0.75rem; /* text-xs */
+            color: #64748b; /* slate-500 */
             margin-top: 1rem;
             padding: 0.5rem;
         }
     </style>
 </head>
 <body class="text-gray-800 flex items-center justify-center min-h-screen">
+    <!-- ایده و تولید: احسان شمسی -->
     <div id="app-container" class="w-full max-w-md mx-auto p-4">
-        <!-- Activation Screen -->
-        <div id="activation-screen" class="w-full">
-            <header class="text-center mb-8">
-                <h1 class="text-4xl font-bold text-sky-700">فعال‌سازی مدرسه الفبا</h1>
-                <p class="text-sky-600 text-lg mt-2">نسخه دمو - 5 درس اول رایگان</p>
-            </header>
-            <div class="bg-white rounded-2xl shadow-lg p-6">
-                <div class="mb-6">
-                    <label for="activation-code" class="block text-gray-700 text-sm font-bold mb-2">کد فعال‌سازی را وارد کنید:</label>
-                    <input type="text" id="activation-code" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" placeholder="مثال: ACT-12345-ABCDE">
-                </div>
-                <button id="activate-btn" class="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-4 rounded-full focus:outline-none focus:shadow-outline">فعال‌سازی</button>
-                <button id="demo-btn" class="w-full mt-4 bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-4 rounded-full focus:outline-none focus:shadow-outline">ورود به نسخه دمو</button>
-                <div id="activation-message" class="mt-4 text-center text-red-500 hidden"></div>
-            </div>
-            <div class="mt-6 text-center text-sm text-gray-500">
-                <p>نسخه دمو شامل 5 درس اول به صورت رایگان است.</p>
-                <p>برای دسترسی به تمام درس‌ها، کد فعال‌سازی را خریداری کنید.</p>
-            </div>
-        </div>
         <!-- Main Menu Screen -->
-        <div id="main-menu" class="w-full hidden">
+        <div id="main-menu" class="w-full">
             <header class="text-center mb-8">
                 <h1 class="text-5xl font-bold text-sky-700">مدرسه الفبا</h1>
                  <p class="text-sky-600 text-lg mt-2 flex justify-center"><img src="sun.png" class="w-10 h-10 text-yellow-400" alt="آفتاب"></p>
@@ -199,27 +215,34 @@
         <!-- Lesson Sections Screen -->
         <div id="lesson-sections-screen" class="hidden w-full">
              <header class="flex items-center justify-between mb-6">
+                <!-- دکمه بازگشت با آیکون بدون کادر -->
                 <button id="back-to-main-menu" class="back-button-icon">
                     <img src="back_arrow.png" alt="بازگشت">
                 </button>
+                <!-- تیتر درس به صورت کاملاً تراز شده در وسط -->
                 <h2 id="sections-lesson-title" class="text-2xl font-bold text-sky-700 lesson-title-header"></h2>
-                <div class="w-12"></div>
+                <div class="w-12"></div> <!-- فضای خالی برای تعادل -->
             </header>
             <div id="sections-grid" class="space-y-4"></div>
+            <!-- ایده و تولید در پایین صفحه -->
             <div class="creator-info">ایده و تولید: احسان شمسی</div>
         </div>
         <!-- Game Screen -->
         <div id="game-screen" class="hidden w-full text-center">
             <header class="flex items-center justify-between mb-6">
+                <!-- دکمه بازگشت با آیکون بدون کادر -->
                 <button id="back-to-sections" class="back-button-icon">
                     <img src="back_arrow.png" alt="بازگشت">
                 </button>
+                <!-- تیتر درس به صورت کاملاً تراز شده در وسط -->
                 <h2 id="game-lesson-title" class="text-xl font-bold text-sky-700 lesson-title-header"></h2>
-                <div class="w-12"></div>
+                <div class="w-12"></div> <!-- فضای خالی برای تعادل -->
             </header>
             <div class="bg-white rounded-2xl shadow-lg p-6">
                 <div id="word-image-container" class="mb-6 h-32 flex items-center justify-center"></div>
                 <div id="build-word-game">
+                    <!-- The container is LTR for correct flex ordering, but visually RTL with flex-row-reverse -->
+                    <!-- استفاده از flex-wrap برای رفتن به خط بعد در صورت نبود فضا -->
                     <div id="drop-zones" class="flex flex-row-reverse flex-wrap justify-center items-center gap-2 mb-6" dir="ltr"></div>
                     <div id="letter-bubbles" class="flex justify-center items-center flex-wrap gap-3 p-4 bg-sky-50 rounded-lg min-h-[80px]"></div>
                 </div>
@@ -232,7 +255,16 @@
                     <button id="read-aloud-btn" class="bg-cyan-500 hover:bg-cyan-600 text-white p-4 rounded-full"><img src="speaker.png" class="w-8 h-8" alt="بلندگو"></button>
                     <button id="reading-done-btn" class="mt-6 w-full bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-6 rounded-full">خواندم</button>
                 </div>
+                <div id="picture-guess-game" class="hidden">
+                    <p class="text-xl text-gray-600 mb-6">کدام کلمه مربوط به تصویر است؟</p>
+                    <div id="picture-guess-options" class="grid grid-cols-1 gap-4"></div>
+                </div>
+                <div id="fill-blank-game" class="hidden">
+                    <p class="text-2xl font-bold text-gray-800 mb-6" id="sentence-blank"></p>
+                    <div id="fill-blank-options" class="grid grid-cols-1 gap-4"></div>
+                </div>
             </div>
+            <!-- ایده و تولید در پایین صفحه -->
             <div class="creator-info">ایده و تولید: احسان شمسی</div>
         </div>
         <!-- Success Modal -->
@@ -253,15 +285,6 @@
                  <button id="back-to-sections-from-complete" class="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-6 rounded-full">بازگشت به درس</button>
             </div>
         </div>
-        <!-- Activation Warning Modal -->
-        <div id="activation-warning-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-            <div class="bg-white rounded-2xl shadow-2xl p-8 text-center">
-                <div class="text-7xl mb-4 text-red-500">⚠️</div>
-                <h3 class="text-3xl font-bold text-red-500 mb-4">هشدار!</h3>
-                <p class="text-xl text-gray-700 mb-6">از به اشتراک گذاری کد فعال‌سازی خودداری کنید زیرا نرم‌افزار شما غیرفعال خواهد شد.</p>
-                <button id="close-warning-modal" class="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-6 rounded-full">متوجه شدم</button>
-            </div>
-        </div>
     </div>
     <script>
         // --- DATA ---
@@ -270,152 +293,285 @@
                 id: 1, title: "درس اول: آ ا ، بـ ب", unlocked: true,
                 sections: [
                     { title: "ترکیب صداها", exercises: [ { type: 'build', word: "آب" }, { type: 'build', word: "بابا" } ] },
-                    { title: "کلمه‌یابی", exercises: [ { type: 'choice', correct: "بابا", options: ["بابا", "باب", "آبا"] }, { type: 'choice', correct: "آب", options: ["آب", "اب", "اَب"] } ] },
-                    { title: "روان‌خوانی", exercises: [ { type: 'read', word: "آب" }, { type: 'read', word: "بابا" } ] }
+                    { title: "کلمه‌یابی", exercises: [ { type: 'choice', correct: "بابا", options: ["بابا", "بایا", "آبا"] }, { type: 'choice', correct: "آب", options: ["آب", "اب", "اَب"] } ] },
+                    { title: "روان‌خوانی", exercises: [ { type: 'read', word: "آب" }, { type: 'read', word: "بابا" } ] },
+                    { title: "حدس تصویر", exercises: [ { type: 'pictureGuess', image: "آب", correct: "آب", options: ["آب", "شیر", "ماه"] }, { type: 'pictureGuess', image: "بابا", correct: "بابا", options: ["بابا", "مادر", "برادر"] } ] },
+                    { title: "کلمه گمشده", exercises: [ 
+                        { type: 'fillBlank', sentence: "من ___ نوشیدم چون تشنہ بودم.", correct: "آب", options: ["آب", "بابا", "ماه"] }, 
+                        { type: 'fillBlank', sentence: "__ مرا دوست دارد", correct: "بابا", options: ["بابا", "درخت", "خانه"] },
+                        { type: 'fillBlank', sentence: "در فنجان ___ ریخته بودم.", correct: "آب", options: ["آب", "سرکه", "خاک"] },
+                        { type: 'fillBlank', sentence: "با ___ بازی کردم.", correct: "بابا", options: ["بابا", "دوست", "ماشین"] }
+                    ] }
                 ]
             },
             {
                 id: 2, title: "درس دوم: اَ َ ، د", unlocked: true,
                 sections: [
                     { title: "ترکیب صداها", exercises: [ { type: 'build', word: "باد" }, { type: 'build', word: "داد" }, { type: 'build', word: "ادب" }, { type: 'build', word: "آباد" }, { type: 'build', word: "بَد" } ] },
-                    { title: "کلمه‌یابی", exercises: [ { type: 'choice', correct: "آباد", options: ["آباد", "آبد", "اباد"] }, { type: 'choice', correct: "داد", options: ["داد", "داب", "دَد"] }, { type: 'choice', correct: "ادب", options: ["ادب", "اد", "اَدب"] } ] },
-                    { title: "روان‌خوانی", exercises: [ { type: 'read', word: "باد" }, { type: 'read', word: "ادب" }, { type: 'read', word: "آباد" }, { type: 'read', word: "داد" }, { type: 'read', word: "بَد" } ] }
+                    { title: "کلمه‌یابی", exercises: [ { type: 'choice', correct: "آباد", options: ["آباد", "آبات", "اداب"] }, { type: 'choice', correct: "داد", options: ["داد", "داب", "باد"] }, { type: 'choice', correct: "ادب", options: ["ادب", "ادد", "ابد"] } ] },
+                    { title: "روان‌خوانی", exercises: [ { type: 'read', word: "باد" }, { type: 'read', word: "ادب" }, { type: 'read', word: "آباد" }, { type: 'read', word: "داد" }, { type: 'read', word: "بَد" } ] },
+                    { title: "حدس تصویر", exercises: [ { type: 'pictureGuess', image: "باد", correct: "باد", options: ["باد", "باران", "آفتاب"] }, { type: 'pictureGuess', image: "داد", correct: "داد", options: ["داد", "گفت", "آمد"] }, { type: 'pictureGuess', image: "ادب", correct: "ادب", options: ["ادب", "آب", "باد"] } ] },
+                    { title: "کلمه گمشده", exercises: [ 
+                        { type: 'fillBlank', sentence: "___ وزید و برگ‌ها را به هوا برد.", correct: "باد", options: ["باد", "باران", "ماه"] }, 
+                        { type: 'fillBlank', sentence: "___ زدم چون سر و صدا زیاد بود.", correct: "داد", options: ["داد", "گفت", "آمد"] },
+                        { type: 'fillBlank', sentence: "در جمع مهمانان، باید ___ را رعایت کنیم.", correct: "ادب", options: ["ادب", "آب", "باد"] },
+                        { type: 'fillBlank', sentence: "شهر ___ زیبا است.", correct: "آباد", options: ["آباد", "باد", "داد"] }
+                    ] }
                 ]
             },
             {
                 id: 3, title: "درس سوم: مـ م ، سـ س", unlocked: true,
                 sections: [
                      { title: "ترکیب صداها", exercises: [ { type: 'build', word: "اسب" }, { type: 'build', word: "سبد" }, { type: 'build', word: "آمد" }, { type: 'build', word: "بادام" }, { type: 'build', word: "داس" }, { type: 'build', word: "سام" } ] },
-                     { title: "کلمه‌یابی", exercises: [ { type: 'choice', correct: "بادام", options: ["بادام", "بادم", "بدام"] }, { type: 'choice', correct: "اسب", options: ["اسب", "اصب", "اسبِ"] }, { type: 'choice', correct: "سبد", options: ["سبد", "سد", "سب"] }, { type: 'choice', correct: "آمد", options: ["آمد", "امد", "اَمد"] } ] },
-                     { title: "روان‌خوانی", exercises: [ { type: 'read', word: "آباد" }, { type: 'read', word: "آمد" }, { type: 'read', word: "اسب" }, { type: 'read', word: "سبد" }, { type: 'read', word: "بادام" }, { type: 'read', word: "داس" } ] }
+                     { title: "کلمه‌یابی", exercises: [ { type: 'choice', correct: "بادام", options: ["بادام", "بادَم", "بابام"] }, { type: 'choice', correct: "اسب", options: ["اسب", "اصب", "اثب"] }, { type: 'choice', correct: "سبد", options: ["سبد", "سمد", "صبد"] }, { type: 'choice', correct: "آمد", options: ["آمد", "امد", "اَمد"] } ] },
+                     { title: "روان‌خوانی", exercises: [ { type: 'read', word: "آباد" }, { type: 'read', word: "آمد" }, { type: 'read', word: "اسب" }, { type: 'read', word: "سبد" }, { type: 'read', word: "بادام" }, { type: 'read', word: "داس" } ] },
+                     { title: "حدس تصویر", exercises: [ { type: 'pictureGuess', image: "اسب", correct: "اسب", options: ["اسب", "گربه", "ماشین"] }, { type: 'pictureGuess', image: "سبد", correct: "سبد", options: ["سبد", "کیف", "دست"] }, { type: 'pictureGuess', image: "آمد", correct: "آمد", options: ["آمد", "رفت", "خوابید"] } ] },
+                     { title: "کلمه گمشده", exercises: [ 
+                        { type: 'fillBlank', sentence: "در مزرعه، ___ دوید و به ما  نزدیک شد.", correct: "اسب", options: ["اسب", "گربه", "ماشین"] }, 
+                        { type: 'fillBlank', sentence: "میوه‌ها را داخل ___ گذاشتم تا به خانه ببرم.", correct: "سبد", options: ["سبد", "کیف", "دست"] },
+                        { type: 'fillBlank', sentence: "امروز بابا از کار زود ____.", correct: "آمد", options: ["آمد", "رفت", "خوابید"] },
+                        { type: 'fillBlank', sentence: "از درخت ____ چیدم.", correct: "بادام", options: ["بادام", "سنگ", "باد"] }
+                    ] }
                 ]
             },
             { 
                 id: 4, title: "درس چهارم: او و ، تـ ت", unlocked: true,
                 sections: [
                      { title: "ترکیب صداها", exercises: [ { type: 'build', word: "توت" }, { type: 'build', word: "دوست" }, { type: 'build', word: "دست" }, { type: 'build', word: "تاب" }, { type: 'build', word: "سوت" }, { type: 'build', word: "بود" } ] },
-                     { title: "کلمه‌یابی", exercises: [ { type: 'choice', correct: "دست", options: ["دست", "دسط", "دثت"] }, { type: 'choice', correct: "دوست", options: ["دوست", "دوت", "دوثت"] }, { type: 'choice', correct: "تاب", options: ["تاب", "تَاب", "طاب"] }, { type: 'choice', correct: "توت", options: ["توت", "تت", "تود"] } ] },
-                     { title: "روان‌خوانی", exercises: [ { type: 'read', word: "توت" }, { type: 'read', word: "سوت" }, { type: 'read', word: "دوست" }, { type: 'read', word: "دست" }, { type: 'read', word: "بود" }, { type: 'read', word: "تاب" } ] }
+                     { title: "کلمه‌یابی", exercises: [ { type: 'choice', correct: "دست", options: ["دست", "دثت", "دسط"] }, { type: 'choice', correct: "دوست", options: ["دوست", "دوثت", "دست"] }, { type: 'choice', correct: "تاب", options: ["تاب", "باب", "تاپ"] }, { type: 'choice', correct: "توت", options: ["توت", "تود", "طوت"] } ] },
+                     { title: "روان‌خوانی", exercises: [ { type: 'read', word: "توت" }, { type: 'read', word: "سوت" }, { type: 'read', word: "دوست" }, { type: 'read', word: "دست" }, { type: 'read', word: "بود" }, { type: 'read', word: "تاب" } ] },
+                     { title: "حدس تصویر", exercises: [ { type: 'pictureGuess', image: "توت", correct: "توت", options: ["توت", "سیب", "نان"] }, { type: 'pictureGuess', image: "دوست", correct: "دوست", options: ["دوست", "پدر", "خانه"] }, { type: 'pictureGuess', image: "دست", correct: "دست", options: ["دست", "پا", "چشم"] } ] },
+                     { title: "کلمه گمشده", exercises: [ 
+                        { type: 'fillBlank', sentence: "در باغ، میوه‌ی خوشمزه‌ی ___ را چیدم.", correct: "توت", options: ["توت", "شیر", "نان"] }, 
+                        { type: 'fillBlank', sentence: "____ خوبم همیشه کمکم می کند.", correct: "دوست", options: ["دوست", "سیب", "خانه"] },
+                        { type: 'fillBlank', sentence: "با ___ به مادرم سلام کردم.", correct: "دست", options: ["دست", "پا", "چشم"] },
+                        { type: 'fillBlank', sentence: "در فضای باز ___ کشیدم.", correct: "سوت", options: ["سوت", "تاب", "بود"] }
+                    ] }
                 ] 
             },
             { 
                 id: 5, title: "درس پنجم: ر ، نـ ن", unlocked: true,
                 sections: [
                      { title: "ترکیب صداها", exercises: [ { type: 'build', word: "انار" }, { type: 'build', word: "نان" }, { type: 'build', word: "باران" }, { type: 'build', word: "مادر" }, { type: 'build', word: "برادر" }, { type: 'build', word: "نَر" } ] },
-                     { title: "کلمه‌یابی", exercises: [ { type: 'choice', correct: "انار", options: ["انار", "عنار", "اَنار"] }, { type: 'choice', correct: "باران", options: ["باران", "بارن", "بران"] }, { type: 'choice', correct: "مادر", options: ["مادر", "ماد", "مَدر"] } ] },
-                     { title: "روان‌خوانی", exercises: [ { type: 'read', word: "انار" }, { type: 'read', word: "نان" }, { type: 'read', word: "باران" }, { type: 'read', word: "مادر" }, { type: 'read', word: "برادر" }, { type: 'read', word: "نَر" } ] }
+                     { title: "کلمه‌یابی", exercises: [ { type: 'choice', correct: "انار", options: ["انار", "عنار", "آنار"] }, { type: 'choice', correct: "باران", options: ["باران", "یاران", "بارن"] }, { type: 'choice', correct: "مادر", options: ["مادر", "مادار", "مادب"] } ] },
+                     { title: "روان‌خوانی", exercises: [ { type: 'read', word: "انار" }, { type: 'read', word: "نان" }, { type: 'read', word: "باران" }, { type: 'read', word: "مادر" }, { type: 'read', word: "برادر" }, { type: 'read', word: "نَر" } ] },
+                     { title: "حدس تصویر", exercises: [ { type: 'pictureGuess', image: "انار", correct: "انار", options: ["انار", "سیب", "آب"] }, { type: 'pictureGuess', image: "نان", correct: "نان", options: ["نان", "آب", "ماه"] }, { type: 'pictureGuess', image: "باران", correct: "باران", options: ["باران", "باد", "آفتاب"] } ] },
+                     { title: "کلمه گمشده", exercises: [ 
+                        { type: 'fillBlank', sentence: "صبحانه‌ام را با یک تکه ___ خوردم.", correct: "نان", options: ["نان", "آب", "ماه"] }, 
+                        { type: 'fillBlank', sentence: "وقتی ___ آمد، همه زیر چتر رفته بودند.", correct: "باران", options: ["باران", "باد", "آفتاب"] },
+                        { type: 'fillBlank', sentence: "___ مرا به مدرسه برد.", correct: "مادر", options: ["مادر", "پدر", "برادر"] },
+                        { type: 'fillBlank', sentence: "در خانه با ___ بازی کردم.", correct: "برادر", options: ["برادر", "خواهر", "پدر"] }
+                    ] }
                 ] 
             },
             {
-                id: 6, title: "درس ششم: ایـ یـ ی ای ، ز", unlocked: false,
+                id: 6, title: "درس ششم: ایـ یـ ی ای ، ز", unlocked: true,
                 sections: [
                      { title: "ترکیب صداها", exercises: [ { type: 'build', word: "ایران" }, { type: 'build', word: "سیب" }, { type: 'build', word: "میز" }, { type: 'build', word: "زیبا" }, { type: 'build', word: "بازی" } ] },
                      { title: "کلمه‌یابی", exercises: [ { type: 'choice', correct: "میز", options: ["میز", "میض", "میظ"] }, { type: 'choice', correct: "زیبا", options: ["زیبا", "ذیبا", "ظیبا"] }, { type: 'choice', correct: "ایران", options: ["ایران", "عیران", "اران"] } ] },
-                     { title: "روان‌خوانی", exercises: [ { type: 'read', word: "ایران" }, { type: 'read', word: "سیب" }, { type: 'read', word: "میز" }, { type: 'read', word: "زیبا" }, { type: 'read', word: "بازی" }, { type: 'read', word: "آزاد" } ] }
+                     { title: "روان‌خوانی", exercises: [ { type: 'read', word: "ایران" }, { type: 'read', word: "سیب" }, { type: 'read', word: "میز" }, { type: 'read', word: "زیبا" }, { type: 'read', word: "بازی" }, { type: 'read', word: "آزاد" } ] },
+                     { title: "حدس تصویر", exercises: [ { type: 'pictureGuess', image: "سیب", correct: "سیب", options: ["سیب", "گل", "ماه"] }, { type: 'pictureGuess', image: "میز", correct: "میز", options: ["میز", "صندلی", "تشک"] }, { type: 'pictureGuess', image: "ایران", correct: "ایران", options: ["ایران", "عراق", "ارمنستان"] } ] },
+                     { title: "کلمه گمشده", exercises: [ 
+                        { type: 'fillBlank', sentence: "___ خوردم چون گرسنه بودم.", correct: "سیب", options: ["سیب", "گل", "ماه"] }, 
+                        { type: 'fillBlank', sentence: "روی ____ لیوان آب را گذاشتم.", correct: "میز", options: ["میز", "صندلی", "تشک"] },
+                        { type: 'fillBlank', sentence: "پارک بسیار ___ بود.", correct: "زیبا", options: ["زیبا", "سنگ", "کثیف"] },
+                        { type: 'fillBlank', sentence: "در ___ شرکت کردم.", correct: "بازی", options: ["بازی", "سیب", "چای"] }
+                    ] }
                 ]
             },
             {
-                id: 7, title: "درس هفتم: اِ ـِ ـﻪ ﻪ ، شـ ش", unlocked: false,
+                id: 7, title: "درس هفتم: اِ ـِ ـﻪ ﻪ ، شـ ش", unlocked: true,
                 sections: [
                      { title: "ترکیب صداها", exercises: [ { type: 'build', word: "شانه" }, { type: 'build', word: "تراش" }, { type: 'build', word: "آش" }, { type: 'build', word: "امشب" }, { type: 'build', word: "ستاره" } ] },
-                     { title: "کلمه‌یابی", exercises: [ { type: 'choice', correct: "شانه", options: ["شانه", "شونه", "شامه"] }, { type: 'choice', correct: "تراش", options: ["تراش", "طراش", "تدراس"] }, { type: 'choice', correct: "ستاره", options: ["ستاره", "سطاره", "ثتاره"] } ] },
-                     { title: "روان‌خوانی", exercises: [ { type: 'read', word: "شانه" }, { type: 'read', word: "تراش" }, { type: 'read', word: "آش" }, { type: 'read', word: "امشب" }, { type: 'read', word: "ستاره" }, { type: 'read', word: "ماشین" } ] }
+                     { title: "کلمه‌یابی", exercises: [ { type: 'choice', correct: "شانه", options: ["شانه", "سانه", "شامه"] }, { type: 'choice', correct: "تراش", options: ["تراش", "طراش", "تدراس"] }, { type: 'choice', correct: "ستاره", options: ["ستاره", "سطاره", "ثتاره"] } ] },
+                     { title: "روان‌خوانی", exercises: [ { type: 'read', word: "شانه" }, { type: 'read', word: "تراش" }, { type: 'read', word: "آش" }, { type: 'read', word: "امشب" }, { type: 'read', word: "ستاره" }, { type: 'read', word: "ماشین" } ] },
+                     { title: "حدس تصویر", exercises: [ { type: 'pictureGuess', image: "شانه", correct: "شانه", options: ["شانه", "دست", "پا"] }, { type: 'pictureGuess', image: "ستاره", correct: "ستاره", options: ["ستاره", "ماه", "خورشید"] }, { type: 'pictureGuess', image: "تراش", correct: "تراش", options: ["تراش", "قیچی", "دستمال"] } ] },
+                     { title: "کلمه گمشده", exercises: [ 
+                        { type: 'fillBlank', sentence: "____ را شستم تا تمیز شود .", correct: "دست", options: ["شانه", "دست", "پا"] }, 
+                        { type: 'fillBlank', sentence: "در آسمان ___ دیدم.", correct: "ستاره", options: ["ستاره", "زمین", "سنگ"] },
+                        { type: 'fillBlank', sentence: "مدادم را با ___ تراشیدم.", correct: "تراش", options: ["تراش", "قیچی", "دستمال"] },
+                        { type: 'fillBlank', sentence: "___ گرم بود.", correct: "آش", options: ["آش", "سیب", "شکر"] }
+                    ] }
                 ]
             },
             {
-                id: 8, title: "درس هشتم: یُ ، اُ ـُ", unlocked: false,
+                id: 8, title: "درس هشتم: یُ ، اُ ـُ", unlocked: true,
                 sections: [
                      { title: "ترکیب صداها", exercises: [ { type: 'build', word: "امید" }, { type: 'build', word: "بُرد" }, { type: 'build', word: "سُرمه" }, { type: 'build', word: "کُشت" }, { type: 'build', word: "مُژه" } ] },
                      { title: "کلمه‌یابی", exercises: [ { type: 'choice', correct: "امید", options: ["امید", "عمید", "امیت"] }, { type: 'choice', correct: "سُرمه", options: ["سُرمه", "سورمه", "صُرمه"] } ] },
-                     { title: "روان‌خوانی", exercises: [ { type: 'read', word: "امید" }, { type: 'read', word: "بُرد" }, { type: 'read', word: "سُرمه" }, { type: 'read', word: "مُژه" }, { type: 'read', word: "اُرْدَک" } ] }
+                     { title: "روان‌خوانی", exercises: [ { type: 'read', word: "امید" }, { type: 'read', word: "بُرد" }, { type: 'read', word: "سُرمه" }, { type: 'read', word: "مُژه" }, { type: 'read', word: "اُرْدَک" } ] },
+                     { title: "حدس تصویر", exercises: [ { type: 'pictureGuess', image: "امید", correct: "امید", options: ["امید", "خاطره", "عشق"] }, { type: 'pictureGuess', image: "سُرمه", correct: "سُرمه", options: ["سُرمه", "خط", "دور"] }, { type: 'pictureGuess', image: "بُرد", correct: "بُرد", options: ["بُرد", "آورد", "فرستاد"] } ] },
+                     { title: "کلمه گمشده", exercises: [ 
+                        { type: 'fillBlank', sentence: "___ دارم که فردا بهتر خواهد شد.", correct: "امید", options: ["امید", "خاطره", "عشق"] }, 
+                        { type: 'fillBlank', sentence: "چشم ___ کشیدم تا زیبا شود.", correct: "سُرمه", options: ["سُرمه", "سرکه", "دور"] },
+                        { type: 'fillBlank', sentence: "او مسابقه را ____.", correct: "بُرد", options: ["بُرد", "آورد", "فرستاد"] },
+                        { type: 'fillBlank', sentence: "___ کنار چشم است .", correct: "مُژه", options: ["مُژه", "ماهی", "قایق"] }
+                    ] }
                 ]
             },
             {
-                id: 9, title: "درس نهم: کـ ک، گـ گ", unlocked: false,
+                id: 9, title: "درس نهم: کـ ک، گـ گ", unlocked: true,
                 sections: [
                     { title: "ترکیب صداها", exercises: [ { type: 'build', word: "کتاب" }, { type: 'build', word: "کفش" }, { type: 'build', word: "کمر" }, { type: 'build', word: "گل" }, { type: 'build', word: "گربه" }, { type: 'build', word: "گاو" } ] },
-                    { title: "کلمه‌یابی", exercises: [ { type: 'choice', correct: "کتاب", options: ["کتاب", "کتپ", "کتب"] }, { type: 'choice', correct: "گل", options: ["گل", "غل", "گِل"] } ] },
-                    { title: "روان‌خوانی", exercises: [ { type: 'read', word: "کتاب" }, { type: 'read', word: "کفش" }, { type: 'read', word: "گل" }, { type: 'read', word: "گربه" } ] }
+                    { title: "کلمه‌یابی", exercises: [ { type: 'choice', correct: "کتاب", options: ["کتاب", "کتَب", "کتپ"] }, { type: 'choice', correct: "گل", options: ["گل", "غل", "خب"] } ] },
+                    { title: "روان‌خوانی", exercises: [ { type: 'read', word: "کتاب" }, { type: 'read', word: "کفش" }, { type: 'read', word: "گل" }, { type: 'read', word: "گربه" } ] },
+                    { title: "حدس تصویر", exercises: [ { type: 'pictureGuess', image: "کتاب", correct: "کتاب", options: ["کتاب", "دفتر", "ماشین"] }, { type: 'pictureGuess', image: "گل", correct: "گل", options: ["گل", "درخت", "ماه"] }, { type: 'pictureGuess', image: "کفش", correct: "کفش", options: ["کفش", "پا", "جوراب"] } ] },
+                    { title: "کلمه گمشده", exercises: [ 
+                        { type: 'fillBlank', sentence: "___ خواندم تا دانش بیشتری کسب کنم.", correct: "کتاب", options: ["کتاب", "کفش", "ماشین"] }, 
+                        { type: 'fillBlank', sentence: "در باغ ___ دیدم.", correct: "گل", options: ["گل", "شیر", "ماه"] },
+                        { type: 'fillBlank', sentence: "___ پوشیدم و به مدرسه رفتم.", correct: "کفش", options: ["کفش", "پا", "نمک"] },
+                        { type: 'fillBlank', sentence: "در حیاط ___ دیدم.", correct: "گربه", options: ["گربه", "اسب", "ماهی"] }
+                    ] }
                 ]
             },
             {
-                id: 10, title: "درس دهم: لـ ل، مـ م", unlocked: false,
+                id: 10, title: "درس دهم: لـ ل، مـ م", unlocked: true,
                 sections: [
                     { title: "ترکیب صداها", exercises: [ { type: 'build', word: "لاله" }, { type: 'build', word: "لیوان" }, { type: 'build', word: "ماه" }, { type: 'build', word: "ماشین" } ] },
-                    { title: "کلمه‌یابی", exercises: [ { type: 'choice', correct: "لاله", options: ["لاله", "لله", "لالِه"] }, { type: 'choice', correct: "ماه", options: ["ماه", "مه", "مَه"] } ] },
-                    { title: "روان‌خوانی", exercises: [ { type: 'read', word: "لاله" }, { type: 'read', word: "لیوان" }, { type: 'read', word: "ماه" }, { type: 'read', word: "ماشین" } ] }
+                    { title: "کلمه‌یابی", exercises: [ { type: 'choice', correct: "لاله", options: ["لاله", "لله", "خاله"] }, { type: 'choice', correct: "ماه", options: ["ماه", "مه", "مَه"] } ] },
+                    { title: "روان‌خوانی", exercises: [ { type: 'read', word: "لاله" }, { type: 'read', word: "لیوان" }, { type: 'read', word: "ماه" }, { type: 'read', word: "ماشین" } ] },
+                    { title: "حدس تصویر", exercises: [ { type: 'pictureGuess', image: "لاله", correct: "لاله", options: ["لاله", "گل", "درخت"] }, { type: 'pictureGuess', image: "ماه", correct: "ماه", options: ["ماه", "ستاره", "خورشید"] }, { type: 'pictureGuess', image: "لیوان", correct: "لیوان", options: ["لیوان", "ظرف", "کاسه"] } ] },
+                    { title: "کلمه گمشده", exercises: [ 
+                        { type: 'fillBlank', sentence: "در باغ ___ دیدم.", correct: "لاله", options: ["لاله", "ماه", "الاغ"] }, 
+                        { type: 'fillBlank', sentence: "___در شب می درخشد.", correct: "ماه", options: ["ماه", "سیاره", "خورشید"] },
+                        { type: 'fillBlank', sentence: "آب را داخل ___ ریختم.", correct: "لیوان", options: ["لیوان", "ماه", "گل"] },
+                        { type: 'fillBlank', sentence: "در خیابان ___ دیدم.", correct: "ماشین", options: ["ماشین", "ماهی", "شیر"] }
+                    ] }
                 ]
             },
             {
-                id: 11, title: "درس یازدهم: نـ ن، و", unlocked: false,
+                id: 11, title: "درس یازدهم: نـ ن، و", unlocked: true,
                 sections: [
                     { title: "ترکیب صداها", exercises: [ { type: 'build', word: "نوزاد" }, { type: 'build', word: "نخل" }, { type: 'build', word: "وزن" }, { type: 'build', word: "ویلا" } ] },
-                    { title: "کلمه‌یابی", exercises: [ { type: 'choice', correct: "نوزاد", options: ["نوزاد", "نوزد", "نوزَد"] }, { type: 'choice', correct: "وزن", options: ["وزن", "وز", "وَزن"] } ] },
-                    { title: "روان‌خوانی", exercises: [ { type: 'read', word: "نوزاد" }, { type: 'read', word: "نخل" }, { type: 'read', word: "وزن" }, { type: 'read', word: "ویلا" } ] }
+                    { title: "کلمه‌یابی", exercises: [ { type: 'choice', correct: "نوزاد", options: ["نوزاد", "نوزد", "نوزَد"] }, { type: 'choice', correct: "وزن", options: ["وزن", "وز", "وضن"] } ] },
+                    { title: "روان‌خوانی", exercises: [ { type: 'read', word: "نوزاد" }, { type: 'read', word: "نخل" }, { type: 'read', word: "وزن" }, { type: 'read', word: "ویلا" } ] },
+                    { title: "حدس تصویر", exercises: [ { type: 'pictureGuess', image: "نوزاد", correct: "نوزاد", options: ["نوزاد", "بچه", "مرد"] }, { type: 'pictureGuess', image: "وزن", correct: "وزن", options: ["وزن", "سن", "قد"] }, { type: 'pictureGuess', image: "نخل", correct: "نخل", options: ["نخل", "درخت", "ماه"] } ] },
+                    { title: "کلمه گمشده", exercises: [ 
+                        { type: 'fillBlank', sentence: "___ گریه کرد چون گرسنه بود . ", correct: "نوزاد", options: ["نوزاد", "بابا", "مرد"] }, 
+                        { type: 'fillBlank', sentence: "___ من کم است.", correct: "وزن", options: ["وزن", "پدر", "سگ"] },
+                        { type: 'fillBlank', sentence: "خرما را از درخت ___ چیدم.", correct: "نخل", options: ["نخل", "سیب", "ماه"] },
+                        { type: 'fillBlank', sentence: "در شمال ___ اجاره کردم.", correct: "ویلا", options: ["ویلا", "زمین", "دریا"] }
+                    ] }
                 ]
             },
             {
-                id: 12, title: "درس دوازدهم: هـ ه، یـ ی", unlocked: false,
+                id: 12, title: "درس دوازدهم: هـ ه، یـ ی", unlocked: true,
                 sections: [
                     { title: "ترکیب صداها", exercises: [ { type: 'build', word: "هوا" }, { type: 'build', word: "هیچ" }, { type: 'build', word: "یخ" }, { type: 'build', word: "یار" } ] },
-                    { title: "کلمه‌یابی", exercises: [ { type: 'choice', correct: "هوا", options: ["هوا", "هَوا", "هِوا"] }, { type: 'choice', correct: "یخ", options: ["یخ", "یَخ", "یِخ"] } ] },
-                    { title: "روان‌خوانی", exercises: [ { type: 'read', word: "هوا" }, { type: 'read', word: "هیچ" }, { type: 'read', word: "یخ" }, { type: 'read', word: "یار" } ] }
+                    { title: "کلمه‌یابی", exercises: [ { type: 'choice', correct: "هوا", options: ["هوا", "حوای", "هلو"] }, { type: 'choice', correct: "یخ", options: ["یخ", "پخ", "تخ"] } ] },
+                    { title: "روان‌خوانی", exercises: [ { type: 'read', word: "هوا" }, { type: 'read', word: "هیچ" }, { type: 'read', word: "یخ" }, { type: 'read', word: "یار" } ] },
+                    { title: "حدس تصویر", exercises: [ { type: 'pictureGuess', image: "هوا", correct: "هوا", options: ["هوا", "آب", "ماه"] }, { type: 'pictureGuess', image: "یخ", correct: "یخ", options: ["یخ", "آب", "برف"] }, { type: 'pictureGuess', image: "هیچ", correct: "هیچ", options: ["هیچ", "چیز", "کتاب"] } ] },
+                    { title: "کلمه گمشده", exercises: [ 
+                        { type: 'fillBlank', sentence: "___ سرد است.", correct: "هوا", options: ["هوا", "زمین", "ماه"] }, 
+                        { type: 'fillBlank', sentence: "روی دریا ___ دیدم.", correct: "یخ", options: ["یخ", "سیب", "نوزاد"] },
+                        { type: 'fillBlank', sentence: "در جعبه ___ نبود.", correct: "هیچ", options: ["هیچ", "چیز", "زمین"] },
+                        { type: 'fillBlank', sentence: "در بازی __- خوبی بود .", correct: "یار", options: ["یار", "قایق", "درخت"] }
+                    ] }
                 ]
             },
             {
-                id: 13, title: "درس سیزدهم: چـ چ، حـ ح", unlocked: false,
+                id: 13, title: "درس سیزدهم: چـ چ، حـ ح", unlocked: true,
                 sections: [
                     { title: "ترکیب صداها", exercises: [ { type: 'build', word: "چشم" }, { type: 'build', word: "چرخ" }, { type: 'build', word: "حیاط" }, { type: 'build', word: "حل" } ] },
-                    { title: "کلمه‌یابی", exercises: [ { type: 'choice', correct: "چشم", options: ["چشم", "چشمِ", "چِشم"] }, { type: 'choice', correct: "حیاط", options: ["حیاط", "حیَاط", "حیِاط"] } ] },
-                    { title: "روان‌خوانی", exercises: [ { type: 'read', word: "چشم" }, { type: 'read', word: "چرخ" }, { type: 'read', word: "حیاط" }, { type: 'read', word: "حل" } ] }
+                    { title: "کلمه‌یابی", exercises: [ { type: 'choice', correct: "چشم", options: ["چشم", "چسم", "جشم"] }, { type: 'choice', correct: "حیاط", options: ["حیاط", "جیات", "خیاط"] } ] },
+                    { title: "روان‌خوانی", exercises: [ { type: 'read', word: "چشم" }, { type: 'read', word: "چرخ" }, { type: 'read', word: "حیاط" }, { type: 'read', word: "حل" } ] },
+                    { title: "حدس تصویر", exercises: [ { type: 'pictureGuess', image: "چشم", correct: "چشم", options: ["چشم", "دوربین", "تلسکوپ"] }, { type: 'pictureGuess', image: "حیاط", correct: "حیاط", options: ["حیاط", "اتاق", "کلاس"] }, { type: 'pictureGuess', image: "چرخ", correct: "چرخ", options: ["چرخ", "موتور", "فرمان"] } ] },
+                    { title: "کلمه گمشده", exercises: [ 
+                        { type: 'fillBlank', sentence: "با ___ دیدم.", correct: "چشم", options: ["چشم", "خانه", "بازی"] }, 
+                        { type: 'fillBlank', sentence: "در ___ بازی کردم.", correct: "حیاط", options: ["حیاط", "دریا", "سقف"] },
+                        { type: 'fillBlank', sentence: "ماشین ___ داشت.", correct: "چرخ", options: ["چرخ", "تند", "کمر"] },
+                        { type: 'fillBlank', sentence: "مساله را ___ کردم.", correct: "حل", options: ["حل", "فهمیدم", "گفتم"] }
+                    ] }
                 ]
             },
             {
-                id: 14, title: "درس چهاردهم: خـ خ، جـ ج", unlocked: false,
+                id: 14, title: "درس چهاردهم: خـ خ، جـ ج", unlocked: true,
                 sections: [
                     { title: "ترکیب صداها", exercises: [ { type: 'build', word: "خرس" }, { type: 'build', word: "خانه" }, { type: 'build', word: "جارو" }, { type: 'build', word: "جوجه" } ] },
-                    { title: "کلمه‌یابی", exercises: [ { type: 'choice', correct: "خرس", options: ["خرس", "خَرس", "خِرس"] }, { type: 'choice', correct: "جارو", options: ["جارو", "جَارو", "جِارو"] } ] },
-                    { title: "روان‌خوانی", exercises: [ { type: 'read', word: "خرس" }, { type: 'read', word: "خانه" }, { type: 'read', word: "جارو" }, { type: 'read', word: "جوجه" } ] }
+                    { title: "کلمه‌یابی", exercises: [ { type: 'choice', correct: "خرس", options: ["خرس", "خارس", "چرس"] }, { type: 'choice', correct: "جارو", options: ["جارو", "چارو", "خارو"] } ] },
+                    { title: "روان‌خوانی", exercises: [ { type: 'read', word: "خرس" }, { type: 'read', word: "خانه" }, { type: 'read', word: "جارو" }, { type: 'read', word: "جوجه" } ] },
+                    { title: "حدس تصویر", exercises: [ { type: 'pictureGuess', image: "خرس", correct: "خرس", options: ["خرس", "اسب", "ماهی"] }, { type: 'pictureGuess', image: "جارو", correct: "جارو", options: ["جارو", "شست", "مرتب"] }, { type: 'pictureGuess', image: "خانه", correct: "خانه", options: ["خانه", "اتاق", "باغ"] } ] },
+                    { title: "کلمه گمشده", exercises: [ 
+                        { type: 'fillBlank', sentence: "در جنگل ___ دیدم.", correct: "خرس", options: ["خرس", "فردا", "پارو"] }, 
+                        { type: 'fillBlank', sentence: "اتاق را ___ کردم.", correct: "جارو", options: ["جارو", "شست", "مرتب"] },
+                        { type: 'fillBlank', sentence: "در حیاط ___ پرورش دادیم.", correct: "جوجه", options: ["جوجه", "خرس", "گربه"] },
+                        { type: 'fillBlank', sentence: "در ___ زندگی می‌کنم.", correct: "خانه", options: ["خانه", "دریا", "ماه"] }
+                    ] }
                 ]
             },
             {
-                id: 15, title: "درس پانزدهم: ثـ ث، صـ ص", unlocked: false,
+                id: 15, title: "درس پانزدهم: ثـ ث، صـ ص", unlocked: true,
                 sections: [
                     { title: "ترکیب صداها", exercises: [ { type: 'build', word: "ثمر" }, { type: 'build', word: "ثابت" }, { type: 'build', word: "صندوق" }, { type: 'build', word: "صبح" } ] },
-                    { title: "کلمه‌یابی", exercises: [ { type: 'choice', correct: "ثمر", options: ["ثمر", "ثَمر", "ثِمر"] }, { type: 'choice', correct: "صندوق", options: ["صندوق", "صَندوق", "صِندوق"] } ] },
-                    { title: "روان‌خوانی", exercises: [ { type: 'read', word: "ثمر" }, { type: 'read', word: "ثابت" }, { type: 'read', word: "صندوق" }, { type: 'read', word: "صبح" } ] }
+                    { title: "کلمه‌یابی", exercises: [ { type: 'choice', correct: "ثمر", options: ["ثمر", "سمر", "صمر"] }, { type: 'choice', correct: "صندوق", options: ["صندوق", "صندوف", "سنذوق"] } ] },
+                    { title: "روان‌خوانی", exercises: [ { type: 'read', word: "ثمر" }, { type: 'read', word: "ثابت" }, { type: 'read', word: "صندوق" }, { type: 'read', word: "صبح" } ] },
+                    { title: "حدس تصویر", exercises: [ { type: 'pictureGuess', image: "ثمر", correct: "ثمر", options: ["ثمر", "برگ", "ریشه"] }, { type: 'pictureGuess', image: "صندوق", correct: "صندوق", options: ["صندوق", "کیف", "جارو"] }, { type: 'pictureGuess', image: "ثابت", correct: "ثابت", options: ["ثابت", "متغیر", "زیاد"] } ] },
+                    { title: "کلمه گمشده", exercises: [ 
+                        { type: 'fillBlank', sentence: "___ درخت را خوردم.", correct: "ثمر", options: ["ثمر", "خار", "کمر"] }, 
+                        { type: 'fillBlank', sentence: "در ___ پول گذاشتم.", correct: "صندوق", options: ["صندوق", "کیف", "جارو"] },
+                        { type: 'fillBlank', sentence: "این قانون همیشه ___ است.", correct: "ثابت", options: ["ثابت", "جارو", "زیاد"] },
+                        { type: 'fillBlank', sentence: "___ زود بیدار شدم.", correct: "صبح", options: ["صبح", "ظهر", "شب"] }
+                    ] }
                 ]
             },
             {
-                id: 16, title: "درس شانزدهم: ضـ ض، طـ ط", unlocked: false,
+                id: 16, title: "درس شانزدهم: ضـ ض، طـ ط", unlocked: true,
                 sections: [
                     { title: "ترکیب صداها", exercises: [ { type: 'build', word: "ضامن" }, { type: 'build', word: "ضبط" }, { type: 'build', word: "طلا" }, { type: 'build', word: "طلب" } ] },
-                    { title: "کلمه‌یابی", exercises: [ { type: 'choice', correct: "ضامن", options: ["ضامن", "ضَامن", "ضِامن"] }, { type: 'choice', correct: "طلا", options: ["طلا", "طَلا", "طِلا"] } ] },
-                    { title: "روان‌خوانی", exercises: [ { type: 'read', word: "ضامن" }, { type: 'read', word: "ضبط" }, { type: 'read', word: "طلا" }, { type: 'read', word: "طلب" } ] }
+                    { title: "کلمه‌یابی", exercises: [ { type: 'choice', correct: "ضامن", options: ["ضامن", "زامن", "ظامن"] }, { type: 'choice', correct: "طلا", options: ["طلا", "تلا", "طلل"] } ] },
+                    { title: "روان‌خوانی", exercises: [ { type: 'read', word: "ضامن" }, { type: 'read', word: "ضبط" }, { type: 'read', word: "طلا" }, { type: 'read', word: "طلب" } ] },
+                    { title: "حدس تصویر", exercises: [ { type: 'pictureGuess', image: "ضامن", correct: "ضامن", options: ["ضامن", "پول", "دوست"] }, { type: 'pictureGuess', image: "طلا", correct: "طلا", options: ["طلا", "نقره", "پلاستیک"] }, { type: 'pictureGuess', image: "ضبط", correct: "ضبط", options: ["ضبط", "شکست", "فروخت"] } ] },
+                    { title: "کلمه گمشده", exercises: [ 
+                        { type: 'fillBlank', sentence: "پلیس___ امنیت است.", correct: "ضامن", options: ["ضامن", "پول", "خلاف"] }, 
+                        { type: 'fillBlank', sentence: "___ را روشن کردم.", correct: "ضبط", options: ["ضبط", "شکست", "فروخت"] },
+                        { type: 'fillBlank', sentence: "انگشترش از ___ ساخته شده بود.", correct: "طلا", options: ["طلا", "نقره", "پلاستیک"] },
+                        { type: 'fillBlank', sentence: "از او درخواست ____ کردم.", correct: "طلب", options: ["طلب", "خواستم", "گفتم"] }
+                    ] }
                 ]
             },
             {
-                id: 17, title: "درس هفدهم: ظـ ظ، عـ ع", unlocked: false,
+                id: 17, title: "درس هفدهم: ظـ ظ، عـ ع", unlocked: true,
                 sections: [
                     { title: "ترکیب صداها", exercises: [ { type: 'build', word: "ظرف" }, { type: 'build', word: "ظروف" }, { type: 'build', word: "عسل" }, { type: 'build', word: "عمر" } ] },
-                    { title: "کلمه‌یابی", exercises: [ { type: 'choice', correct: "ظرف", options: ["ظرف", "ظَرف", "ظِرف"] }, { type: 'choice', correct: "عسل", options: ["عسل", "عَسل", "عِسل"] } ] },
-                    { title: "روان‌خوانی", exercises: [ { type: 'read', word: "ظرف" }, { type: 'read', word: "ظروف" }, { type: 'read', word: "عسل" }, { type: 'read', word: "عمر" } ] }
+                    { title: "کلمه‌یابی", exercises: [ { type: 'choice', correct: "ظرف", options: ["ظرف", "زرف", "ضرف"] }, { type: 'choice', correct: "عسل", options: ["عسل", "غسل", "گسل"] } ] },
+                    { title: "روان‌خوانی", exercises: [ { type: 'read', word: "ظرف" }, { type: 'read', word: "ظروف" }, { type: 'read', word: "عسل" }, { type: 'read', word: "عمر" } ] },
+                    { title: "حدس تصویر", exercises: [ { type: 'pictureGuess', image: "ظرف", correct: "ظرف", options: ["ظرف", "کیف", "سبد"] }, { type: 'pictureGuess', image: "عسل", correct: "عسل", options: ["عسل", "آب", "ماه"] }, { type: 'pictureGuess', image: "ظروف", correct: "ظروف", options: ["ظروف", "ظرف", "کیف"] } ] },
+                    { title: "کلمه گمشده", exercises: [ 
+                        { type: 'fillBlank', sentence: "غذا را در ___ گذاشتم.", correct: "ظرف", options: ["ظرف", "کیف", "تور"] }, 
+                        { type: 'fillBlank', sentence: "___ شیرین است.", correct: "عسل", options: ["عسل", "آب", "ماه"] },
+                        { type: 'fillBlank', sentence: "___ من ۱۰ سال است.", correct: "عمر", options: ["عمر", "پدر", "سیب"] },
+                        { type: 'fillBlank', sentence: "در آش ___ ریختم.", correct: "آب", options: ["آب", "نمک", "فلفل"] }
+                    ] }
                 ]
             },
             {
-                id: 18, title: "درس هجدهم: غـ غ، فـ ف", unlocked: false,
+                id: 18, title: "درس هجدهم: غـ غ، فـ ف", unlocked: true,
                 sections: [
                     { title: "ترکیب صداها", exercises: [ { type: 'build', word: "غذا" }, { type: 'build', word: "غریبه" }, { type: 'build', word: "فنجان" }, { type: 'build', word: "فیلم" } ] },
-                    { title: "کلمه‌یابی", exercises: [ { type: 'choice', correct: "غذا", options: ["غذا", "غَذا", "غِذا"] }, { type: 'choice', correct: "فنجان", options: ["فنجان", "فَنجان", "فِنجان"] } ] },
-                    { title: "روان‌خوانی", exercises: [ { type: 'read', word: "غذا" }, { type: 'read', word: "غریبه" }, { type: 'read', word: "فنجان" }, { type: 'read', word: "فیلم" } ] }
+                    { title: "کلمه‌یابی", exercises: [ { type: 'choice', correct: "غذا", options: ["غذا", "غزا", "عذا"] }, { type: 'choice', correct: "فنجان", options: ["فنجان", "قنجان", "ضنجان"] } ] },
+                    { title: "روان‌خوانی", exercises: [ { type: 'read', word: "غذا" }, { type: 'read', word: "غریبه" }, { type: 'read', word: "فنجان" }, { type: 'read', word: "فیلم" } ] },
+                    { title: "حدس تصویر", exercises: [ { type: 'pictureGuess', image: "غذا", correct: "غذا", options: ["غذا", "آب", "نان"] }, { type: 'pictureGuess', image: "فنجان", correct: "فنجان", options: ["فنجان", "ظرف", "کاسه"] }, { type: 'pictureGuess', image: "غریبه", correct: "غریبه", options: ["غریبه", "دوست", "آشنا"] } ] },
+                    { title: "کلمه گمشده", exercises: [ 
+                        { type: 'fillBlank', sentence: "___ خوردم چون گرسنه بودم.", correct: "غذا", options: ["غذا", "آب", "تاب"] }, 
+                        { type: 'fillBlank', sentence: "قهوه در ___ ریختم.", correct: "فنجان", options: ["فنجان", "بشقاب", "کاسه"] },
+                        { type: 'fillBlank', sentence: "او یک ___ بود.", correct: "غریبه", options: ["غریبه", "دوست", "آشنا"] },
+                        { type: 'fillBlank', sentence: "در سینما ___ دیدم.", correct: "فیلم", options: ["فیلم", "ماه", "خواب"] }
+                    ] }
                 ]
             },
             {
-                id: 19, title: "درس نوزدهم: قـ ق، ژ", unlocked: false,
+                id: 19, title: "درس نوزدهم: قـ ق، ژ", unlocked: true,
                 sections: [
                     { title: "ترکیب صداها", exercises: [ { type: 'build', word: "قلم" }, { type: 'build', word: "قهوه" }, { type: 'build', word: "ژیلت" }, { type: 'build', word: "ژله" } ] },
-                    { title: "کلمه‌یابی", exercises: [ { type: 'choice', correct: "قلم", options: ["قلم", "قَلم", "قِلم"] }, { type: 'choice', correct: "ژیلت", options: ["ژیلت", "ژیلِت", "ژیلَت"] } ] },
-                    { title: "روان‌خوانی", exercises: [ { type: 'read', word: "قلم" }, { type: 'read', word: "قهوه" }, { type: 'read', word: "ژیلت" }, { type: 'read', word: "ژله" } ] }
+                    { title: "کلمه‌یابی", exercises: [ { type: 'choice', correct: "قلم", options: ["قلم", "قفلم", "فیلم"] }, { type: 'choice', correct: "ژیلت", options: ["ژیلت", "ژاله", "منیژه"] } ] },
+                    { title: "روان‌خوانی", exercises: [ { type: 'read', word: "قلم" }, { type: 'read', word: "قهوه" }, { type: 'read', word: "ژیلت" }, { type: 'read', word: "ژله" } ] },
+                    { title: "حدس تصویر", exercises: [ { type: 'pictureGuess', image: "قلم", correct: "قلم", options: ["قلم", "نَی", "میخ"] }, { type: 'pictureGuess', image: "ژیلت", correct: "ژیلت", options: ["ژیلت", "قلم", "دستمال"] }, { type: 'pictureGuess', image: "قهوه", correct: "قهوه", options: ["قهوه", "چای", "آب"] } ] },
+                    { title: "کلمه گمشده", exercises: [ 
+                        { type: 'fillBlank', sentence: "با ___ نوشت.", correct: "قلم", options: ["قلم", "میله", "میخ"] }, 
+                        { type: 'fillBlank', sentence: "با ___ صورتم را تراشیدم.", correct: "ژیلت", options: ["ژیلت", "قلم", "دستمال"] },
+                        { type: 'fillBlank', sentence: "صبح ___ نوشیدم.", correct: "قهوه", options: ["قهوه", "سیب", "صبحانه"] },
+                        { type: 'fillBlank', sentence: "دسر ___ خوردم.", correct: "ژله", options: ["ژله", "آب", "آلو"] }
+                    ] }
                 ]
             }
         ];
@@ -424,15 +580,15 @@
         let currentExercises = [];
         let currentExerciseIndex = 0;
         let draggedElement = null;
-        let dragClone = null;
+        let dragClone = null; // عنصر کپی شده برای drag
         let dragOffsetX = 0;
         let dragOffsetY = 0;
         let isDragging = false;
-        let audioContext = null;
-        let usedSuccessSounds = [];
-        const successSounds = ["bravo1.mp3", "bravo2.mp3", "bravo3.mp3", "bravo4.mp3"];
+        let audioContext = null; // برای مدیریت صداها
+        let usedSuccessSounds = []; // برای ذخیره صداهای استفاده شده
+        const successSounds = ["bravo1.mp3", "bravo2.mp3", "bravo3.mp3", "bravo4.mp3"]; // لیست صداهای موفقیت
+        
         // --- DOM Elements ---
-        const activationScreen = document.getElementById('activation-screen');
         const mainMenu = document.getElementById('main-menu');
         const lessonSectionsScreen = document.getElementById('lesson-sections-screen');
         const gameScreen = document.getElementById('game-screen');
@@ -452,191 +608,198 @@
         const readWordEl = document.getElementById('read-word');
         const readAloudBtn = document.getElementById('read-aloud-btn');
         const readingDoneBtn = document.getElementById('reading-done-btn');
+        const pictureGuessGameEl = document.getElementById('picture-guess-game');
+        const pictureGuessOptionsContainer = document.getElementById('picture-guess-options');
+        const fillBlankGameEl = document.getElementById('fill-blank-game');
+        const sentenceBlankEl = document.getElementById('sentence-blank');
+        const fillBlankOptionsContainer = document.getElementById('fill-blank-options');
         const successModal = document.getElementById('success-modal');
         const modalWordEl = document.getElementById('modal-word');
         const nextExerciseBtn = document.getElementById('next-exercise-btn');
         const lessonCompleteModal = document.getElementById('lesson-complete-modal');
         const backToSectionsFromCompleteBtn = document.getElementById('back-to-sections-from-complete');
-        const activationCodeInput = document.getElementById('activation-code');
-        const activateBtn = document.getElementById('activate-btn');
-        const demoBtn = document.getElementById('demo-btn');
-        const activationMessage = document.getElementById('activation-message');
-        const activationWarningModal = document.getElementById('activation-warning-modal');
-        const closeWarningModalBtn = document.getElementById('close-warning-modal');
+        
         // --- Images/Icons Data ---
         const exerciseImages = {
+            // درس 1
             "آب": `<img src="water.png" class="w-28 h-28 object-contain" alt="آب">`,
             "بابا": `<img src="father.png" class="w-32 h-32 object-contain" alt="بابا">`,
+            // درس 2
             "باد": `<img src="wind.png" class="w-28 h-28 object-contain" alt="باد">`,
             "داد": `<img src="justice.png" class="w-28 h-28 object-contain" alt="داد">`,
             "ادب": `<img src="manners.png" class="w-28 h-28 object-contain" alt="ادب">`,
             "آباد": `<img src="inhabited.png" class="w-28 h-28 object-contain" alt="آباد">`,
             "بَد": `<img src="bad.png" class="w-28 h-28 object-contain" alt="بَد">`,
+            // درس 3
             "اسب": `<img src="horse.png" class="w-28 h-28 object-contain" alt="اسب">`,
             "سبد": `<img src="basket.png" class="w-28 h-28 object-contain" alt="سبد">`,
             "آمد": `<img src="came.png" class="w-28 h-28 object-contain" alt="آمد">`,
             "بادام": `<img src="almond.png" class="w-28 h-28 object-contain" alt="بادام">`,
             "داس": `<img src="scythe.png" class="w-28 h-28 object-contain" alt="داس">`,
             "سام": `<img src="name_sam.png" class="w-28 h-28 object-contain" alt="سام">`,
+            // درس 4
             "توت": `<img src="mulberry.png" class="w-28 h-28 object-contain" alt="توت">`,
             "دوست": `<img src="friend.png" class="w-28 h-28 object-contain" alt="دوست">`,
             "دست": `<img src="hand.png" class="w-28 h-28 object-contain" alt="دست">`,
             "تاب": `<img src="spring_coil.png" class="w-28 h-28 object-contain" alt="تاب">`,
             "سوت": `<img src="whistle.png" class="w-28 h-28 object-contain" alt="سوت">`,
             "بود": `<img src="was.png" class="w-28 h-28 object-contain" alt="بود">`,
+            // درس 5
             "انار": `<img src="pomegranate.png" class="w-28 h-28 object-contain" alt="انار">`,
             "نان": `<img src="bread.png" class="w-28 h-28 object-contain" alt="نان">`,
             "باران": `<img src="rain.png" class="w-28 h-28 object-contain" alt="باران">`,
             "مادر": `<img src="mother.png" class="w-28 h-28 object-contain" alt="مادر">`,
             "برادر": `<img src="brother.png" class="w-28 h-28 object-contain" alt="برادر">`,
             "نَر": `<img src="male.png" class="w-28 h-28 object-contain" alt="نَر">`,
+            // درس 6
             "ایران": `<img src="iran.png" class="w-28 h-28 object-contain" alt="ایران">`,
             "سیب": `<img src="apple.png" class="w-28 h-28 object-contain" alt="سیب">`,
             "میز": `<img src="table.png" class="w-28 h-28 object-contain" alt="میز">`,
             "زیبا": `<img src="beautiful.png" class="w-28 h-28 object-contain" alt="زیبا">`,
             "بازی": `<img src="game.png" class="w-28 h-28 object-contain" alt="بازی">`,
             "آزاد": `<img src="free.png" class="w-28 h-28 object-contain" alt="آزاد">`,
+            // درس 7
             "شانه": `<img src="shoulder.png" class="w-28 h-28 object-contain" alt="شانه">`,
             "تراش": `<img src="shave.png" class="w-28 h-28 object-contain" alt="تراش">`,
             "آش": `<img src="ash_food.png" class="w-28 h-28 object-contain" alt="آش">`,
             "امشب": `<img src="tonight.png" class="w-28 h-28 object-contain" alt="امشب">`,
             "ستاره": `<img src="star.png" class="w-28 h-28 object-contain" alt="ستاره">`,
             "ماشین": `<img src="machine.png" class="w-28 h-28 object-contain" alt="ماشین">`,
+            // درس 8
             "امید": `<img src="hope.png" class="w-28 h-28 object-contain" alt="امید">`,
             "بُرد": `<img src="took.png" class="w-28 h-28 object-contain" alt="بُرد">`,
             "سُرمه": `<img src="kohl.png" class="w-28 h-28 object-contain" alt="سُرمه">`,
             "کُشت": `<img src="killed.png" class="w-28 h-28 object-contain" alt="کُشت">`,
             "مُژه": `<img src="eyelash.png" class="w-28 h-28 object-contain" alt="مُژه">`,
             "اُرْدَک": `<img src="duck.png" class="w-28 h-28 object-contain" alt="اُرْدَک">`,
+            // درس 9
             "کتاب": `<img src="book.png" class="w-28 h-28 object-contain" alt="کتاب">`,
             "کفش": `<img src="shoe.png" class="w-28 h-28 object-contain" alt="کفش">`,
             "کمر": `<img src="waist.png" class="w-28 h-28 object-contain" alt="کمر">`,
             "گل": `<img src="flower.png" class="w-28 h-28 object-contain" alt="گل">`,
             "گربه": `<img src="cat.png" class="w-28 h-28 object-contain" alt="گربه">`,
             "گاو": `<img src="cow.png" class="w-28 h-28 object-contain" alt="گاو">`,
+            // درس 10
             "لاله": `<img src="tulip.png" class="w-28 h-28 object-contain" alt="لاله">`,
             "لیوان": `<img src="glass.png" class="w-28 h-28 object-contain" alt="لیوان">`,
             "ماه": `<img src="moon.png" class="w-28 h-28 object-contain" alt="ماه">`,
+            "ماشین": `<img src="machine.png" class="w-28 h-28 object-contain" alt="ماشین">`,
+            // درس 11
             "نوزاد": `<img src="baby.png" class="w-28 h-28 object-contain" alt="نوزاد">`,
             "نخل": `<img src="palm_tree.png" class="w-28 h-28 object-contain" alt="نخل">`,
             "وزن": `<img src="weight.png" class="w-28 h-28 object-contain" alt="وزن">`,
             "ویلا": `<img src="villa.png" class="w-28 h-28 object-contain" alt="ویلا">`,
+            // درس 12
             "هوا": `<img src="air.png" class="w-28 h-28 object-contain" alt="هوا">`,
             "هیچ": `<img src="nothing.png" class="w-28 h-28 object-contain" alt="هیچ">`,
             "یخ": `<img src="ice.png" class="w-28 h-28 object-contain" alt="یخ">`,
             "یار": `<img src="friend_companion.png" class="w-28 h-28 object-contain" alt="یار">`,
+            // درس 13
             "چشم": `<img src="eye.png" class="w-28 h-28 object-contain" alt="چشم">`,
             "چرخ": `<img src="wheel.png" class="w-28 h-28 object-contain" alt="چرخ">`,
             "حیاط": `<img src="courtyard.png" class="w-28 h-28 object-contain" alt="حیاط">`,
             "حل": `<img src="solution.png" class="w-28 h-28 object-contain" alt="حل">`,
+            // درس 14
             "خرس": `<img src="bear.png" class="w-28 h-28 object-contain" alt="خرس">`,
             "خانه": `<img src="house.png" class="w-28 h-28 object-contain" alt="خانه">`,
             "جارو": `<img src="broom.png" class="w-28 h-28 object-contain" alt="جارو">`,
             "جوجه": `<img src="chick.png" class="w-28 h-28 object-contain" alt="جوجه">`,
+            // درس 15
             "ثمر": `<img src="fruit_samr.png" class="w-28 h-28 object-contain" alt="ثمر">`,
             "ثابت": `<img src="stable.png" class="w-28 h-28 object-contain" alt="ثابت">`,
             "صندوق": `<img src="box.png" class="w-28 h-28 object-contain" alt="صندوق">`,
             "صبح": `<img src="morning.png" class="w-28 h-28 object-contain" alt="صبح">`,
+            // درس 16
             "ضامن": `<img src="guarantor.png" class="w-28 h-28 object-contain" alt="ضامن">`,
             "ضبط": `<img src="record.png" class="w-28 h-28 object-contain" alt="ضبط">`,
             "طلا": `<img src="gold.png" class="w-28 h-28 object-contain" alt="طلا">`,
             "طلب": `<img src="request.png" class="w-28 h-28 object-contain" alt="طلب">`,
+            // درس 17
             "ظرف": `<img src="dish.png" class="w-28 h-28 object-contain" alt="ظرف">`,
             "ظروف": `<img src="dishes.png" class="w-28 h-28 object-contain" alt="ظروف">`,
             "عسل": `<img src="honey.png" class="w-28 h-28 object-contain" alt="عسل">`,
             "عمر": `<img src="age.png" class="w-28 h-28 object-contain" alt="عمر">`,
+            // درس 18
             "غذا": `<img src="food.png" class="w-28 h-28 object-contain" alt="غذا">`,
             "غریبه": `<img src="stranger.png" class="w-28 h-28 object-contain" alt="غریبه">`,
             "فنجان": `<img src="cup.png" class="w-28 h-28 object-contain" alt="فنجان">`,
             "فیلم": `<img src="movie.png" class="w-28 h-28 object-contain" alt="فیلم">`,
+            // درس 19
             "قلم": `<img src="pen.png" class="w-28 h-28 object-contain" alt="قلم">`,
             "قهوه": `<img src="coffee.png" class="w-28 h-28 object-contain" alt="قهوه">`,
             "ژیلت": `<img src="razor.png" class="w-28 h-28 object-contain" alt="ژیلت">`,
             "ژله": `<img src="jelly.png" class="w-28 h-28 object-contain" alt="ژله">`,
+            // تصویر پیش‌فرض برای کلماتی که تصویر ندارند
             "default": `<div class="w-28 h-28 bg-gray-200 rounded-lg flex items-center justify-center text-gray-400">?</div>`
         };
         const sectionIcons = {
             "ترکیب صداها": `<img src="build_word.png" class="w-10 h-10" alt="ترکیب صداها">`,
             "کلمه‌یابی": `<img src="find_word.png" class="w-10 h-10" alt="کلمه‌یابی">`,
-            "روان‌خوانی": `<img src="read_aloud.png" class="w-10 h-10" alt="روان‌خوانی">`
+            "روان‌خوانی": `<img src="read_aloud.png" class="w-10 h-10" alt="روان‌خوانی">`,
+            "حدس تصویر": `<img src="guess_image.png" class="w-10 h-10" alt="حدس تصویر">`,
+            "کلمه گمشده": `<img src="missing_word.png" class="w-10 h-10" alt="کلمه گمشده">`
         };
         const arrowIcon = `<img src="arrow_back.png" class="w-8 h-8 text-indigo-300" alt="بازگشت">`;
-        const lockIcon = `<img src="lock.png" class="w-8 h-8" alt="قفل">`;
-        // --- Valid License Keys ---
-        // --- Valid License Keys (به صورت تصادفی تولید شده) ---
-const validLicenseKeys = [
-    "ACT-K7M9P-QR2X4", "ACT-3N8VW-BJ5ZF", "ACT-D4H6Y-LM9C1", "ACT-R2T8U-EW4Q7", "ACT-5F9G3-HJ8K2",
-    "ACT-A1S6D-ZX4CV", "ACT-W3E7R-TY5UI", "ACT-Q9O2P-LK6JM", "ACT-I8U4Y-NB3VH", "ACT-X5C1V-BN7QM",
-    "ACT-M6K9J-HU4RF", "ACT-L2P5T-YG8WE", "ACT-F8D3S-AZ1XC", "ACT-V7B4N-QW6ER", "ACT-G5H2J-KL9PO",
-    "ACT-U4Y1I-MN6BT", "ACT-E3R7T-YU8OP", "ACT-Z9X2C-VB4NM", "ACT-C1V5B-QA3ZW", "ACT-N8M6L-KJ9HU",
-    "ACT-H4J7G-FD2SA", "ACT-J6K3L-PO9IY", "ACT-K2L8M-NB4VX", "ACT-P9O1I-UH7TY", "ACT-T5Y4R-EW3QA",
-    "ACT-Y8U7T-RS2DF", "ACT-Q3W6E-AZ9XC", "ACT-A7S2D-CV4BN", "ACT-S4D9F-GH5JK", "ACT-D1F5G-HJ6KL",
-    "ACT-F9G8H-JK7LM", "ACT-G6H5J-KL4MN", "ACT-H3J2K-LM5NP", "ACT-J7K6L-MN8OP", "ACT-K4L3M-NP9QR",
-    "ACT-L8M7N-PQ2RS", "ACT-M5N4P-QR5ST", "ACT-N2P8Q-ST9UV", "ACT-P6Q5R-TU2VW", "ACT-Q3R2S-UV5WX",
-    "ACT-R7S6T-VW8XY", "ACT-S4T3U-WX9YZ", "ACT-T8U7V-XY2ZA", "ACT-U5V4W-YZ5AB", "ACT-V2W8X-ZA8BC",
-    "ACT-W6X5Y-AB1CD", "ACT-X3Y2Z-BC4DE", "ACT-Y7Z6A-CD7EF", "ACT-Z4A3B-DE0FG", "ACT-A8B7C-EF3GH",
-    "ACT-B5C4D-FG6HI", "ACT-C2D8E-GH9IJ", "ACT-D6E5F-HI2JK", "ACT-E3F2G-IJ5KL", "ACT-F7G6H-JK8LM",
-    "ACT-G4H3J-KL1MN", "ACT-H8J7K-LM4NP", "ACT-J5K4L-MN7PQ", "ACT-K2L8M-NP0QR", "ACT-L6M5N-PQ3RS",
-    "ACT-M3N2P-QR6ST", "ACT-N7P6Q-ST9UV", "ACT-P4Q3R-TU2VW", "ACT-Q8R7S-UV5WX", "ACT-R5S4T-VW8XY",
-    "ACT-S2T8U-WX9YZ", "ACT-T6U5V-XY2ZA", "ACT-U3V2W-YZ5AB", "ACT-V7W6X-ZA8BC", "ACT-W4X3Y-AB1CD",
-    "ACT-X8Y7Z-BC4DE", "ACT-Y5Z4A-CD7EF", "ACT-Z2A8B-DE0FG", "ACT-A6B5C-EF3GH", "ACT-B3C2D-FG6HI",
-    "ACT-C7D6E-GH9IJ", "ACT-D4E3F-HI2JK", "ACT-E8F7G-IJ5KL", "ACT-F5G4H-JK8LM", "ACT-G2H8J-KL1MN",
-    "ACT-H6J5K-LM4NP", "ACT-J3K2L-MN7PQ", "ACT-K7L6M-NP0QR", "ACT-L4M3N-PQ3RS", "ACT-M8N7P-QR6ST",
-    "ACT-N5P4Q-ST9UV", "ACT-P2Q8R-TU2VW", "ACT-Q6R5S-UV5WX", "ACT-R3S2T-VW8XY", "ACT-S7T6U-WX9YZ",
-    "ACT-T4U3V-XY2ZA", "ACT-U8V7W-YZ5AB", "ACT-V5W4X-ZA8BC", "ACT-W2X8Y-AB1CD", "ACT-X6Y5Z-BC4DE",
-    "ACT-Y3Z2A-CD7EF", "ACT-Z7A6B-DE0FG", "ACT-A4B3C-EF3GH", "ACT-B8C7D-FG6HI", "ACT-C5D4E-GH9IJ",
-    "ACT-D2E8F-HI2JK", "ACT-E6F5G-IJ5KL", "ACT-F3G2H-JK8LM", "ACT-G7H6J-KL1MN", "ACT-H4J3K-LM4NP",
-    "ACT-J8K7L-MN7PQ", "ACT-K5L4M-NP0QR", "ACT-L2M8N-PQ3RS", "ACT-M6N5P-QR6ST", "ACT-N3P2Q-ST9UV"
-];
+        
         // --- Navigation & Render ---
         function showScreen(screen) {
-            [activationScreen, mainMenu, lessonSectionsScreen, gameScreen].forEach(s => s.classList.add('hidden'));
+            [mainMenu, lessonSectionsScreen, gameScreen].forEach(s => s.classList.add('hidden'));
             screen.classList.remove('hidden');
         }
+        
         function renderMainMenu() {
             lessonsGrid.innerHTML = '';
             lessons.forEach(lesson => {
                  const isLocked = !lesson.unlocked;
                  const card = document.createElement('div');
                  card.className = `lesson-card p-6 rounded-2xl text-white font-bold text-2xl shadow-lg cursor-pointer flex justify-between items-center card ${isLocked ? 'locked' : ''}`;
+                 const lockIcon = `<img src="lock.png" class="w-8 h-8" alt="قفل">`;
                  const playIcon = `<img src="play.png" class="w-8 h-8" alt="پخش">`;
                  card.innerHTML = `<span>${lesson.title}</span> <span>${isLocked ? lockIcon : playIcon}</span>`;
-                 if (!isLocked) {
-                    card.onclick = () => showLessonSections(lesson.id);
-                 } else {
-                    card.onclick = () => {
-                        activationMessage.textContent = "این درس قفل شده است. برای دسترسی به تمام درس‌ها، کد فعال‌سازی را وارد کنید.";
-                        activationMessage.classList.remove('hidden');
-                        setTimeout(() => activationMessage.classList.add('hidden'), 3000);
-                    };
-                 }
+                 if (!isLocked) card.onclick = () => showLessonSections(lesson.id);
                  lessonsGrid.appendChild(card);
             });
         }
+        
         function showLessonSections(lessonId) {
             currentLesson = lessons.find(l => l.id === lessonId);
             sectionsLessonTitle.textContent = currentLesson.title;
             sectionsGrid.innerHTML = '';
-            currentLesson.sections.forEach(section => {
+            currentLesson.sections.forEach((section, index) => {
+                const sectionContainer = document.createElement('div');
+                sectionContainer.className = 'section-card-container';
+                
                 const card = document.createElement('div');
                 card.className = 'card bg-white p-5 rounded-2xl shadow-md cursor-pointer flex items-center gap-4';
                 card.innerHTML = `
                     <div class="text-3xl">${sectionIcons[section.title]}</div>
                     <div class="flex-1"><h3 class="font-bold text-xl text-gray-700">${section.title}</h3></div>
                     <div>${arrowIcon}</div>`;
-                card.onclick = () => startSection(section.exercises);
-                sectionsGrid.appendChild(card);
+                card.onclick = () => startSection(section.exercises, index);
+                
+                // اضافه کردن نشانگر تمرین انجام شده
+                if (section.completed) {
+                    const completedIndicator = document.createElement('div');
+                    completedIndicator.className = 'completed-indicator';
+                    completedIndicator.innerHTML = '✓';
+                    sectionContainer.appendChild(completedIndicator);
+                }
+                
+                sectionContainer.appendChild(card);
+                sectionsGrid.appendChild(sectionContainer);
             });
             showScreen(lessonSectionsScreen);
         }
+        
         // --- Game Logic ---
-        function startSection(exercises) {
+        function startSection(exercises, sectionIndex) {
             currentExercises = shuffle([...exercises]);
             currentExerciseIndex = 0;
             gameLessonTitle.textContent = currentLesson.title;
-            loadExercise(currentExerciseIndex);
+            loadExercise(currentExerciseIndex, sectionIndex);
             showScreen(gameScreen);
         }
+        
         function shuffle(array) {
             for (let i = array.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
@@ -644,15 +807,20 @@ const validLicenseKeys = [
             }
             return array;
         }
-        function loadExercise(index) {
+        
+        function loadExercise(index, sectionIndex) {
             const exercise = currentExercises[index];
-            const wordKey = exercise.word || exercise.correct;
+            const wordKey = exercise.word || exercise.correct || exercise.image;
+            // استفاده از تصویر پیش‌فرض اگر کلمه تصویر نداشته باشد
             wordImageContainer.innerHTML = exerciseImages[wordKey] || exerciseImages["default"];
-            [buildWordGameEl, choiceGameEl, readGameEl].forEach(el => el.classList.add('hidden'));
+            [buildWordGameEl, choiceGameEl, readGameEl, pictureGuessGameEl, fillBlankGameEl].forEach(el => el.classList.add('hidden'));
             if (exercise.type === 'build') loadBuildExercise(exercise);
             else if (exercise.type === 'choice') loadChoiceExercise(exercise);
-            else if (exercise.type === 'read') loadReadExercise(exercise);
+            else if (exercise.type === 'read') loadReadExercise(exercise, sectionIndex);
+            else if (exercise.type === 'pictureGuess') loadPictureGuessExercise(exercise);
+            else if (exercise.type === 'fillBlank') loadFillBlankExercise(exercise);
         }
+        
         function loadBuildExercise(exercise) {
             buildWordGameEl.classList.remove('hidden');
             const wordLetters = exercise.word.split('');
@@ -668,6 +836,7 @@ const validLicenseKeys = [
             });
             shuffle([...wordLetters]).forEach(letter => {
                 const bubble = document.createElement('div');
+                // حذف border-radius برای مربع شدن - تغییر اصلی
                 bubble.className = 'letter-bubble w-16 h-16 bg-yellow-300 flex items-center justify-center text-3xl font-bold shadow-md';
                 bubble.textContent = letter;
                 bubble.draggable = true;
@@ -676,6 +845,7 @@ const validLicenseKeys = [
             });
             addDragDropListeners();
         }
+        
         function loadChoiceExercise(exercise) {
             choiceGameEl.classList.remove('hidden');
             choiceOptionsContainer.innerHTML = '';
@@ -687,12 +857,44 @@ const validLicenseKeys = [
                 choiceOptionsContainer.appendChild(button);
             });
         }
+        
+        function loadPictureGuessExercise(exercise) {
+            pictureGuessGameEl.classList.remove('hidden');
+            pictureGuessOptionsContainer.innerHTML = '';
+            // نمایش تصویر در بالا انجام شده است در loadExercise
+            shuffle([...exercise.options]).forEach(option => {
+                const button = document.createElement('button');
+                button.className = 'choice-btn w-full bg-blue-400 text-white font-bold text-2xl py-4 rounded-xl shadow-md hover:bg-blue-500 transition-all card';
+                button.textContent = option;
+                button.onclick = (e) => handlePictureGuessSelection(e, option, exercise.correct);
+                pictureGuessOptionsContainer.appendChild(button);
+            });
+        }
+
+        function loadFillBlankExercise(exercise) {
+            fillBlankGameEl.classList.remove('hidden');
+            fillBlankOptionsContainer.innerHTML = '';
+            // نمایش جمله با جای خالی
+            sentenceBlankEl.textContent = exercise.sentence;
+            shuffle([...exercise.options]).forEach(option => {
+                const button = document.createElement('button');
+                button.className = 'choice-btn w-full bg-blue-400 text-white font-bold text-2xl py-4 rounded-xl shadow-md hover:bg-blue-500 transition-all card';
+                button.textContent = option;
+                button.onclick = (e) => handleFillBlankSelection(e, option, exercise.correct);
+                fillBlankOptionsContainer.appendChild(button);
+            });
+        }
+        
         // --- Audio Playback Logic ---
+        // تابعی برای پخش صدای یک فایل
         function playSound(filename) {
+            // اطمینان از ایجاد audio context
             if (!audioContext) {
                 audioContext = new (window.AudioContext || window.webkitAudioContext)();
             }
+            // ساخت یک عنصر صوتی جدید برای هر پخش
             const audio = new Audio(`sounds/${filename}`);
+            // تلاش برای رزوم کردن audio context در صورت نیاز (برای مرورگرهای جدید)
             if (audioContext.state === 'suspended') {
                 audioContext.resume().then(() => {
                     audio.play().catch(e => console.log("خطا در پخش صوت:", e));
@@ -701,35 +903,53 @@ const validLicenseKeys = [
                 audio.play().catch(e => console.log("خطا در پخش صوت:", e));
             }
         }
+        
+        // تابع برای پخش صدای تشویق تصادفی بدون تکرار
         function playRandomSuccessSound() {
+            // اگر همه صداها استفاده شده‌اند، لیست را ریست کن
             if (usedSuccessSounds.length === successSounds.length) {
                 usedSuccessSounds = [];
             }
+            
+            // فیلتر کردن صداهایی که هنوز استفاده نشده‌اند
             const availableSounds = successSounds.filter(sound => !usedSuccessSounds.includes(sound));
+            
+            // انتخاب تصادفی یک صدا از صداهای موجود
             const randomIndex = Math.floor(Math.random() * availableSounds.length);
             const selectedSound = availableSounds[randomIndex];
+            
+            // اضافه کردن صدای انتخاب شده به لیست صداهای استفاده شده
             usedSuccessSounds.push(selectedSound);
+            
+            // پخش صدا
             playSound(selectedSound);
         }
+        
         // --- Read Exercise Logic ---
-        function loadReadExercise(exercise) {
+        function loadReadExercise(exercise, sectionIndex) {
             readGameEl.classList.remove('hidden');
             readWordEl.textContent = exercise.word;
+            // اضافه کردن event listener به دکمه بلندگو
             readAloudBtn.onclick = () => {
+                // پخش صدای کلمه (با پسوند mp3 - می‌توانید تغییر دهید)
                 playSound(`${exercise.word}.mp3`);
             };
+            // اضافه کردن event listener به دکمه "خواندم"
             readingDoneBtn.onclick = () => {
+                // پخش صدای تشویق تصادفی و نمایش مودال موفقیت
                 playRandomSuccessSound();
-                setTimeout(() => showSuccessModal(), 1000);
+                setTimeout(() => showSuccessModal(sectionIndex), 1000); // کمی تاخیر برای پخش صدا
             };
         }
+        
         function handleChoiceSelection(event, selectedOption, correctOption) {
             const button = event.target;
             choiceOptionsContainer.querySelectorAll('button').forEach(btn => btn.disabled = true);
             if (selectedOption === correctOption) {
                 button.classList.add('correct', 'bg-green-500');
+                // پخش صدای تشویق تصادفی و نمایش مودال موفقیت
                 playRandomSuccessSound();
-                setTimeout(showSuccessModal, 1000);
+                setTimeout(showSuccessModal, 1000); // کمی تاخیر برای پخش صدا
             } else {
                 button.classList.add('incorrect', 'bg-red-500');
                 choiceOptionsContainer.querySelectorAll('button').forEach(btn => {
@@ -738,37 +958,79 @@ const validLicenseKeys = [
                 setTimeout(() => loadExercise(currentExerciseIndex), 1500);
             }
         }
+
+        function handlePictureGuessSelection(event, selectedOption, correctOption) {
+            const button = event.target;
+            pictureGuessOptionsContainer.querySelectorAll('button').forEach(btn => btn.disabled = true);
+            if (selectedOption === correctOption) {
+                button.classList.add('correct', 'bg-green-500');
+                // پخش صدای تشویق تصادفی و نمایش مودال موفقیت
+                playRandomSuccessSound();
+                setTimeout(showSuccessModal, 1000); // کمی تاخیر برای پخش صدا
+            } else {
+                button.classList.add('incorrect', 'bg-red-500');
+                pictureGuessOptionsContainer.querySelectorAll('button').forEach(btn => {
+                    if (btn.textContent === correctOption) btn.classList.add('bg-green-500');
+                });
+                setTimeout(() => loadExercise(currentExerciseIndex), 1500);
+            }
+        }
+
+        function handleFillBlankSelection(event, selectedOption, correctOption) {
+            const button = event.target;
+            fillBlankOptionsContainer.querySelectorAll('button').forEach(btn => btn.disabled = true);
+            if (selectedOption === correctOption) {
+                button.classList.add('correct', 'bg-green-500');
+                // پخش صدای تشویق تصادفی و نمایش مودال موفقیت
+                playRandomSuccessSound();
+                setTimeout(showSuccessModal, 1000); // کمی تاخیر برای پخش صدا
+            } else {
+                button.classList.add('incorrect', 'bg-red-500');
+                fillBlankOptionsContainer.querySelectorAll('button').forEach(btn => {
+                    if (btn.textContent === correctOption) btn.classList.add('bg-green-500');
+                });
+                setTimeout(() => loadExercise(currentExerciseIndex), 1500);
+            }
+        }
+        
         // --- Drag & Drop Logic (Mouse & Touch) ---
         function addDragDropListeners() {
             const bubbles = document.querySelectorAll('.letter-bubble');
             const dropZones = document.querySelectorAll('.drop-zone:not(.filled)');
             bubbles.forEach(bubble => {
+                // Mouse Events
                 bubble.addEventListener('mousedown', startDrag);
+                // Touch Events
                 bubble.addEventListener('touchstart', handleTouchStart, { passive: false });
             });
             dropZones.forEach(zone => {
-                zone.addEventListener('dragover', e => e.preventDefault());
-                zone.addEventListener('drop', handleDrop);
-                zone.addEventListener('touchend', handleTouchDrop);
+                zone.addEventListener('dragover', e => e.preventDefault()); // For standard DnD
+                zone.addEventListener('drop', handleDrop); // For standard DnD
+                zone.addEventListener('touchend', handleTouchDrop); // For touch
             });
+            // جلوگیری از context menu در حین drag
             document.addEventListener('contextmenu', (e) => {
                 if (isDragging) {
                     e.preventDefault();
                 }
             });
         }
+        
+        // --- Mouse Drag ---
         function startDrag(e) {
-            if (e.button !== 0) return;
-            e.preventDefault();
+            if (e.button !== 0) return; // Only left mouse button
+            e.preventDefault(); // Prevent default drag behavior
             startDragProcess(e.target, e.clientX, e.clientY);
             document.addEventListener('mousemove', drag);
             document.addEventListener('mouseup', stopDrag);
         }
+        
         function drag(e) {
             if (!isDragging) return;
             e.preventDefault();
             moveDrag(e.clientX, e.clientY);
         }
+        
         function stopDrag(e) {
             if (!isDragging) return;
             e.preventDefault();
@@ -776,73 +1038,95 @@ const validLicenseKeys = [
             document.removeEventListener('mousemove', drag);
             document.removeEventListener('mouseup', stopDrag);
         }
+        
+        // --- Touch Drag ---
         function handleTouchStart(e) {
             if (e.touches.length > 1) return;
-            e.preventDefault();
+            e.preventDefault(); // Prevent scrolling
             const touch = e.touches[0];
             startDragProcess(e.target, touch.clientX, touch.clientY);
             document.addEventListener('touchmove', handleTouchMove, { passive: false });
             document.addEventListener('touchend', handleTouchEnd);
         }
+        
         function handleTouchMove(e) {
             if (!isDragging || e.touches.length > 1) return;
-            e.preventDefault();
+            e.preventDefault(); // Prevent scrolling
             const touch = e.touches[0];
             moveDrag(touch.clientX, touch.clientY);
         }
+        
         function handleTouchEnd(e) {
             if (!isDragging) return;
             e.preventDefault();
+            // موقعیت لمس نهایی ممکن است در دسترس نباشد، بنابراین از آخرین موقعیت dragClone استفاده می‌کنیم
             endDrag(parseInt(dragClone.style.left) || 0, parseInt(dragClone.style.top) || 0);
             document.removeEventListener('touchmove', handleTouchMove);
             document.removeEventListener('touchend', handleTouchEnd);
         }
+        
+        // --- Drag Helper Functions ---
         function startDragProcess(element, clientX, clientY) {
             draggedElement = element;
             isDragging = true;
             draggedElement.classList.add('dragging');
+            // ایجاد یک کپی از عنصر برای drag
             dragClone = draggedElement.cloneNode(true);
             dragClone.classList.add('drag-clone');
             document.body.appendChild(dragClone);
+            // محاسبه دقیق فاصله موس/انگشت از گوشه بالا سمت چپ عنصر
             const rect = draggedElement.getBoundingClientRect();
             dragOffsetX = clientX - rect.left;
             dragOffsetY = clientY - rect.top;
+            // تنظیم ابعاد و موقعیت اولیه کپی
             dragClone.style.width = `${rect.width}px`;
             dragClone.style.height = `${rect.height}px`;
             dragClone.style.left = `${rect.left}px`;
             dragClone.style.top = `${rect.top}px`;
+            // جلوگیری از انتخاب متن در حین drag
             document.body.style.userSelect = 'none';
-            document.body.style.webkitUserSelect = 'none';
+            document.body.style.webkitUserSelect = 'none'; // For Safari
         }
+        
         function moveDrag(clientX, clientY) {
             if (!isDragging || !dragClone) return;
+            // موقعیت عنصر را دقیقاً زیر موس/انگشت قرار می‌دهیم
             dragClone.style.left = `${clientX - dragOffsetX}px`;
             dragClone.style.top = `${clientY - dragOffsetY}px`;
         }
+        
         function endDrag(clientX, clientY) {
             if (!isDragging) return;
             isDragging = false;
+            // یافتن drop zone زیر موس/انگشت با حساسیت بیشتر
             let dropTarget = null;
             const dropZones = document.querySelectorAll('.drop-zone:not(.filled)');
             for (const zone of dropZones) {
                 const rect = zone.getBoundingClientRect();
+                // محاسبه مرکز drop zone
                 const zoneCenterX = rect.left + rect.width / 2;
                 const zoneCenterY = rect.top + rect.height / 2;
+                // محاسبه فاصله از مرکز drop zone
                 const distance = Math.sqrt(Math.pow(clientX - zoneCenterX, 2) + Math.pow(clientY - zoneCenterY, 2));
+                // افزایش حساسیت: اگر فاصله کمتر از 1.5 برابر شعاع drop zone باشد، آن را قبول کن
+                // شعاع drop zone حدوداً Math.sqrt(width^2 + height^2) / 2 است
                 const zoneRadius = Math.sqrt(Math.pow(rect.width, 2) + Math.pow(rect.height, 2)) / 2;
-                if (distance < zoneRadius * 1.5) {
+                if (distance < zoneRadius * 1.5) { // افزایش حساسیت
                     dropTarget = zone;
-                    break;
+                    break; // اولین zone مناسب را پیدا کن
                 }
             }
+            // پردازش drop
             if (dropTarget) {
                 dropLetter(dropTarget, draggedElement);
             } else {
+                 // اگر drop zone مناسبی پیدا نشد، انیمیشن shake
                  if (draggedElement) {
                     draggedElement.classList.add('shake');
                     setTimeout(() => draggedElement.classList.remove('shake'), 500);
                  }
             }
+            // پاک کردن
             if (dragClone) {
                 document.body.removeChild(dragClone);
                 dragClone = null;
@@ -854,6 +1138,8 @@ const validLicenseKeys = [
             document.body.style.userSelect = '';
             document.body.style.webkitUserSelect = '';
         }
+        
+        // --- Drop Handling ---
         function handleDrop(e) {
             e.preventDefault();
             const dropZone = e.target.closest('.drop-zone');
@@ -861,9 +1147,11 @@ const validLicenseKeys = [
                 dropLetter(dropZone, draggedElement);
             }
         }
+        
         function handleTouchDrop(e) {
             const dropZone = e.target.closest('.drop-zone');
             if (dropZone && draggedElement) {
+                 // For touch, we need to find the element being "touched" at the drop point
                 const touch = e.changedTouches[0];
                 const elementFromPoint = document.elementFromPoint(touch.clientX, touch.clientY);
                 if (elementFromPoint && elementFromPoint.classList.contains('letter-bubble') && elementFromPoint.classList.contains('dragging')) {
@@ -871,6 +1159,7 @@ const validLicenseKeys = [
                 }
             }
         }
+        
         function dropLetter(dropZone, letterElement) {
             if (dropZone.classList.contains('filled')) {
                 letterElement.classList.add('shake');
@@ -878,8 +1167,11 @@ const validLicenseKeys = [
                 return;
             }
             const allZones = Array.from(dropZonesContainer.children);
+            // Find the first empty slot from the left (LTR logic for filling order)
             const nextEmptyZoneIndex = allZones.findIndex(z => !z.classList.contains('filled'));
+            // The index of the slot the user dropped onto
             const dropIndex = allZones.indexOf(dropZone);
+            // Check if the user is dropping onto the correct *sequential* slot (LTR)
             if (dropIndex !== nextEmptyZoneIndex) {
                 letterElement.classList.add('shake');
                 setTimeout(() => letterElement.classList.remove('shake'), 500);
@@ -889,25 +1181,33 @@ const validLicenseKeys = [
                 dropZone.textContent = letterElement.textContent;
                 dropZone.classList.add('filled');
                 dropZone.classList.remove('text-transparent');
-                letterElement.style.display = 'none';
+                letterElement.style.display = 'none'; // Hide the original bubble
                 checkWordCompletion();
             } else {
                 letterElement.classList.add('shake');
                 setTimeout(() => letterElement.classList.remove('shake'), 500);
             }
         }
+        
         function checkWordCompletion() {
             const isComplete = Array.from(dropZonesContainer.children).every(z => z.classList.contains('filled'));
             if (isComplete) {
+                // پخش صدای تشویق تصادفی و نمایش مودال موفقیت
                 playRandomSuccessSound();
-                setTimeout(showSuccessModal, 1000);
+                setTimeout(showSuccessModal, 1000); // کمی تاخیر برای پخش صدا
             }
         }
-        function showSuccessModal() {
+        
+        function showSuccessModal(sectionIndex) {
             const exercise = currentExercises[currentExerciseIndex];
             const word = exercise.word || exercise.correct;
             modalWordEl.textContent = `«${word}» عالی بود!`;
             if (currentExerciseIndex >= currentExercises.length - 1) {
+                // علامت گذاری بخش به عنوان تکمیل شده
+                if (sectionIndex !== undefined) {
+                    currentLesson.sections[sectionIndex].completed = true;
+                    saveProgress(); // ذخیره پیشرفت
+                }
                 setTimeout(() => {
                     successModal.classList.add('hidden');
                     lessonCompleteModal.classList.remove('hidden');
@@ -917,38 +1217,11 @@ const validLicenseKeys = [
                  successModal.classList.add('flex', 'show');
             }
         }
-        // --- Activation Logic ---
-        function activateApp() {
-            const code = activationCodeInput.value.trim();
-            if (validLicenseKeys.includes(code)) {
-                // ذخیره کد فعال‌سازی در localStorage
-                localStorage.setItem('app_license_key', code);
-                // باز کردن قفل درس‌های 6 تا 19
-                lessons.forEach(lesson => {
-                    if (lesson.id > 5) {
-                        lesson.unlocked = true;
-                    }
-                });
-                // نمایش هشدار
-                activationWarningModal.classList.remove('hidden');
-                // رفتن به صفحه اصلی انجام نمی‌شود تا کاربر هشدار را ببیند
-            } else {
-                activationMessage.textContent = "کد فعال‌سازی نامعتبر است.";
-                activationMessage.classList.remove('hidden');
-                setTimeout(() => activationMessage.classList.add('hidden'), 3000);
-            }
-        }
-        function enterDemoMode() {
-            // فقط درس‌های 1 تا 5 فعال هستند (که از قبل true هستند)
-            // پس نیاز به تغییر نیست
-            showScreen(mainMenu);
-            renderMainMenu();
-        }
+        
         // --- Event Listeners ---
-        activateBtn.addEventListener('click', activateApp);
-        demoBtn.addEventListener('click', enterDemoMode);
         backToMainMenuBtn.addEventListener('click', () => showScreen(mainMenu));
         backToSectionsBtn.addEventListener('click', () => showLessonSections(currentLesson.id));
+        // readingDoneBtn event listener moved inside loadReadExercise
         backToSectionsFromCompleteBtn.addEventListener('click', () => {
             lessonCompleteModal.classList.add('hidden');
             showLessonSections(currentLesson.id);
@@ -958,28 +1231,11 @@ const validLicenseKeys = [
             successModal.classList.add('hidden');
             loadExercise(currentExerciseIndex);
         });
-        closeWarningModalBtn.addEventListener('click', () => {
-            activationWarningModal.classList.add('hidden');
-            showScreen(mainMenu);
-            renderMainMenu();
-        });
+        
         // --- Initialization ---
         document.addEventListener('DOMContentLoaded', () => {
-            // بررسی اینکه آیا کد فعال‌سازی قبلاً وارد شده است یا نه
-            const savedLicenseKey = localStorage.getItem('app_license_key');
-            if (savedLicenseKey && validLicenseKeys.includes(savedLicenseKey)) {
-                // اگر کد معتبر بود، درس‌های 6 تا 19 را باز کن
-                lessons.forEach(lesson => {
-                    if (lesson.id > 5) {
-                        lesson.unlocked = true;
-                    }
-                });
-                showScreen(mainMenu);
-                renderMainMenu();
-            } else {
-                // اگر کد معتبر نبود یا وجود نداشت، به صفحه فعال‌سازی برو
-                showScreen(activationScreen);
-            }
+            showScreen(mainMenu);
+            renderMainMenu();
         });
     </script>
 </body>
