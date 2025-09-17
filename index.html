@@ -242,6 +242,65 @@
             margin-top: 0.5rem;
             font-weight: 300;
         }
+
+        /* --- استایل های جدید برای Gamification --- */
+        .stars-display {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            margin-bottom: 1rem;
+        }
+        .star-icon {
+            width: 24px;
+            height: 24px;
+            filter: drop-shadow(0 2px 2px rgba(0,0,0,0.2));
+        }
+        .achievement-card {
+            background-color: #f8fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 1rem;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            transition: all 0.3s;
+        }
+        .achievement-card.locked {
+            opacity: 0.5;
+            border-color: #94a3b8;
+        }
+        .achievement-card.unlocked {
+            border-color: #fbbf24;
+            background-color: #fef3c7;
+            animation: glow 2s infinite alternate;
+        }
+        @keyframes glow {
+            from { box-shadow: 0 0 5px #fbbf24; }
+            to { box-shadow: 0 0 20px #fbbf24; }
+        }
+        .trophy-icon {
+            width: 40px;
+            height: 40px;
+        }
+        .leaderboard-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem 1rem;
+            background-color: #f1f5f9;
+            border-radius: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+        .stats-badge {
+            background-color: #dbeafe;
+            color: #1d4ed8;
+            padding: 0.25rem 0.5rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body class="text-gray-800">
@@ -261,13 +320,82 @@
         <!-- --- صفحه منوی اصلی --- -->
         <div id="main-menu" class="page">
             <div class="bg-white rounded-2xl shadow-lg p-6 w-full max-w-md">
-                <header class="text-center mb-8">
+                <header class="text-center mb-4">
                     <h1 class="text-5xl font-bold text-sky-700">مدرسه الفبا</h1>
                     <p class="text-sky-600 text-lg mt-2"><img src="sun.png" class="w-10 h-10 mx-auto" alt="آفتاب"></p>
+                    <!-- نمایش تعداد ستاره‌ها -->
+                    <div id="main-menu-stars" class="stars-display mt-4">
+                        <img src="star.png" class="star-icon" alt="ستاره">
+                        <span id="star-count" class="text-2xl font-bold text-yellow-500">0</span>
+                    </div>
                 </header>
-                <div id="lessons-grid" class="space-y-4"></div>
+                <div id="lessons-grid" class="space-y-4 mb-6"></div>
+                <!-- دکمه‌های جدید تابلو امتیازات و دستاوردها -->
+                <div class="flex gap-4">
+                    <button id="show-leaderboard-btn" class="flex-1 bg-amber-500 hover:bg-amber-600 text-white font-bold py-3 px-4 rounded-full">
+                        🏆 تابلو امتیازات
+                    </button>
+                    <button id="show-achievements-btn" class="flex-1 bg-purple-500 hover:bg-purple-600 text-white font-bold py-3 px-4 rounded-full">
+                        🎯 دستاوردها
+                    </button>
+                </div>
             </div>
         </div>
+
+        <!-- --- صفحه تابلو امتیازات --- -->
+        <div id="leaderboard-screen" class="page">
+            <div class="bg-white rounded-2xl shadow-lg p-6 w-full max-w-md">
+                <header class="flex items-center justify-between mb-6">
+                    <button id="back-to-main-from-leaderboard" class="back-button-icon">
+                        <img src="back_arrow.png" alt="بازگشت">
+                    </button>
+                    <h2 class="text-2xl font-bold text-amber-500">🏆 تابلو امتیازات</h2>
+                    <div class="w-12"></div>
+                </header>
+                <div class="space-y-4">
+                    <div class="leaderboard-item">
+                        <span>تعداد ستاره‌ها:</span>
+                        <span id="lb-total-stars" class="font-bold text-yellow-500">0</span>
+                    </div>
+                    <div class="leaderboard-item">
+                        <span>دروس کامل شده:</span>
+                        <span id="lb-completed-lessons" class="font-bold text-green-500">0/19</span>
+                    </div>
+                    <div class="leaderboard-item">
+                        <span>تمرین‌های انجام شده:</span>
+                        <span id="lb-total-exercises" class="font-bold text-blue-500">0</span>
+                    </div>
+                    <div class="leaderboard-item">
+                        <span>کلمات ساخته شده:</span>
+                        <span id="lb-words-built" class="stats-badge">0</span>
+                    </div>
+                    <div class="leaderboard-item">
+                        <span>کلمات خوانده شده:</span>
+                        <span id="lb-words-read" class="stats-badge">0</span>
+                    </div>
+                </div>
+            </div>
+            <div class="creator-info">ایده و تولید: احسان شمسی</div>
+        </div>
+
+        <!-- --- صفحه دستاوردها --- -->
+        <div id="achievements-screen" class="page">
+            <div class="bg-white rounded-2xl shadow-lg p-6 w-full max-w-md">
+                <header class="flex items-center justify-between mb-6">
+                    <button id="back-to-main-from-achievements" class="back-button-icon">
+                        <img src="back_arrow.png" alt="بازگشت">
+                    </button>
+                    <h2 class="text-2xl font-bold text-purple-500">🎯 دستاوردها</h2>
+                    <div class="w-12"></div>
+                </header>
+                <div id="achievements-list" class="space-y-4">
+                    <!-- دستاوردها به صورت پویا اینجا قرار می‌گیرند -->
+                </div>
+            </div>
+            <div class="creator-info">ایده و تولید: احسان شمسی</div>
+        </div>
+
+        <!-- --- صفحه منوی اصلی --- (بقیه صفحات بدون تغییر) -->
         <!-- --- صفحه بخش‌های درس --- -->
         <div id="lesson-sections-screen" class="page">
             <div class="bg-white rounded-2xl shadow-lg p-6 w-full max-w-md">
@@ -322,7 +450,9 @@
         <div id="success-modal" class="modal">
             <div class="bg-white rounded-2xl shadow-2xl p-8 text-center transform scale-95 transition-transform duration-300">
                 <div class="text-7xl mb-4"><img src="star.png" class="w-16 h-16 mx-auto" alt="ستاره"></div>
-                <h3 class="text-4xl font-bold text-green-500 mb-4">آفرین!</h3>
+                <h3 class="text-4xl font-bold text-green-500 mb-2">آفرین!</h3>
+                <!-- نمایش ستاره کسب شده -->
+                <p id="modal-stars-earned" class="text-2xl text-yellow-500 font-bold mb-2">+1 ⭐</p>
                 <p id="modal-word" class="text-2xl text-gray-700 mb-6"></p>
                 <button id="next-exercise-btn" class="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-6 rounded-full">بعدی</button>
             </div>
@@ -674,6 +804,16 @@
                 ]
             }
         ];
+
+        // --- DATA برای Gamification ---
+        const achievementsList = [
+            { id: 'champion', name: "قهرمان حروف!", description: "کامل کردن ۵ درس", icon: "trophy.png", condition: (state) => state.completedLessons >= 5 },
+            { id: 'wordBuilder', name: "کلمه‌ساز حرفه‌ای!", description: "ساختن ۲۰ کلمه", icon: "hammer.png", condition: (state) => state.wordsBuilt >= 20 },
+            { id: 'reader', name: "خواننده بی‌نظیر!", description: "خواندن ۱۰ کلمه", icon: "book.png", condition: (state) => state.wordsRead >= 10 },
+            { id: 'master', name: "استاد الفبا!", description: "کامل کردن تمام ۱۹ درس", icon: "crown.png", condition: (state) => state.completedLessons >= 19 },
+            { id: 'speedster', name: "سریع‌العمل!", description: "انجام ۵۰ تمرین", icon: "bolt.png", condition: (state) => state.totalExercises >= 50 }
+        ];
+
         // --- STATE ---
         let currentLesson = null;
         let currentExercises = [];
@@ -688,12 +828,26 @@
         const successSounds = ["bravo1.mp3", "bravo2.mp3", "bravo3.mp3", "bravo4.mp3"];
         let isActivated = false;
         let isDemoMode = false;
+
+        // --- STATE جدید برای Gamification ---
+        let playerState = {
+            stars: 0,
+            completedLessons: 0,
+            totalExercises: 0,
+            wordsBuilt: 0,
+            wordsRead: 0,
+            unlockedAchievements: []
+        };
+
         // --- DOM Elements ---
         const pages = {
             activation: document.getElementById('activation-screen'),
             mainMenu: document.getElementById('main-menu'),
             lessonSections: document.getElementById('lesson-sections-screen'),
-            game: document.getElementById('game-screen')
+            game: document.getElementById('game-screen'),
+            // --- صفحات جدید ---
+            leaderboard: document.getElementById('leaderboard-screen'),
+            achievements: document.getElementById('achievements-screen')
         };
         const modals = {
             success: document.getElementById('success-modal'),
@@ -709,6 +863,19 @@
             activationMessage: document.getElementById('activation-message'),
             // Main Menu
             lessonsGrid: document.getElementById('lessons-grid'),
+            starCount: document.getElementById('star-count'), // المان جدید
+            showLeaderboardBtn: document.getElementById('show-leaderboard-btn'), // المان جدید
+            showAchievementsBtn: document.getElementById('show-achievements-btn'), // المان جدید
+            // Leaderboard
+            lbTotalStars: document.getElementById('lb-total-stars'),
+            lbCompletedLessons: document.getElementById('lb-completed-lessons'),
+            lbTotalExercises: document.getElementById('lb-total-exercises'),
+            lbWordsBuilt: document.getElementById('lb-words-built'),
+            lbWordsRead: document.getElementById('lb-words-read'),
+            backToMainFromLeaderboard: document.getElementById('back-to-main-from-leaderboard'),
+            // Achievements
+            achievementsList: document.getElementById('achievements-list'),
+            backToMainFromAchievements: document.getElementById('back-to-main-from-achievements'),
             // Lesson Sections
             backToMainMenuBtn: document.getElementById('back-to-main-menu'),
             sectionsLessonTitle: document.getElementById('sections-lesson-title'),
@@ -730,6 +897,7 @@
             fillBlankOptionsContainer: document.getElementById('fill-blank-options'),
             // Modals
             modalWordEl: document.getElementById('modal-word'),
+            modalStarsEarned: document.getElementById('modal-stars-earned'), // المان جدید
             nextExerciseBtn: document.getElementById('next-exercise-btn'),
             backToSectionsFromCompleteBtn: document.getElementById('back-to-sections-from-complete'),
             closeWarningBtn: document.getElementById('close-warning-btn'),
@@ -741,6 +909,7 @@
             // --- المان جدید برای کانتینر پویا --- 
             dynamicReadGameContainer: document.getElementById('dynamic-read-game-container')
         };
+
         // --- Images/Icons Data ---
         const exerciseImages = {
             "آب": `<img src="water.png" class="w-28 h-28 object-contain" alt="آب">`,
@@ -840,6 +1009,7 @@
             "حدس تصویر": `<img src="guess_image.png" class="w-10 h-10" alt="حدس تصویر">`,
             "کلمه گمشده": `<img src="missing_word.png" class="w-10 h-10" alt="کلمه گمشده">`
         };
+
         // --- Navigation & Render ---
         function showPage(pageName) {
             Object.values(pages).forEach(page => page.classList.remove('active'));
@@ -853,8 +1023,71 @@
         }
         function showMainMenu() {
             renderMainMenu();
+            updateStarsDisplay();
             showPage('mainMenu');
         }
+
+        // --- توابع جدید برای Gamification ---
+        function awardStars(stars = 1) {
+            playerState.stars += stars;
+            playerState.totalExercises++;
+            updateStarsDisplay();
+            savePlayerState();
+        }
+
+        function updateStarsDisplay() {
+            elements.starCount.textContent = playerState.stars;
+            // بروزرسانی تابلو امتیازات
+            if (elements.lbTotalStars) elements.lbTotalStars.textContent = playerState.stars;
+            if (elements.lbCompletedLessons) elements.lbCompletedLessons.textContent = `${playerState.completedLessons}/19`;
+            if (elements.lbTotalExercises) elements.lbTotalExercises.textContent = playerState.totalExercises;
+            if (elements.lbWordsBuilt) elements.lbWordsBuilt.textContent = playerState.wordsBuilt;
+            if (elements.lbWordsRead) elements.lbWordsRead.textContent = playerState.wordsRead;
+        }
+
+        function checkAchievements() {
+            let newAchievementUnlocked = false;
+            achievementsList.forEach(achievement => {
+                if (!playerState.unlockedAchievements.includes(achievement.id) && achievement.condition(playerState)) {
+                    playerState.unlockedAchievements.push(achievement.id);
+                    newAchievementUnlocked = true;
+                    console.log(`دستاورد جدید: ${achievement.name}`);
+                }
+            });
+            if (newAchievementUnlocked) {
+                savePlayerState();
+                renderAchievements();
+            }
+        }
+
+        function renderAchievements() {
+            elements.achievementsList.innerHTML = '';
+            achievementsList.forEach(achievement => {
+                const isUnlocked = playerState.unlockedAchievements.includes(achievement.id);
+                const card = document.createElement('div');
+                card.className = `achievement-card ${isUnlocked ? 'unlocked' : 'locked'}`;
+                card.innerHTML = `
+                    <img src="${achievement.icon}" class="trophy-icon" alt="${achievement.name}">
+                    <div class="flex-1 text-right">
+                        <h3 class="font-bold text-lg">${achievement.name}</h3>
+                        <p class="text-sm text-gray-600">${achievement.description}</p>
+                    </div>
+                    <div class="text-2xl">${isUnlocked ? '✅' : '🔒'}</div>
+                `;
+                elements.achievementsList.appendChild(card);
+            });
+        }
+
+        function showLeaderboard() {
+            updateStarsDisplay(); // مطمئن شویم داده‌ها به‌روز هستند
+            showPage('leaderboard');
+        }
+
+        function showAchievements() {
+            renderAchievements();
+            showPage('achievements');
+        }
+
         function renderMainMenu() {
             elements.lessonsGrid.innerHTML = '';
             lessons.forEach(lesson => {
@@ -1046,7 +1279,9 @@
             if (readingDoneBtn) {
                 readingDoneBtn.onclick = () => {
                     playRandomSuccessSound();
-                    setTimeout(() => showSuccessModal(sectionIndex), 1000);
+                    playerState.wordsRead++; // آمار خواندن کلمه
+                    checkAchievements();
+                    setTimeout(() => showSuccessModal(sectionIndex, 1), 1000); // اعطای 1 ستاره
                 };
             }
         }
@@ -1056,7 +1291,7 @@
             if (selectedOption === correctOption) {
                 button.classList.add('correct', 'bg-green-500');
                 playRandomSuccessSound();
-                setTimeout(showSuccessModal, 1000);
+                setTimeout(() => showSuccessModal(undefined, 1), 1000); // اعطای 1 ستاره
             } else {
                 button.classList.add('incorrect', 'bg-red-500');
                 elements.choiceOptionsContainer.querySelectorAll('button').forEach(btn => {
@@ -1071,7 +1306,7 @@
             if (selectedOption === correctOption) {
                 button.classList.add('correct', 'bg-green-500');
                 playRandomSuccessSound();
-                setTimeout(showSuccessModal, 1000);
+                setTimeout(() => showSuccessModal(undefined, 1), 1000); // اعطای 1 ستاره
             } else {
                 button.classList.add('incorrect', 'bg-red-500');
                 elements.pictureGuessOptionsContainer.querySelectorAll('button').forEach(btn => {
@@ -1086,7 +1321,7 @@
             if (selectedOption === correctOption) {
                 button.classList.add('correct', 'bg-green-500');
                 playRandomSuccessSound();
-                setTimeout(showSuccessModal, 1000);
+                setTimeout(() => showSuccessModal(undefined, 1), 1000); // اعطای 1 ستاره
             } else {
                 button.classList.add('incorrect', 'bg-red-500');
                 elements.fillBlankOptionsContainer.querySelectorAll('button').forEach(btn => {
@@ -1257,17 +1492,27 @@
             const isComplete = Array.from(elements.dropZonesContainer.children).every(z => z.classList.contains('filled'));
             if (isComplete) {
                 playRandomSuccessSound();
-                setTimeout(showSuccessModal, 1000);
+                playerState.wordsBuilt++; // آمار ساخت کلمه
+                checkAchievements();
+                setTimeout(() => showSuccessModal(undefined, 2), 1000); // اعطای 2 ستاره برای ساخت کلمه
             }
         }
-        function showSuccessModal(sectionIndex) {
+        function showSuccessModal(sectionIndex, starsEarned = 1) {
+            awardStars(starsEarned); // اعطای ستاره
             const exercise = currentExercises[currentExerciseIndex];
             const word = exercise.word || exercise.correct;
             elements.modalWordEl.textContent = `«${word}» عالی بود!`;
+            elements.modalStarsEarned.textContent = `+${starsEarned} ⭐`; // نمایش ستاره کسب شده
             if (currentExerciseIndex >= currentExercises.length - 1) {
                 if (sectionIndex !== undefined) {
                     currentLesson.sections[sectionIndex].completed = true;
                     saveProgress();
+                    // بررسی اینکه آیا کل درس کامل شده است
+                    const allSectionsCompleted = currentLesson.sections.every(s => s.completed);
+                    if (allSectionsCompleted) {
+                        playerState.completedLessons++;
+                        checkAchievements();
+                    }
                 }
                 setTimeout(() => {
                     hideModal('success');
@@ -1342,6 +1587,13 @@
             hideModal('success');
             loadExercise(currentExerciseIndex);
         });
+
+        // --- Event Listeners جدید برای دکمه‌های Gamification ---
+        elements.showLeaderboardBtn.addEventListener('click', showLeaderboard);
+        elements.showAchievementsBtn.addEventListener('click', showAchievements);
+        elements.backToMainFromLeaderboard.addEventListener('click', () => showPage('mainMenu'));
+        elements.backToMainFromAchievements.addEventListener('click', () => showPage('mainMenu'));
+
         // Activation
         elements.activateBtn.addEventListener('click', () => {
             const code = elements.activationCodeInput.value.trim();
@@ -1376,6 +1628,7 @@
         });
         // --- Initialization ---
         document.addEventListener('DOMContentLoaded', () => {
+            loadPlayerState(); // بارگذاری پیشرفت بازیکن
             checkActivationStatus();
         });
         // Simple progress saving
@@ -1398,12 +1651,46 @@
                             }
                         }
                     }
+                    // محاسبه مجدد تعداد دروس کامل شده
+                    playerState.completedLessons = lessons.filter(lesson => 
+                        lesson.sections.every(section => section.completed)
+                    ).length;
+                    updateStarsDisplay();
+                    checkAchievements();
                 }
             } catch (e) {
                 console.log('Error loading progress:', e);
             }
         }
         loadProgress();
+
+        // --- توابع جدید برای ذخیره و بارگذاری وضعیت بازیکن ---
+        function savePlayerState() {
+            try {
+                localStorage.setItem('alphabetApp_playerState', JSON.stringify(playerState));
+            } catch (e) {
+                console.log('Error saving player state:', e);
+            }
+        }
+        function loadPlayerState() {
+            try {
+                const savedState = localStorage.getItem('alphabetApp_playerState');
+                if (savedState) {
+                    playerState = JSON.parse(savedState);
+                    // مطمئن شویم که تمام فیلدها وجود دارند
+                    playerState.stars = playerState.stars || 0;
+                    playerState.completedLessons = playerState.completedLessons || 0;
+                    playerState.totalExercises = playerState.totalExercises || 0;
+                    playerState.wordsBuilt = playerState.wordsBuilt || 0;
+                    playerState.wordsRead = playerState.wordsRead || 0;
+                    playerState.unlockedAchievements = playerState.unlockedAchievements || [];
+                    updateStarsDisplay();
+                    renderAchievements();
+                }
+            } catch (e) {
+                console.log('Error loading player state:', e);
+            }
+        }
     </script>
 </body>
 </html>
