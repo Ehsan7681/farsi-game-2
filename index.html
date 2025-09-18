@@ -124,7 +124,7 @@
             width: 36px;
             height: 36px;
         }
-        #build-word-game, #choice-game, #picture-guess-game, #fill-blank-game {
+        #build-word-game, #choice-game, #picture-guess-game, #fill-blank-game, #dictation-game {
             max-width: 100%;
             overflow-x: hidden;
         }
@@ -242,7 +242,6 @@
             margin-top: 0.5rem;
             font-weight: 300;
         }
-
         /* --- استایل های جدید برای Gamification --- */
         .stars-display {
             display: flex;
@@ -301,6 +300,52 @@
             font-size: 0.75rem;
             font-weight: bold;
         }
+        /* --- استایل برای صفحه املا --- */
+        #dictation-game {
+            text-align: center;
+            width: 100%;
+        }
+        #dictation-text {
+            font-size: 1.75rem; /* text-2xl */
+            font-weight: bold;
+            margin: 2rem 0;
+            min-height: 3rem;
+            padding: 1rem;
+            background-color: #f1f5f9;
+            border-radius: 1rem;
+            border: 2px dashed #94a3b8;
+            line-height: 1.8;
+        }
+        #dictation-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            margin-top: 1rem;
+            direction: ltr; /* ✅ جابه‌جایی دکمه‌ها */
+        }
+        .dictation-nav-btn {
+            background-color: #6366f1;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .dictation-nav-btn:hover {
+            background-color: #4f46e5;
+        }
+        .dictation-nav-btn:disabled {
+            background-color: #cbd5e1;
+            cursor: not-allowed;
+        }
+        #dictation-counter {
+            font-size: 1.125rem; /* text-lg */
+            font-weight: bold;
+            color: #475569;
+        }
     </style>
 </head>
 <body class="text-gray-800">
@@ -341,7 +386,6 @@
                 </div>
             </div>
         </div>
-
         <!-- --- صفحه تابلو امتیازات --- -->
         <div id="leaderboard-screen" class="page">
             <div class="bg-white rounded-2xl shadow-lg p-6 w-full max-w-md">
@@ -377,7 +421,6 @@
             </div>
             <div class="creator-info">ایده و تولید: احسان شمسی</div>
         </div>
-
         <!-- --- صفحه دستاوردها --- -->
         <div id="achievements-screen" class="page">
             <div class="bg-white rounded-2xl shadow-lg p-6 w-full max-w-md">
@@ -394,7 +437,6 @@
             </div>
             <div class="creator-info">ایده و تولید: احسان شمسی</div>
         </div>
-
         <!-- --- صفحه منوی اصلی --- (بقیه صفحات بدون تغییر) -->
         <!-- --- صفحه بخش‌های درس --- -->
         <div id="lesson-sections-screen" class="page">
@@ -441,6 +483,19 @@
                     <p class="text-2xl font-bold text-gray-800 mb-6" id="sentence-blank"></p>
                     <div id="fill-blank-options" class="grid grid-cols-1 gap-4"></div>
                 </div>
+                <!-- --- صفحه املا --- -->
+                <div id="dictation-game" class="hidden">
+                    <div id="dictation-text">متن املا اینجا نمایش داده می‌شود.</div>
+                    <div id="dictation-controls">
+                        <!-- ✅ دکمه‌ها جابه‌جا شده‌اند -->
+                        <button id="prev-dictation-btn" class="dictation-nav-btn">◀ قبلی</button>
+                        <span id="dictation-counter">املا 1 از 1</span>
+                        <button id="next-dictation-btn" class="dictation-nav-btn">بعدی ▶</button>
+                    </div>
+                    <button id="finish-dictation-btn" class="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-6 rounded-full mt-6">
+                        پایان املا
+                    </button>
+                </div>
                 <!-- --- محل جدید برای درج #read-game به صورت پویا --- -->
                 <div id="dynamic-read-game-container"></div>
             </div>
@@ -448,7 +503,8 @@
         </div>
         <!-- --- مودال موفقیت --- -->
         <div id="success-modal" class="modal">
-            <div class="bg-white rounded-2xl shadow-2xl p-8 text-center transform scale-95 transition-transform duration-300">
+            <!-- ✅ transform scale-95 حذف شد -->
+            <div class="bg-white rounded-2xl shadow-2xl p-8 text-center scale-95 transition-transform duration-300">
                 <div class="text-7xl mb-4"><img src="star.png" class="w-16 h-16 mx-auto" alt="ستاره"></div>
                 <h3 class="text-4xl font-bold text-green-500 mb-2">آفرین!</h3>
                 <!-- نمایش ستاره کسب شده -->
@@ -530,6 +586,10 @@
                         { type: 'fillBlank', sentence: "__ مرا دوست دارد", correct: "بابا", options: ["بابا", "درخت", "خانه"] },
                         { type: 'fillBlank', sentence: "در فنجان ___ ریخته بودم.", correct: "آب", options: ["آب", "سرکه", "خاک"] },
                         { type: 'fillBlank', sentence: "با ___ بازی کردم.", correct: "بابا", options: ["بابا", "دوست", "ماشین"] }
+                    ] },
+                    { title: "املا", exercises: [
+                        { type: 'dictation', text: "آ - آب - با - بابا " },
+                        { type: 'dictation', text: "آب - بابا _ با _ ب - آ - بابا آب " }
                     ] }
                 ]
             },
@@ -545,6 +605,10 @@
                         { type: 'fillBlank', sentence: "___ زدم چون سر و صدا زیاد بود.", correct: "داد", options: ["داد", "گفت", "آمد"] },
                         { type: 'fillBlank', sentence: "در جمع مهمانان، باید ___ را رعایت کنیم.", correct: "ادب", options: ["ادب", "آب", "باد"] },
                         { type: 'fillBlank', sentence: "شهر ___ زیبا است.", correct: "آباد", options: ["آباد", "باد", "داد"] }
+                    ] },
+                    { title: "املا", exercises: [
+                        { type: 'dictation', text: "بابا - آب - اَ - آ - بـ - بَ - بـَ " },
+                        { type: 'dictation', text: " اَدَب - آ - آداب - آب - با - بابا - داد" }
                     ] }
                 ]
             },
@@ -560,6 +624,12 @@
                         { type: 'fillBlank', sentence: "میوه‌ها را داخل ___ گذاشتم تا به خانه ببرم.", correct: "سبد", options: ["سبد", "کیف", "دست"] },
                         { type: 'fillBlank', sentence: "امروز بابا از کار زود ____.", correct: "آمد", options: ["آمد", "رفت", "خوابید"] },
                         { type: 'fillBlank', sentence: "از درخت ____ چیدم.", correct: "بادام", options: ["بادام", "سنگ", "باد"] }
+                    ] },
+                    { title: "املا", exercises: [
+                        { type: 'dictation', text: "داد - دام - م - مـ - ما - مَ - ماد - " },
+                        { type: 'dictation', text: "ما - بام - بَم - بادام - دام - باد - آمَد " },
+                        { type: 'dictation', text: "باد - آمَد - بام - بادام - آدَم - بابا - سام - اَسب - داماد با اَسب آمَد." },
+                        { type: 'dictation', text: "بادام - آمَد - بَد - دَم - دام - باد آمَد - بابا بادام داد - داماد آمَد." }
                     ] }
                 ]
             },
@@ -575,6 +645,12 @@
                         { type: 'fillBlank', sentence: "____ خوبم همیشه کمکم می کند.", correct: "دوست", options: ["دوست", "سیب", "خانه"] },
                         { type: 'fillBlank', sentence: "با ___ به مادرم سلام کردم.", correct: "دست", options: ["دست", "پا", "چشم"] },
                         { type: 'fillBlank', sentence: "در فضای باز ___ کشیدم.", correct: "سوت", options: ["سوت", "تاب", "بود"] }
+                    ] },
+                    { title: "املا", exercises: [
+                        { type: 'dictation', text: "تا - توت - اَسب - داماد - بادام - دام - امَد - سَبَد - داد" },
+                        { type: 'dictation', text: "بابا - بادام - آب - سوت - سام - بابا آمَد - " },
+                        { type: 'dictation', text: "سوت - سام - تام - بام - بابا بادام داد - داماد با سَبَد توت آمَد." },
+                        { type: 'dictation', text: "دَست - سوت - سام - بو - سود - بود - مو  - دود -  او با اَسب آمد. تاب - دوست" }
                     ] }
                 ] 
             },
@@ -590,6 +666,12 @@
                         { type: 'fillBlank', sentence: "وقتی ___ آمد، همه زیر چتر رفته بودند.", correct: "باران", options: ["باران", "باد", "آفتاب"] },
                         { type: 'fillBlank', sentence: "___ مرا به مدرسه برد.", correct: "مادر", options: ["مادر", "پدر", "برادر"] },
                         { type: 'fillBlank', sentence: "در خانه با ___ بازی کردم.", correct: "برادر", options: ["برادر", "خواهر", "پدر"] }
+                    ] },
+                    { title: "املا", exercises: [
+                        { type: 'dictation', text: "نـ - ن - نان - نا - نش - ما - مامان - بابا - تاب " },
+                        { type: 'dictation', text: "مادَر - سارا - دار - داد - اَبرو - دَرس - سَرد - آرام " },
+                        { type: 'dictation', text: "مادَر آمَد - مادَر با سَبَد  آمَد - مَرد - دَر - دار - دَست - دَما " },
+                        { type: 'dictation', text: "بَرادَر با آَسب آمَد. - مادَر آرام آمَد. - سارا بَرادَر دارَد. - اَبر آمَد - باران- آسمان - نَم نَم - اَنار- دندان " }
                     ] }
                 ] 
             },
@@ -605,6 +687,12 @@
                         { type: 'fillBlank', sentence: "روی ____ لیوان آب را گذاشتم.", correct: "میز", options: ["میز", "صندلی", "تشک"] },
                         { type: 'fillBlank', sentence: "پارک بسیار ___ بود.", correct: "زیبا", options: ["زیبا", "سنگ", "کثیف"] },
                         { type: 'fillBlank', sentence: "در ___ شرکت کردم.", correct: "بازی", options: ["بازی", "سیب", "چای"] }
+                    ] },
+                    { title: "املا", exercises: [
+                        { type: 'dictation', text: "انار - اسب - دندان - آبان - من - ما " },
+                        { type: 'dictation', text: "زَن - مَرد - باران - آسمان - نان - دَرس - دارَد - ای - ایـ - ی - یـ - سیب - بیدار" },
+                        { type: 'dictation', text: "بیدار - سیب - ایستاد - ایران - ایرانی - اَمیر - برمی دارَد - سَرد - - سرباز - سرما - آزاد - زمین  - زیبا " },
+                        { type: 'dictation', text: "سرباز - سرد - زیبا - ایران - ایرانی - ایرانی آزاد - ایران سرسبز است . - ایران ازاد است. - ما ایران را دوست داریم." }
                     ] }
                 ]
             },
@@ -620,11 +708,17 @@
                         { type: 'fillBlank', sentence: "در آسمان ___ دیدم.", correct: "ستاره", options: ["ستاره", "زمین", "سنگ"] },
                         { type: 'fillBlank', sentence: "مدادم را با ___ تراشیدم.", correct: "تراش", options: ["تراش", "قیچی", "دستمال"] },
                         { type: 'fillBlank', sentence: "___ گرم بود.", correct: "آش", options: ["آش", "سیب", "شکر"] }
+                    ] },
+                    { title: "املا", exercises: [
+                        { type: 'dictation', text: "اِمام - ساده - دانه - مِداد - اِنسان - تازه - دبِستان - مدرِسه " },
+                        { type: 'dictation', text: "شب - شیر- اش - تراش - شانه - نامه ای - شانه ای - دانه ای - ستاره ای " },
+                        { type: 'dictation', text: "او سیتاره را به مادرش نیشان داد. - شب بود. اَمین ستاره را در آسمان دید. - اَمین مِداد دارد. - مِداد من زیبا است." },
+                        { type: 'dictation', text: "آش سرد بود. - با تراش مِداد را تراشیدم. - مادرم زیبا است. - بابا را دوست دارم. " }
                     ] }
                 ]
             },
             {
-                id: 8, title: "درس هشتم: یُ ، اُ ـُ", unlocked: true,
+                id: 8, title: "درس هشتم : یـ ی ، اُ ـُ", unlocked: true,
                 sections: [
                      { title: "ترکیب صداها", exercises: [ { type: 'build', word: "امید" }, { type: 'build', word: "بُرد" }, { type: 'build', word: "سُرمه" }, { type: 'build', word: "کُشت" }, { type: 'build', word: "مُژه" } ] },
                      { title: "کلمه‌یابی", exercises: [ { type: 'choice', correct: "امید", options: ["امید", "عمید", "امیت"] }, { type: 'choice', correct: "سُرمه", options: ["سُرمه", "سورمه", "صُرمه"] } ] },
@@ -635,176 +729,307 @@
                         { type: 'fillBlank', sentence: "چشم ___ کشیدم تا زیبا شود.", correct: "سُرمه", options: ["سُرمه", "سرکه", "دور"] },
                         { type: 'fillBlank', sentence: "او مسابقه را ____.", correct: "بُرد", options: ["بُرد", "آورد", "فرستاد"] },
                         { type: 'fillBlank', sentence: "___ کنار چشم است .", correct: "مُژه", options: ["مُژه", "ماهی", "قایق"] }
+                    ] },
+                    { title: "املا", exercises: [
+                        { type: 'dictation', text: "بویِ یاس – مویِ مَن – مِیمون – مِیدان – مَریَم" },
+                        { type: 'dictation', text: "اُردو – بُرد – بُز - مَردُم – مُراد – دُرُست – اُستان – اُتو – سُرسُره" },
+                        { type: 'dictation', text: "دایی یاسر از یزد می آید. - میمون در سایه نشسته است . - از بیرون بوی یاس می آیَد. - یاسین رویَش را می شویَد." },
+                        { type: 'dictation', text: "مُدیرِ دبستان ، دانشِ آموزان را به اُردو بُرد. - مَردُم ایران در مبارزه با دشمنان می میرند. - شیر برای رُشد بدن مناسب است. - اُمید دانش آموزِ ممتاز دبستان شُد." }
                     ] }
                 ]
             },
             {
-                id: 9, title: "درس نهم: کـ ک، گـ گ", unlocked: true,
+                id: 9, title: "درس نهم: کـ ک ، و ", unlocked: true,
                 sections: [
-                    { title: "ترکیب صداها", exercises: [ { type: 'build', word: "کتاب" }, { type: 'build', word: "کفش" }, { type: 'build', word: "کمر" }, { type: 'build', word: "گل" }, { type: 'build', word: "گربه" }, { type: 'build', word: "گاو" } ] },
-                    { title: "کلمه‌یابی", exercises: [ { type: 'choice', correct: "کتاب", options: ["کتاب", "کتَب", "کتپ"] }, { type: 'choice', correct: "گل", options: ["گل", "غل", "خب"] } ] },
-                    { title: "روان‌خوانی", exercises: [ { type: 'read', word: "کتاب" }, { type: 'read', word: "کفش" }, { type: 'read', word: "گل" }, { type: 'read', word: "گربه" } ] },
-                    { title: "حدس تصویر", exercises: [ { type: 'pictureGuess', image: "کتاب", correct: "کتاب", options: ["کتاب", "دفتر", "ماشین"] }, { type: 'pictureGuess', image: "گل", correct: "گل", options: ["گل", "درخت", "ماه"] }, { type: 'pictureGuess', image: "کفش", correct: "کفش", options: ["کفش", "پا", "جوراب"] } ] },
+                    { title: "ترکیب صداها", exercises: [ { type: 'build', word: "کتاب" }, { type: 'build', word: "کمر" }, { type: 'build', word: "وزنه بردار" }, { type: 'build', word: "داور" }, { type: 'build', word: "میوه" } ] },
+                    { title: "کلمه‌یابی", exercises: [ { type: 'choice', correct: "کتاب", options: ["کتاب", "کتَب", "کتپ"] }, { type: 'choice', correct: "داور", options: ["داور", "دارر", "ساور"] } ] },
+                    { title: "روان‌خوانی", exercises: [ { type: 'read', word: "کتاب" }, { type: 'read', word: "وزن" }, { type: 'read', word: "داور" }, { type: 'read', word: "وزنه بردار" }, { type: 'read', word: "میوه" } ] },
+                    { title: "حدس تصویر", exercises: [ { type: 'pictureGuess', image: "کتاب", correct: "کتاب", options: ["کتاب", "دفتر", "ماشین"] }, { type: 'pictureGuess', image: "وزنه بردار", correct: "وزنه بردار", options: ["وزنه بردار", "درخت", "داور"] }, { type: 'pictureGuess', image: "داور", correct: "داور", options: ["داور", "وزنه بردار", "میوه"] } ] },
                     { title: "کلمه گمشده", exercises: [ 
                         { type: 'fillBlank', sentence: "___ خواندم تا دانش بیشتری کسب کنم.", correct: "کتاب", options: ["کتاب", "کفش", "ماشین"] }, 
-                        { type: 'fillBlank', sentence: "در باغ ___ دیدم.", correct: "گل", options: ["گل", "شیر", "ماه"] },
+                        { type: 'fillBlank', sentence: "___ سوت شروع بازی را زد .", correct: "داور", options: ["داور", "وزنه بردار", "ماه"] },
                         { type: 'fillBlank', sentence: "___ پوشیدم و به مدرسه رفتم.", correct: "کفش", options: ["کفش", "پا", "نمک"] },
-                        { type: 'fillBlank', sentence: "در حیاط ___ دیدم.", correct: "گربه", options: ["گربه", "اسب", "ماهی"] }
+                        { type: 'fillBlank', sentence: "___ وزنه را بالای سر برد.", correct: "وزنه بردار", options: ["وزنه بردار", "اسب", "داور"] }
+                    ] },
+                    { title: "املا", exercises: [
+                        { type: 'dictation', text: "کَبوتر – کودک – کاسه – کباب – کتاب - کُرسی – مِشکی – سِرکه – بِرکه – شَک – شِکَر – شُکر – شِکایَت - نَمَک – کَدو – تاریک – نمکدان" },
+                        { type: 'dictation', text: "مِسواک – وَرزِش – سَواد – وَرزش کار- می شَوَد – مَشوِرَت" },
+                        { type: 'dictation', text: "داور به سمت دروازه می رَوَد. - ورزش کار ورزش می کند. - آن وانِت میوِه می آوَرَد. - کودک واکسن می زند." },
+                        { type: 'dictation', text: "ای کاش من کبوتر بودم. - اکبر کاردستی درست می کند. - کوسه ترسناک است. - اُردک در برکه شنا می کند." }
                     ] }
                 ]
             },
             {
-                id: 10, title: "درس دهم: لـ ل، مـ م", unlocked: true,
+                id: 10, title: "درس دهم : پـ پ ، گـ گ", unlocked: true, // ✅ تغییر عنوان درس
                 sections: [
-                    { title: "ترکیب صداها", exercises: [ { type: 'build', word: "لاله" }, { type: 'build', word: "لیوان" }, { type: 'build', word: "ماه" }, { type: 'build', word: "ماشین" } ] },
-                    { title: "کلمه‌یابی", exercises: [ { type: 'choice', correct: "لاله", options: ["لاله", "لله", "خاله"] }, { type: 'choice', correct: "ماه", options: ["ماه", "مه", "مَه"] } ] },
-                    { title: "روان‌خوانی", exercises: [ { type: 'read', word: "لاله" }, { type: 'read', word: "لیوان" }, { type: 'read', word: "ماه" }, { type: 'read', word: "ماشین" } ] },
-                    { title: "حدس تصویر", exercises: [ { type: 'pictureGuess', image: "لاله", correct: "لاله", options: ["لاله", "گل", "درخت"] }, { type: 'pictureGuess', image: "ماه", correct: "ماه", options: ["ماه", "ستاره", "خورشید"] }, { type: 'pictureGuess', image: "لیوان", correct: "لیوان", options: ["لیوان", "ظرف", "کاسه"] } ] },
+                    { title: "ترکیب صداها", exercises: [ { type: 'build', word: "گاو" }, { type: 'build', word: "سگ" }, { type: 'build', word: "پدر" }, { type: 'build', word: "پا" } ] }, // ✅ تغییر تمرین‌ها
+                    { title: "کلمه‌یابی", exercises: [ { type: 'choice', correct: "سگ", options: ["سگ", "سک", "بگ"] }, { type: 'choice', correct: "پدر", options: ["پدر", "پسر", "کدر"] } ] }, // ✅ تغییر تمرین‌ها
+                    { title: "روان‌خوانی", exercises: [ { type: 'read', word: "سگ" }, { type: 'read', word: "گاو" }, { type: 'read', word: "پدر" }, { type: 'read', word: "پا" } ] }, // ✅ تغییر تمرین‌ها
+                    { title: "حدس تصویر", exercises: [ { type: 'pictureGuess', image: "گاو", correct: "گاو", options: ["نمک", "گاو", "کبوتر"] }, { type: 'pictureGuess', image: "پدر", correct: "پدر", options: ["پدر", "مادر", "برادر"] }] }, // ✅ تغییر تمرین‌ها
                     { title: "کلمه گمشده", exercises: [ 
-                        { type: 'fillBlank', sentence: "در باغ ___ دیدم.", correct: "لاله", options: ["لاله", "ماه", "الاغ"] }, 
-                        { type: 'fillBlank', sentence: "___در شب می درخشد.", correct: "ماه", options: ["ماه", "سیاره", "خورشید"] },
-                        { type: 'fillBlank', sentence: "آب را داخل ___ ریختم.", correct: "لیوان", options: ["لیوان", "ماه", "گل"] },
-                        { type: 'fillBlank', sentence: "در خیابان ___ دیدم.", correct: "ماشین", options: ["ماشین", "ماهی", "شیر"] }
+                        { type: 'fillBlank', sentence: "در باغ ___ دیدم.", correct: "سگ", options: ["لاله", "ماه", "سگ"] }, 
+                        { type: 'fillBlank', sentence: "___ مرا به مدرسه برد.", correct: "پدر", options: ["پدر", "مادر", "برادر"] }, // ✅ تغییر جمله
+                        { type: 'fillBlank', sentence: "____ به ما شیر می دهد.", correct: "گاو", options: ["گاو", "ماه", "گل"] },
+                        { type: 'fillBlank', sentence: "با ___ راه رفتم.", correct: "پا", options: ["پا", "دست", "سر"] } // ✅ تغییر جمله
+                    ] },
+                    { title: "املا", exercises: [
+                        { type: 'dictation', text: "پَر – پَرواز – پَروَرِش – پاک – پوشید – پرستو – توپ – پَروانه" }, // ✅ تغییر متن
+                        { type: 'dictation', text: "گُرگ – پدر بُزُرگ – گَرم – گاو – گاری – مادر بزرگ – بزرگ" }, // ✅ تغییر متن
+                        { type: 'dictation', text: "پدر کت پوشید. - شاپرک پر کشید. - پرنده در آسمان پرواز می کند. - پارسا توپ را پرت کرد. - پری با پنیر پیتزا می پزد." },
+                        { type: 'dictation', text: "مادر بزرگ نرگس در گرگان زندگی می کند. - انگور در تابستان می رسد. - یگانه گرسنه است و گریه می کند. - آموزگار دانش آموزان را به گردش می برد." } // ✅ تغییر متن
                     ] }
                 ]
             },
             {
-                id: 11, title: "درس یازدهم: نـ ن، و", unlocked: true,
+                id: 11, title: "درس یازدهم : فـ ف ، خـ خ", unlocked: true,
                 sections: [
-                    { title: "ترکیب صداها", exercises: [ { type: 'build', word: "نوزاد" }, { type: 'build', word: "نخل" }, { type: 'build', word: "وزن" }, { type: 'build', word: "ویلا" } ] },
-                    { title: "کلمه‌یابی", exercises: [ { type: 'choice', correct: "نوزاد", options: ["نوزاد", "نوزد", "نوزَد"] }, { type: 'choice', correct: "وزن", options: ["وزن", "وز", "وضن"] } ] },
-                    { title: "روان‌خوانی", exercises: [ { type: 'read', word: "نوزاد" }, { type: 'read', word: "نخل" }, { type: 'read', word: "وزن" }, { type: 'read', word: "ویلا" } ] },
-                    { title: "حدس تصویر", exercises: [ { type: 'pictureGuess', image: "نوزاد", correct: "نوزاد", options: ["نوزاد", "بچه", "مرد"] }, { type: 'pictureGuess', image: "وزن", correct: "وزن", options: ["وزن", "سن", "قد"] }, { type: 'pictureGuess', image: "نخل", correct: "نخل", options: ["نخل", "درخت", "ماه"] } ] },
+                    { title: "ترکیب صداها", exercises: [ { type: 'build', word: "درخت" }, { type: 'build', word: "آدم برفی" }, { type: 'build', word: "خرس" }, { type: 'build', word: "رودخانه" } ] },
+                    { title: "کلمه‌یابی", exercises: [ { type: 'choice', correct: "رودخانه", options: ["رودجانه", "رودخانه", "رودانه"] }, { type: 'choice', correct: "خرس", options: ["خرس", "جرس", "حرس"] } ] },
+                    { title: "روان‌خوانی", exercises: [ { type: 'read', word: "رودخانه" }, { type: 'read', word: "ادم برفی" }, { type: 'read', word: "خرس" }, { type: 'read', word: "درخت" } ] },
+                    { title: "حدس تصویر", exercises: [ { type: 'pictureGuess', image: "درخت", correct: "درخت", options: ["درخت", "خرس", "برف"] }, { type: 'pictureGuess', image: "ادم برفی", correct: "آدم برفی", options: ["آدم برفی", "رود", "خرس"] }, { type: 'pictureGuess', image: "برف", correct: "برف", options: ["برف", "درخت", "ماه"] } ] },
                     { title: "کلمه گمشده", exercises: [ 
-                        { type: 'fillBlank', sentence: "___ گریه کرد چون گرسنه بود . ", correct: "نوزاد", options: ["نوزاد", "بابا", "مرد"] }, 
-                        { type: 'fillBlank', sentence: "___ من کم است.", correct: "وزن", options: ["وزن", "پدر", "سگ"] },
-                        { type: 'fillBlank', sentence: "خرما را از درخت ___ چیدم.", correct: "نخل", options: ["نخل", "سیب", "ماه"] },
-                        { type: 'fillBlank', sentence: "در شمال ___ اجاره کردم.", correct: "ویلا", options: ["ویلا", "زمین", "دریا"] }
+                        { type: 'fillBlank', sentence: "من به ___ آب دادم.  ", correct: "درخت", options: ["درخت", "خرس", "هوا"] }, 
+                        { type: 'fillBlank', sentence: "___ امد.", correct: "برف", options: ["برف", "خرس", "درخت"] },
+                        { type: 'fillBlank', sentence: "___ شیرین است . ", correct: "خرما", options: ["خرما", "آب", "برف"] },
+                        { type: 'fillBlank', sentence: "در شمال ___ اجاره کردم.", correct: "خانه", options: ["خانه", "زمین", "دریا"] }
+                    ] },
+                    { title: "املا", exercises: [
+                        { type: 'dictation', text: "خَر – خِرس – خُروس – خنده – خاک – خمیده – خَراب – خانواده" },
+                        { type: 'dictation', text: "برف – کیف – آفتاب – دفتر – پفک - رفت – آفرین – فرشته – فانوس – نَفت" },
+                        { type: 'dictation', text: "فرید با برف آدم برفی درست می کند. - فرشته در کیفش دفتر و کتاب فارسی دارد. - پفک و نوشابه برای بدن مفید نیستند. - افسانه و پدرش به مسافرت رفتند. - فرزانه درباره ی آزمون فردا فکر می کرد." },
+                        { type: 'dictation', text: "استاد مراد با میخ و تخته تخت می سازد. - خانواده ی خانم مدیر به کنار رودخانه رفتند. - خانه ی خرگوش زیر درخت است. - شاخ گوزن شکسته است. - خدا بخشنده است." }
                     ] }
                 ]
             },
             {
-                id: 12, title: "درس دوازدهم: هـ ه، یـ ی", unlocked: true,
+                id: 12, title: "درس دوازدهم : قـ ق ، لـ ل", unlocked: true,
                 sections: [
-                    { title: "ترکیب صداها", exercises: [ { type: 'build', word: "هوا" }, { type: 'build', word: "هیچ" }, { type: 'build', word: "یخ" }, { type: 'build', word: "یار" } ] },
-                    { title: "کلمه‌یابی", exercises: [ { type: 'choice', correct: "هوا", options: ["هوا", "حوای", "هلو"] }, { type: 'choice', correct: "یخ", options: ["یخ", "پخ", "تخ"] } ] },
-                    { title: "روان‌خوانی", exercises: [ { type: 'read', word: "هوا" }, { type: 'read', word: "هیچ" }, { type: 'read', word: "یخ" }, { type: 'read', word: "یار" } ] },
-                    { title: "حدس تصویر", exercises: [ { type: 'pictureGuess', image: "هوا", correct: "هوا", options: ["هوا", "آب", "ماه"] }, { type: 'pictureGuess', image: "یخ", correct: "یخ", options: ["یخ", "آب", "برف"] }, { type: 'pictureGuess', image: "هیچ", correct: "هیچ", options: ["هیچ", "چیز", "کتاب"] } ] },
+                    { title: "ترکیب صداها", exercises: [ { type: 'build', word: "لاله" }, { type: 'build', word: "لیوان" }, { type: 'build', word: "گل" }, { type: 'build', word: "قند" }, { type: 'build', word: "قوری" }, { type: 'build', word: "قایق" } ] },
+                    { title: "کلمه‌یابی", exercises: [ { type: 'choice', correct: "گل", options: ["گل", "حوای", "هلو"] }, { type: 'choice', correct: "لیوان", options: ["لیوان", "قند", "لاله"] } ] },
+                    { title: "روان‌خوانی", exercises: [ { type: 'read', word: "لاله" }, { type: 'read', word: "لیوان" }, { type: 'read', word: "قوری" }, { type: 'read', word: "گل" } ] },
+                    { title: "حدس تصویر", exercises: [ { type: 'pictureGuess', image: "لاله", correct: "لاله", options: ["لاله", "لیوان", "ماه"] }, { type: 'pictureGuess', image: "قند", correct: "قند", options: ["قند", "آب", "برف"] }, { type: 'pictureGuess', image: "قوری", correct: "قوری", options: ["قوری", "قند", "لیوان"] } ] },
                     { title: "کلمه گمشده", exercises: [ 
-                        { type: 'fillBlank', sentence: "___ سرد است.", correct: "هوا", options: ["هوا", "زمین", "ماه"] }, 
-                        { type: 'fillBlank', sentence: "روی دریا ___ دیدم.", correct: "یخ", options: ["یخ", "سیب", "نوزاد"] },
-                        { type: 'fillBlank', sentence: "در جعبه ___ نبود.", correct: "هیچ", options: ["هیچ", "چیز", "زمین"] },
-                        { type: 'fillBlank', sentence: "در بازی __- خوبی بود .", correct: "یار", options: ["یار", "قایق", "درخت"] }
+                        { type: 'fillBlank', sentence: "___ خیلی زیبا است.", correct: "لاله", options: ["لاله", "زمین", "لیوان"] }, 
+                        { type: 'fillBlank', sentence: "روی دریا ___ دیدم.", correct: "قایق", options: ["قایق", "قند", "گل"] },
+                        { type: 'fillBlank', sentence: "در قندان ___ نبود.", correct: "قند", options: ["قند", "گل", "قوری"] },
+                        { type: 'fillBlank', sentence: "او به من ___ زیبایی داد .", correct: "گل", options: ["گل", "قایق", "درخت"] }
+                    ] },
+                    { title: "املا", exercises: [
+                        { type: 'dictation', text: "قوری – قاشُق – قند – قدَم – قُرآن – قو – بشُقاب – اُتاق - قَشنگ – بَرق – آقا – قاب – قادر – قُدرت – قَوی – وَقتی" },
+                        { type: 'dictation', text: "وقتی به رودخانه رسیدم قوی قشنگی را دیدم. - پدر وقت نماز قرآن را برداشت . - قاشق روی بشقاب است. - قوری روی سماور است. - اگر قوی باشم در مسابقه برنده می شوم. - قرآن کتاب خدا است." },
+                        { type: 'dictation', text: "گل – فیل – بال – لاله – لباس – لب – لازم – لبخند - لانه - ناله - پرتقال – زلال – بلال – میلاد - شالیزار - الفبا" },
+                        { type: 'dictation', text: "بلبل کنار گل است. - گل لبخند روی لب دارد. - رودخانه آب زلال و سالمی دارد. - خاله لیلا در کتلت فلفل می ریزد. - لانه ی لک لک روی درخت است. - میلاد وقتی به کلاس آمد سلام کرد. - فیل خیلی بزرگ است." }
                     ] }
                 ]
             },
             {
-                id: 13, title: "درس سیزدهم: چـ چ، حـ ح", unlocked: true,
+                id: 13, title: "درس سیزدهم: جـ ج  ، و استثنا", unlocked: true,
                 sections: [
-                    { title: "ترکیب صداها", exercises: [ { type: 'build', word: "چشم" }, { type: 'build', word: "چرخ" }, { type: 'build', word: "حیاط" }, { type: 'build', word: "حل" } ] },
-                    { title: "کلمه‌یابی", exercises: [ { type: 'choice', correct: "چشم", options: ["چشم", "چسم", "جشم"] }, { type: 'choice', correct: "حیاط", options: ["حیاط", "جیات", "خیاط"] } ] },
-                    { title: "روان‌خوانی", exercises: [ { type: 'read', word: "چشم" }, { type: 'read', word: "چرخ" }, { type: 'read', word: "حیاط" }, { type: 'read', word: "حل" } ] },
-                    { title: "حدس تصویر", exercises: [ { type: 'pictureGuess', image: "چشم", correct: "چشم", options: ["چشم", "دوربین", "تلسکوپ"] }, { type: 'pictureGuess', image: "حیاط", correct: "حیاط", options: ["حیاط", "اتاق", "کلاس"] }, { type: 'pictureGuess', image: "چرخ", correct: "چرخ", options: ["چرخ", "موتور", "فرمان"] } ] },
+                    { title: "ترکیب صداها", exercises: [ { type: 'build', word: "جوجه" }, { type: 'build', word: "جارو" }, { type: 'build', word: "خورشید" }, { type: 'build', word: "نوک" } ] },
+                    { title: "کلمه‌یابی", exercises: [ { type: 'choice', correct: "جوجه", options: ["جوجه", "چوجه", "خوجه"] }, { type: 'choice', correct: "خورشید", options: ["خرشید", "خورسید", "خورشید"] } ] },
+                    { title: "روان‌خوانی", exercises: [ { type: 'read', word: "جوجه" }, { type: 'read', word: "جارو" }, { type: 'read', word: "خورشید" }, { type: 'read', word: "نوک" } ] },
+                    { title: "حدس تصویر", exercises: [ { type: 'pictureGuess', image: "جارو", correct: "جارو", options: ["جارو", "دو", "خورشید"] }, { type: 'pictureGuess', image: "خورشید", correct: "خورشید", options: ["خورشید", "اتاق", "کلاس"] }, { type: 'pictureGuess', image: "نوک", correct: "نوک", options: ["نوک", "موتور", "خوش"] } ] },
                     { title: "کلمه گمشده", exercises: [ 
-                        { type: 'fillBlank', sentence: "با ___ دیدم.", correct: "چشم", options: ["چشم", "خانه", "بازی"] }, 
-                        { type: 'fillBlank', sentence: "در ___ بازی کردم.", correct: "حیاط", options: ["حیاط", "دریا", "سقف"] },
-                        { type: 'fillBlank', sentence: "ماشین ___ داشت.", correct: "چرخ", options: ["چرخ", "تند", "کمر"] },
-                        { type: 'fillBlank', sentence: "مساله را ___ کردم.", correct: "حل", options: ["حل", "فهمیدم", "گفتم"] }
+                        { type: 'fillBlank', sentence: "___ من بزرگ شد . ", correct: "جوجه", options: ["جوجه", "خورشید", "خوش"] }, 
+                        { type: 'fillBlank', sentence: "____ بسیار میدرخشد.", correct: "خورشید", options: ["خورشید", "دریا", "سقف"] },
+                        { type: 'fillBlank', sentence: "با ____ از زمین دانه برمی دارد. ", correct: "نوک", options: ["نوک", "تند", "کمر"] },
+                        { type: 'fillBlank', sentence: "من ___ را خوردم . ", correct: "خوراک", options: ["خوراک", "خورشید", "جارو"] }
+                    ] },
+                    { title: "املا", exercises: [
+                        { type: 'dictation', text: "جوجه – گنج – جارو – جواب – سجده – مجید – برج – جوراب - برنج – خجالت – خنجر – نارنجی – مسجد – گنجشک – تجربه - رجب – جاری – مجلس – جلسه – نجات – جنگ – جام – جان" },
+                        { type: 'dictation', text: "خوش – خورشید – خوراک - دو – تو – مو تور – خوردن – نوک – کادو – مانتو- پالتو – نو – نوروز – پیانو – تکواندو – خوردنی – برخورد" },
+                        { type: 'dictation', text: "جوجه کنار درخت برنج را برمی دارد. - گنج آن جا زیر پل مخفی شده است. - جشن الفبا جالب و سرگرم کننده بود. - جناب آقای مجاور - آموزگار باتجربه ای است. - جنگل پر از جانوران بزرگ است. - من با مداد رنگی نارنجی پرتقال کشیدم." },
+                        { type: 'dictation', text: "ابتدای سال نو را نوروز می گوییم. خورشید در اسمان می درخشد. - موتور به جدول کنار خیابان برخورد کرد. - مونا در پلو نمک ریخت. - من خوراک لوبیا را برای شام می خورم. - امین کادوی خود را باز کرد." }
                     ] }
                 ]
             },
             {
-                id: 14, title: "درس چهاردهم: خـ خ، جـ ج", unlocked: true,
+                id: 14, title: "درس چهاردهم: ه‍ ‍ه‍ ‍ه ه ، چـ چ", unlocked: true,
                 sections: [
-                    { title: "ترکیب صداها", exercises: [ { type: 'build', word: "خرس" }, { type: 'build', word: "خانه" }, { type: 'build', word: "جارو" }, { type: 'build', word: "جوجه" } ] },
-                    { title: "کلمه‌یابی", exercises: [ { type: 'choice', correct: "خرس", options: ["خرس", "خارس", "چرس"] }, { type: 'choice', correct: "جارو", options: ["جارو", "چارو", "خارو"] } ] },
-                    { title: "روان‌خوانی", exercises: [ { type: 'read', word: "خرس" }, { type: 'read', word: "خانه" }, { type: 'read', word: "جارو" }, { type: 'read', word: "جوجه" } ] },
-                    { title: "حدس تصویر", exercises: [ { type: 'pictureGuess', image: "خرس", correct: "خرس", options: ["خرس", "اسب", "ماهی"] }, { type: 'pictureGuess', image: "جارو", correct: "جارو", options: ["جارو", "شست", "مرتب"] }, { type: 'pictureGuess', image: "خانه", correct: "خانه", options: ["خانه", "اتاق", "باغ"] } ] },
+                    { title: "ترکیب صداها", exercises: [ { type: 'build', word: "چشم" }, { type: 'build', word: "آهو" }, { type: 'build', word: "چوب" }, { type: 'build', word: "ماه" }, { type: 'build', word: "هلو" }] },
+                    { title: "کلمه‌یابی", exercises: [ { type: 'choice', correct: "چشم", options: ["چشم", "چسم", "پشم"] }, { type: 'choice', correct: "ماه", options: ["ماه", "ماهـ", "ماهی"] } ] },
+                    { title: "روان‌خوانی", exercises: [ { type: 'read', word: "ماه" }, { type: 'read', word: "چشم" }, { type: 'read', word: "آهو" }, { type: 'read', word: "هلو" }, { type: 'read', word: "چوب" } ] },
+                    { title: "حدس تصویر", exercises: [ { type: 'pictureGuess', image: "چشم", correct: "چشم", options: ["خرس", "چشم", "ماه"] }, { type: 'pictureGuess', image: "هلو", correct: "هلو", options: ["هلو", "چوب", "آهو"] }, { type: 'pictureGuess', image: "چوب", correct: "چوب", options: ["چوب", "اتاق", "چشم"] } ] },
                     { title: "کلمه گمشده", exercises: [ 
-                        { type: 'fillBlank', sentence: "در جنگل ___ دیدم.", correct: "خرس", options: ["خرس", "فردا", "پارو"] }, 
-                        { type: 'fillBlank', sentence: "اتاق را ___ کردم.", correct: "جارو", options: ["جارو", "شست", "مرتب"] },
-                        { type: 'fillBlank', sentence: "در حیاط ___ پرورش دادیم.", correct: "جوجه", options: ["جوجه", "خرس", "گربه"] },
-                        { type: 'fillBlank', sentence: "در ___ زندگی می‌کنم.", correct: "خانه", options: ["خانه", "دریا", "ماه"] }
+                        { type: 'fillBlank', sentence: "در جنگل ___ را دیدم .", correct: "آهو", options: ["ماه", "آهو", "پارو"] }, 
+                        { type: 'fillBlank', sentence: "میز از جنس ___ است.", correct: "چوب", options: ["چوب", "ماه", "چشم"] },
+                        { type: 'fillBlank', sentence: "در حیاط ___ پرورش دادیم.", correct: "هلو", options: ["هلو", "هدیه", "دهان"] },
+                        { type: 'fillBlank', sentence: "___ در آسمان شب بسیار زیبا است . ", correct: "ماه", options: ["ماه", "خورشید", "زمین"] }
+                    ] },
+                    { title: "املا", exercises: [
+                        { type: 'dictation', text: "آهو – ماه – نه - مهر – مهربان – هدایت – کوه - کوهستان – کلاه – مهتاب – سهراب – میهن – ماهر – هنر – فهیمه – می فهمد – می دهد – هادی – هدیه – هر – شهر – هلو – ناهار – نهنگ – مهین – ده – هفت – هشت – همیشه – هنوز – هرگز – همسایه" },
+                        { type: 'dictation', text: "در زمستان هوا همیشه سرد است. - هر شب ستاره ها را در کنار ماه می بینم. نباید هرگز همسایه را آزار دهیم. - کوه های زیادی در کوهستان است. - هنوز هم کلاسی هایم را فراموش نکرده ام. - مهر یکی از ماه های پاییز است." },
+                        { type: 'dictation', text: "چراگاه – چرا – چاه – چرخ – چون – چتر – چوب – مچ – پرچم  - چادر – چپ – چیز – چسب – چاپ – چند – چاقو – چابک – کچل - چک – چه – پارچه – پارچ – چشم – چاله – چانه – چرخید – - چرخاند – می چکد – چکمه – چرم – هیچ – چلو کباب – چهار " },
+                        { type: 'dictation', text: "چشم چپم آسیب دیده است. مادر پارچه را قیچی کرد و با آن چادر دوخت. چهار چرخ ماشین می چرخد. چوپان گوسفندان را به چراگاه می برد. باران روی چتر می چکد. ستاره در آسمان شب چشمک می زند." }
                     ] }
                 ]
             },
             {
-                id: 15, title: "درس پانزدهم: ثـ ث، صـ ص", unlocked: true,
+                id: 15, title: "درس پانزدهم: ژ ، خوا", unlocked: true,
                 sections: [
-                    { title: "ترکیب صداها", exercises: [ { type: 'build', word: "ثمر" }, { type: 'build', word: "ثابت" }, { type: 'build', word: "صندوق" }, { type: 'build', word: "صبح" } ] },
-                    { title: "کلمه‌یابی", exercises: [ { type: 'choice', correct: "ثمر", options: ["ثمر", "سمر", "صمر"] }, { type: 'choice', correct: "صندوق", options: ["صندوق", "صندوف", "سنذوق"] } ] },
-                    { title: "روان‌خوانی", exercises: [ { type: 'read', word: "ثمر" }, { type: 'read', word: "ثابت" }, { type: 'read', word: "صندوق" }, { type: 'read', word: "صبح" } ] },
-                    { title: "حدس تصویر", exercises: [ { type: 'pictureGuess', image: "ثمر", correct: "ثمر", options: ["ثمر", "برگ", "ریشه"] }, { type: 'pictureGuess', image: "صندوق", correct: "صندوق", options: ["صندوق", "کیف", "جارو"] }, { type: 'pictureGuess', image: "ثابت", correct: "ثابت", options: ["ثابت", "متغیر", "زیاد"] } ] },
+                    { title: "ترکیب صداها", exercises: [ { type: 'build', word: "ژاله" }, { type: 'build', word: "منیژه" }, { type: 'build', word: "پژمرده" }, { type: 'build', word: "خواهر" }, { type: 'build', word: "خواب" } ] },
+                    { title: "کلمه‌یابی", exercises: [ { type: 'choice', correct: "ژاله", options: ["زاله", "راله", "ژاله"] }, { type: 'choice', correct: "پژمرده", options: ["پژمرده", "بژمرده", "پسمرده"] } ] },
+                    { title: "روان‌خوانی", exercises: [ { type: 'read', word: "ژاله" }, { type: 'read', word: "منیژه" }, { type: 'read', word: "پژمرده" }, { type: 'read', word: "خواب" }, { type: 'read', word: "خواهر" } ] },
+                    { title: "حدس تصویر", exercises: [ { type: 'pictureGuess', image: "ژاله", correct: "ژاله", options: ["ژاله", "پژمرده", "خواب"] }, { type: 'pictureGuess', image: "پژمرده", correct: "پژمرده", options: ["پژمرده", "کیف", "جارو"] }, { type: 'pictureGuess', image: "خواهر", correct: "خواهر", options: ["خواهر", "خواب", "منیژه"] } ] },
                     { title: "کلمه گمشده", exercises: [ 
-                        { type: 'fillBlank', sentence: "___ درخت را خوردم.", correct: "ثمر", options: ["ثمر", "خار", "کمر"] }, 
-                        { type: 'fillBlank', sentence: "در ___ پول گذاشتم.", correct: "صندوق", options: ["صندوق", "کیف", "جارو"] },
-                        { type: 'fillBlank', sentence: "این قانون همیشه ___ است.", correct: "ثابت", options: ["ثابت", "جارو", "زیاد"] },
-                        { type: 'fillBlank', sentence: "___ زود بیدار شدم.", correct: "صبح", options: ["صبح", "ظهر", "شب"] }
+                        { type: 'fillBlank', sentence: "____ به گل ها آب داد.", correct: "ژاله", options: ["ژاله", "خار", "پژمرده"] }, 
+                        { type: 'fillBlank', sentence: "___ به ژاله کمک کرد . ", correct: "منیژه ", options: ["منیژه", "گل", "ساسان"] },
+                        { type: 'fillBlank', sentence: "این گل ___ شده است.", correct: "پژمرده", options: ["پژمرده", "ژاله", "خواب"] },
+                        { type: 'fillBlank', sentence: "شب باید زود به ___ رفت .", correct: "خواب", options: ["خواب", "پژمرده", "ژاله"] }
+                    ] },
+                    { title: "املا", exercises: [
+                        { type: 'dictation', text: "ژاله – بیژن – پژمرده – مژده – منیژه – ژاکت – ماژیک – آژیر – اژدها – نژاد – ژامبون – آژانس – اورژانس – مُژه – مژدگانی" },
+                        { type: 'dictation', text: "ژاله با ماژیک روی تخته وایت برد می نویسد. مژه ی چشم مژده سیاه است. ماشین آتش نشانی آژیر می کشد. اگر به گل ها آب ندهیم ، آنها پژمرده می شوند. پژمان موهای ژولیده ای دارد. وقتی مادر بیمار شد با اورژانس تماس گرفتم." },
+                        { type: 'dictation', text: "خواهر – خواب – می خواهد – خواهش – خواستن – خوابیدن - گیاه خوار – می خواند – خواندن – تخت خواب – خواستگار  - درخواست" },
+                        { type: 'dictation', text: "پدر هرشب برای من و خواهرم کتاب داستان می خواند. بسیاری از جانوران در جنگل گوشت خوار هستند. من از مادر خواهش کردم تا روی تخت خواب عروسک ببرم. خوابیدن روی چمن بسیار جالب بود." }
                     ] }
                 ]
             },
             {
-                id: 16, title: "درس شانزدهم: ضـ ض، طـ ط", unlocked: true,
+                id: 16, title: "درس شانزدهم: تشدید ـّ", unlocked: true,
                 sections: [
-                    { title: "ترکیب صداها", exercises: [ { type: 'build', word: "ضامن" }, { type: 'build', word: "ضبط" }, { type: 'build', word: "طلا" }, { type: 'build', word: "طلب" } ] },
-                    { title: "کلمه‌یابی", exercises: [ { type: 'choice', correct: "ضامن", options: ["ضامن", "زامن", "ظامن"] }, { type: 'choice', correct: "طلا", options: ["طلا", "تلا", "طلل"] } ] },
-                    { title: "روان‌خوانی", exercises: [ { type: 'read', word: "ضامن" }, { type: 'read', word: "ضبط" }, { type: 'read', word: "طلا" }, { type: 'read', word: "طلب" } ] },
-                    { title: "حدس تصویر", exercises: [ { type: 'pictureGuess', image: "ضامن", correct: "ضامن", options: ["ضامن", "پول", "دوست"] }, { type: 'pictureGuess', image: "طلا", correct: "طلا", options: ["طلا", "نقره", "پلاستیک"] }, { type: 'pictureGuess', image: "ضبط", correct: "ضبط", options: ["ضبط", "شکست", "فروخت"] } ] },
+                    { title: "ترکیب صداها", exercises: [ { type: 'build', word: "بنّا" }, { type: 'build', word: "کفّاش" }, { type: 'build', word: "تشکّر" }, { type: 'build', word: "نجّار" }, { type: 'build', word: "اوّل" }, { type: 'build', word: "دکّان" } ] },
+                    { title: "کلمه‌یابی", exercises: [ { type: 'choice', correct: "بنّا", options: ["بنّا", "بنا", "بانّا"] }, { type: 'choice', correct: "کفّاش", options: ["کفّاش", "کفاش", "کففاش"] } ] },
+                    { title: "روان‌خوانی", exercises: [ { type: 'read', word: "بنّا" }, { type: 'read', word: "دکّان" }, { type: 'read', word: "کفّاش" }, { type: 'read', word: "اوّل" } ] },
+                    { title: "حدس تصویر", exercises: [ { type: 'pictureGuess', image: "بنّا", correct: "بنّا", options: ["بنّا", "کفّاش", "نجّار"] }, { type: 'pictureGuess', image: "نجّار", correct: "نجّار", options: ["نجّار", "کفّاش", "اوّل"] }, { type: 'pictureGuess', image: "کفّاش", correct: "کفّاش", options: ["کفّاش", "نجّار", "بنّا"] } ] },
                     { title: "کلمه گمشده", exercises: [ 
-                        { type: 'fillBlank', sentence: "پلیس___ امنیت است.", correct: "ضامن", options: ["ضامن", "پول", "خالف"] }, 
-                        { type: 'fillBlank', sentence: "___ را روشن کردم.", correct: "ضبط", options: ["ضبط", "شکست", "فروخت"] },
-                        { type: 'fillBlank', sentence: "انگشترش از ___ ساخته شده بود.", correct: "طلا", options: ["طلا", "نقره", "پلاستیک"] },
-                        { type: 'fillBlank', sentence: "از او درخواست ____ کردم.", correct: "طلب", options: ["طلب", "خواستم", "گفتم"] }
+                        { type: 'fillBlank', sentence: "____ خانه میسازد. ", correct: "بنّا", options: ["بنّا", "کفّاش", "نجّار"] }, 
+                        { type: 'fillBlank', sentence: "___ میز و وسایل چوبی میسازد.", correct: "نجّار", options: ["نجّار", "بنّا", "کفّاش"] },
+                        { type: 'fillBlank', sentence: "____ کفش  میدوزد.", correct: "کفّاش", options: ["کفّاش", "بنّا", "نجّار"] },
+                        { type: 'fillBlank', sentence: "از او ____ کردم که کمکم کرد. ", correct: "تشکّر", options: ["تشکّر", "خواستم", "گفتم"] }
+                    ] },
+                    { title: "املا", exercises: [
+                        { type: 'dictation', text: "بنّا – نقّاش – کفّاش – اهمیّت – تشکّر –نجّار – بچّه ها" },
+                        { type: 'dictation', text: "اوّل – امّا – مکّه – سکّه – دکّان – بقّالی – شدّت – ملّت – دقّت" },
+                        { type: 'dictation', text: "نقّاش روی دیوار با دقّت نقّاشی می کند. نجّار تخته ها را ارّه می کند. بچّه های کلاس اوّل دبستان کتاب فارسی می خوانند. کودک سکّه های خود را در قلّک می ریزد. من به مدرسه رفتم امّا امین نیامد." }
                     ] }
                 ]
             },
             {
-                id: 17, title: "درس هفدهم: ظـ ظ، عـ ع", unlocked: true,
+                id: 17, title: "درس هفدهم: صـ ص ، ذ", unlocked: true,
                 sections: [
-                    { title: "ترکیب صداها", exercises: [ { type: 'build', word: "ظرف" }, { type: 'build', word: "ظروف" }, { type: 'build', word: "عسل" }, { type: 'build', word: "عمر" } ] },
-                    { title: "کلمه‌یابی", exercises: [ { type: 'choice', correct: "ظرف", options: ["ظرف", "زرف", "ضرف"] }, { type: 'choice', correct: "عسل", options: ["عسل", "غسل", "گسل"] } ] },
-                    { title: "روان‌خوانی", exercises: [ { type: 'read', word: "ظرف" }, { type: 'read', word: "ظروف" }, { type: 'read', word: "عسل" }, { type: 'read', word: "عمر" } ] },
-                    { title: "حدس تصویر", exercises: [ { type: 'pictureGuess', image: "ظرف", correct: "ظرف", options: ["ظرف", "کیف", "سبد"] }, { type: 'pictureGuess', image: "عسل", correct: "عسل", options: ["عسل", "آب", "ماه"] }, { type: 'pictureGuess', image: "ظروف", correct: "ظروف", options: ["ظروف", "ظرف", "کیف"] } ] },
+                    { title: "ترکیب صداها", exercises: [ { type: 'build', word: "صابون" }, { type: 'build', word: "صدف" }, { type: 'build', word: "اذان" }, { type: 'build', word: "ذرّت" }, { type: 'build', word: "صورتی" } ] },
+                    { title: "کلمه‌یابی", exercises: [ { type: 'choice', correct: "صابون", options: ["صابون", "سابون", "طابون"] }, { type: 'choice', correct: "ذرّت", options: ["ذرّت", "زرت", "ظّرت"] } ] },
+                    { title: "روان‌خوانی", exercises: [ { type: 'read', word: "صابون" }, { type: 'read', word: "صدف" }, { type: 'read', word: "اذان" }, { type: 'read', word: "ذرّت" }, { type: 'read', word: "صورتی" } ] },
+                    { title: "حدس تصویر", exercises: [ { type: 'pictureGuess', image: "صابون", correct: "صابون", options: ["صابون", "صدف", "سبد"] }, { type: 'pictureGuess', image: "ذرّت", correct: "ذرّت", options: ["ذرّت", "صورتی", "اذان"] }, { type: 'pictureGuess', image: "صورتی", correct: "صورتی", options: ["صورتی", "صبر", "صدا"] } ] },
                     { title: "کلمه گمشده", exercises: [ 
-                        { type: 'fillBlank', sentence: "غذا را در ___ گذاشتم.", correct: "ظرف", options: ["ظرف", "کیف", "تور"] }, 
-                        { type: 'fillBlank', sentence: "___ شیرین است.", correct: "عسل", options: ["عسل", "آب", "ماه"] },
-                        { type: 'fillBlank', sentence: "___ من ۱۰ سال است.", correct: "عمر", options: ["عمر", "پدر", "سیب"] },
-                        { type: 'fillBlank', sentence: "در آش ___ ریختم.", correct: "آب", options: ["آب", "نمک", "فلفل"] }
+                        { type: 'fillBlank', sentence: "دستم دستم را با ___ شستم.", correct: "صابون", options: ["صابون", "کیف", "تور"] }, 
+                        { type: 'fillBlank', sentence: "در ساحل دریا ___ پیدا کردم .", correct: "صدف", options: ["صدف", "آب", "صابون"] },
+                        { type: 'fillBlank', sentence: "من در مسجد ___ گفتم.", correct: "اذان", options: ["اذان", "ذرّت", "صدف"] },
+                        { type: 'fillBlank', sentence: "رنگ لباس دوستم ____ بود .", correct: "صورتی", options: ["صورتی", "توری", "صابون"] }
+                    ] },
+                    { title: "املا", exercises: [
+                        { type: 'dictation', text: "قصّه – صبر – صابون – صدف – صدا – صورت – صورتی - تصویر – مخصوص – صاف – صندوق – صابر – نصب - فصل – فاصله – صف – شصت – صد – وصل – اصل" },
+                        { type: 'dictation', text: "مادر بزرگ قصّه ی صندوقچه ی جواهرات را خواند. مروارید در دل صدف است. وقتی بهار از راه می رسد ، صدای پرندگان در همه جا می پیچد. مینا دست و صورتش را با آب و صابون می شوید. صد دو تا صفر دارد. در خیابان اصلی یک تصادف شدید رخ داده است." },
+                        { type: 'dictation', text: "گذشته – لذّت – لذیذ – ذرّه – ذرّه بین – ذکر – آذر – اذان –دلپذیر –نذری – می گذارم – گذاشت – زیرگذر – رهگذر – بذر –ذرّت – پذیرایی – جذّاب – جاذبه – جذب – ذوب" },
+                        { type: 'dictation', text: "مادر با یک ناهار لذیذ از مهمان ها پذیرایی کرد. کشاورز بذر های ذرّت را در زمین می پاشد. مهر ، آبان و آذر ماه های فصل پاییز است. پدر به هنگام اذان ذکر می گوید. ذرّه های ریز را می شود زیر ذرّه بین دید." }
                     ] }
                 ]
             },
             {
-                id: 18, title: "درس هجدهم: غـ غ، فـ ف", unlocked: true,
+                id: 18, title: "درس هجدهم: عـ ـعـ ـع ع ، ثـ ث", unlocked: true,
                 sections: [
-                    { title: "ترکیب صداها", exercises: [ { type: 'build', word: "غذا" }, { type: 'build', word: "غریبه" }, { type: 'build', word: "فنجان" }, { type: 'build', word: "فیلم" } ] },
-                    { title: "کلمه‌یابی", exercises: [ { type: 'choice', correct: "غذا", options: ["غذا", "غزا", "عذا"] }, { type: 'choice', correct: "فنجان", options: ["فنجان", "قنجان", "ضنجان"] } ] },
-                    { title: "روان‌خوانی", exercises: [ { type: 'read', word: "غذا" }, { type: 'read', word: "غریبه" }, { type: 'read', word: "فنجان" }, { type: 'read', word: "فیلم" } ] },
-                    { title: "حدس تصویر", exercises: [ { type: 'pictureGuess', image: "غذا", correct: "غذا", options: ["غذا", "آب", "نان"] }, { type: 'pictureGuess', image: "فنجان", correct: "فنجان", options: ["فنجان", "ظرف", "کاسه"] }, { type: 'pictureGuess', image: "غریبه", correct: "غریبه", options: ["غریبه", "دوست", "آشنا"] } ] },
+                    { title: "ترکیب صداها", exercises: [ { type: 'build', word: "ساعت" }, { type: 'build', word: "عصا" }, { type: 'build', word: "عبادت" }, { type: 'build', word: "ثانیه" }, { type: 'build', word: "مبعث" } ] },
+                    { title: "کلمه‌یابی", exercises: [ { type: 'choice', correct: "ساعت", options: ["ساعت", "سات", "صاعت"] }, { type: 'choice', correct: "عصا", options: ["عصا", "اَصا", "عسا"] } ] },
+                    { title: "روان‌خوانی", exercises: [ { type: 'read', word: "ساعت" }, { type: 'read', word: "عصا" }, { type: 'read', word: "عبادت" }, { type: 'read', word: "ثانیه" } ] },
+                    { title: "حدس تصویر", exercises: [ { type: 'pictureGuess', image: "ساعت", correct: "ساعت", options: ["ساعت", "عصا", "ثابت"] }, { type: 'pictureGuess', image: "عصا", correct: "عصا", options: ["عصا", "عقاب", "مزرعه"] }, { type: 'pictureGuess', image: "ثانیه", correct: "ثانیه", options: ["ثانیه", "آثار", "کوثر"] } ] },
+                    { title: "کلمه گمشده", exercises: [ 
+                        { type: 'fillBlank', sentence: "روی دیوار اتاق من ____ وجود دارد.", correct: "ساعت", options: ["ساعت", "عصا", "عادت"] }, 
+                        { type: 'fillBlank', sentence: "پدربزرگ به کمک ___ راه میرود.", correct: "عصا", options: ["عصا", "ثانیه", "کاسه"] },
+                        { type: 'fillBlank', sentence: "او در وقت نماز ____ می کند.", correct: "عبادت", options: ["عبادت", "دعوا", "علی"] },
+                        { type: 'fillBlank', sentence: "عقربه ___- شمار خیلی سریع جا به جا میشود .", correct: "ثانیه", options: ["ثانیه", "خانه", "خواب"] }
+                    ] },
+                    { title: "املا", exercises: [
+                        { type: 'dictation', text: "علی – معلّم – ساعت – معنی – عبارت – معصومه – سعید – عصا" },
+                        { type: 'dictation', text: "معلّم جمع کردن عدد ها را به ما می آموزد. شمع های جشن تولّد علی به تعداد سن او بود. سعدی شاعر بزرگ ایرانی است. عقربه ی ساعت سریع نمی چرخد." },
+                        { type: 'dictation', text: "کعبه خانه ی خدا است. پدر بعد از نماز دعا می خواند. با مسواک می توانیم لثه را تمیز کنیم. خوردن میوه های مفید مانند سیب ، باعث سلامتی می شود.ایرانی شجاع و دلیر است." },
+                        { type: 'dictation', text: "در بازدید از موزه ی ایران آثار باستانی را دیدیم. ثریّا امسال در کلاس اوّل دبستان ثبت نام می کند. عقربه ی ثانیه شمار ساعت خیلی سریع می چرخد. کیف سارا کثیف شد. روزی که پیامبر برگزیده شد مبعث نام دارد." }
+                    ] }
+                ]
+            },
+            {
+                id: 19, title: "درس نوزدهم: حـ ح ، ضـ ض", unlocked: true,
+                sections: [
+                    { title: "ترکیب صداها", exercises: [ { type: 'build', word: "حوله" }, { type: 'build', word: "حلزون" }, { type: 'build', word: "صبح" }, { type: 'build', word: "حوض" }, { type: 'build', word: "مریض" } ] },
+                    { title: "کلمه‌یابی", exercises: [ { type: 'choice', correct: "حوله", options: ["حوله", "هوله", "حول"] }, { type: 'choice', correct: "حلزون", options: ["حلزون", "هلزون", "حلزان"] }, { type: 'choice', correct: "مریض", options: ["مریض", "مریز", "مریظ"] } ] },
+                    { title: "روان‌خوانی", exercises: [ { type: 'read', word: "حوله" }, { type: 'read', word: "حلزون" }, { type: 'read', word: "صبح" }, { type: 'read', word: "حوض" }, { type: 'read', word: "مریض" } ] },
+                    { title: "حدس تصویر", exercises: [ { type: 'pictureGuess', image: "حوله", correct: "حوله", options: ["قلم", "حوله", "میخ"] }, { type: 'pictureGuess', image: "حوض", correct: "حوض", options: ["حوض", "قلم", "دستمال"] }, { type: 'pictureGuess', image: "مریض", correct: "مریض", options: ["مریض", "چای", "حلزون"] } ] },
+                    { title: "کلمه گمشده", exercises: [ 
+                        { type: 'fillBlank', sentence: "او با ____ نوشت. ", correct: "قلم", options: ["قلم", "میله", "حوض"] }, 
+                        { type: 'fillBlank', sentence: "با ___ صورتم را تراشیدم.", correct: "ژیلت", options: ["ژیلت", "قلم", "حوله"] },
+                        { type: 'fillBlank', sentence: "صبح ___ نوشیدم.", correct: "قهوه", options: ["قهوه", "سیب", "صبحانه"] },
+                        { type: 'fillBlank', sentence: "زیر بوته ها ___ دیدم .", correct: "حلزون", options: ["ژله", "حلزون", "صبح"] }
+                    ] },
+                    { title: "املا", exercises: [
+                        { type: 'dictation', text: "بعضی – حوض – وضو – مریض – رضا – حضرت – حاضر – ضامن - حوله – حمّام – حلزون – حرف – حریف – محرّم – حسین – حسن" },
+                        { type: 'dictation', text: "حسن هفته ای دو بار به حمّام می رود. حلزون حیوانی چسبناک است. صبح ها بعد از صبحانه احساس سیری می کنم.امام رضا ضامن آهو است. معلّم ضرب را در ریاضی به ما آموخت. پدر رضایت نامه ی ابوالفضل را برای اردو امضا کرد." },
+                        { type: 'dictation', text: "بعضی وقت ها به ماهی های حوض نگاه می کنم. همیشه آرزو می کنم کاش به فضا سفر کنم. حضرت محمّد (ص)پیامبر اسلام است. مرضیه با مادرش وضو می گیرد.هر کس باید از حوله ی مخصوص خود استفاده کند. نام محلّه ما محلّه ی دکتر حسابی است. حشرات حیواناتی ریز و مزاحم هستند." },
+                        { type: 'dictation', text: "حمله – حلیم – حرکت – حیوان – حشرات – محمّد – حیدر- حال –رحیم – حنا – حامد – احمد – صحبت – صلح -" }
+                    ] }
+                ]
+            },
+            {
+                id: 20, title: "درس بیستم : ط ، ظ  ،غـ ـغـ ـغ غ", unlocked: true,
+                sections: [
+                    { title: "ترکیب صداها", exercises: [
+					{ type: 'build', word: "حیاط" },
+					{ type: 'build', word: "مطب" },
+					{ type: 'build', word: "طلا" }, 
+					{ type: 'build', word: "چراغ" },  
+					{ type: 'build', word: "مرغ" },
+					{ type: 'build', word: "ظلم" },
+					{ type: 'build', word: "ظرف" } ]
+					},
+                    { title: "کلمه‌یابی", exercises: [ 
+					{ type: 'choice', correct: "حیاط", options: ["حیاط", "حیاط", "هیاط"] },
+					{ type: 'choice', correct: "مطب", options: ["مطب", "متب", "فطب"] },
+					{ type: 'choice', correct: "طلا", options: ["طلا", "تلا", "علا"] },
+                    { type: 'choice', correct: "چراغ", options: ["چراغ", "حراغ", "جراغ"] },
+					{ type: 'choice', correct: "ظرف", options: ["ظرف", "ضرف", "زرف"] },
+					{ type: 'choice', correct: "ظلم", options: ["ظلم", "ضلم", "زلم"] },
+					{ type: 'choice', correct: "غریبه", options: ["غریبه", "قریبه", "غریب"] },
+					{ type: 'choice', correct: "غذا", options: ["غذا", "غزا", "عذا"] }
+					] },
+                    { title: "روان‌خوانی", exercises: [ 
+					{ type: 'read', word: "غذا" }, 
+					{ type: 'read', word: "غریبه" },
+					{ type: 'read', word: "حیاط" }, 
+					{ type: 'read', word: "ظلم" },
+					{ type: 'read', word: "مطب" },
+					{ type: 'read', word: "چراغ" },
+					{ type: 'read', word: "طلا" }
+					] },									
+                    { title: "حدس تصویر", exercises: [
+					{ type: 'pictureGuess', image: "غذا", correct: "غذا", options: ["غذا", "آب", "نان"] },
+					{ type: 'pictureGuess', image: "حیاط", correct: "حیاط", options: ["حیاط", "ظرف", "کاسه"] },
+					{ type: 'pictureGuess', image: "غریبه", correct: "غریبه", options: ["غریبه", "دوست", "آشنا"] },
+					{ type: 'pictureGuess', image: "طلا", correct: "طلا", options: ["طلا", "ظرف", "کاسه"] },
+					{ type: 'pictureGuess', image: "چراغ", correct: "چراغ", options: ["چراغ", "طلا", "مطب"] },
+					{ type: 'pictureGuess', image: "ظرف", correct: "ظرف", options: ["غذا", "ظرف", "غریبه"] }
+
+
+					] },
                     { title: "کلمه گمشده", exercises: [ 
                         { type: 'fillBlank', sentence: "___ خوردم چون گرسنه بودم.", correct: "غذا", options: ["غذا", "آب", "تاب"] }, 
                         { type: 'fillBlank', sentence: "قهوه در ___ ریختم.", correct: "فنجان", options: ["فنجان", "بشقاب", "کاسه"] },
                         { type: 'fillBlank', sentence: "او یک ___ بود.", correct: "غریبه", options: ["غریبه", "دوست", "آشنا"] },
-                        { type: 'fillBlank', sentence: "در سینما ___ دیدم.", correct: "فیلم", options: ["فیلم", "ماه", "خواب"] }
-                    ] }
-                ]
-            },
-            {
-                id: 19, title: "درس نوزدهم: قـ ق، ژ", unlocked: true,
-                sections: [
-                    { title: "ترکیب صداها", exercises: [ { type: 'build', word: "قلم" }, { type: 'build', word: "قهوه" }, { type: 'build', word: "ژیلت" }, { type: 'build', word: "ژله" } ] },
-                    { title: "کلمه‌یابی", exercises: [ { type: 'choice', correct: "قلم", options: ["قلم", "قفلم", "فیلم"] }, { type: 'choice', correct: "ژیلت", options: ["ژیلت", "ژاله", "منیژه"] } ] },
-                    { title: "روان‌خوانی", exercises: [ { type: 'read', word: "قلم" }, { type: 'read', word: "قهوه" }, { type: 'read', word: "ژیلت" }, { type: 'read', word: "ژله" } ] },
-                    { title: "حدس تصویر", exercises: [ { type: 'pictureGuess', image: "قلم", correct: "قلم", options: ["قلم", "نَی", "میخ"] }, { type: 'pictureGuess', image: "ژیلت", correct: "ژیلت", options: ["ژیلت", "قلم", "دستمال"] }, { type: 'pictureGuess', image: "قهوه", correct: "قهوه", options: ["قهوه", "چای", "آب"] } ] },
-                    { title: "کلمه گمشده", exercises: [ 
-                        { type: 'fillBlank', sentence: "با ___ نوشت.", correct: "قلم", options: ["قلم", "میله", "میخ"] }, 
-                        { type: 'fillBlank', sentence: "با ___ صورتم را تراشیدم.", correct: "ژیلت", options: ["ژیلت", "قلم", "دستمال"] },
-                        { type: 'fillBlank', sentence: "صبح ___ نوشیدم.", correct: "قهوه", options: ["قهوه", "سیب", "صبحانه"] },
-                        { type: 'fillBlank', sentence: "دسر ___ خوردم.", correct: "ژله", options: ["ژله", "آب", "آلو"] }
+                        { type: 'fillBlank', sentence: "در سینما ___ دیدم.", correct: "فیلم", options: ["فیلم", "ماه", "خواب"] },
+						{ type: 'fillBlank', sentence: "دستبند او از جنس ___ بود.", correct: "طلا", options: ["غریبه", "طلا", "حیاط"] },
+						{ type: 'fillBlank', sentence: "اتاق تاریک بود پس __- را روشن کردم .", correct: "چراغ", options: ["چراغ", "دوست", "مطب"] },
+						{ type: 'fillBlank', sentence: "در حیاط ما چند ___ وجود دارد. ", correct: "مرغ", options: ["مرغ", "طلا", "غذا"] }
+						
+						
+						
+                    ] },
+                    { title: "املا", exercises: [
+                        { type: 'dictation', text: "ظاهر – ظهر – اعظم – عظمت – ظلم – مواظبت –خدا حافظی - مغرب – غروب – غرب – غصّه – غمگین – غم – غذا – قورباغه- حیاط – طوطی – طبل – طاووس – طلب – طالبی – مطلب – وسط" },
+                        { type: 'dictation', text: "خاطرات – وطن – قطار – طناب – خط – خطّاطی – خیّاط - غول – بغل – باغ – چراغ – دروغ – زاغ – کلاغ – داغ – غدیر - مواظب – حفاظت – ناظم – نظم – منظّم – ظالم – ظلمت – وظیفه – ظرف" },
+                        { type: 'dictation', text: "اعظم وقت خداحافظی بسیار غمگین بود. مادر برای ظهر ماکارونی می پزد. ناظم با بچّه ها صحبت می کند.کلاغ روی شاخه قار قار می کرد. قورباغه در مرداب پرید. عید غدیر جشن جانشینی امام علی(ع) است.عطا به مطب پزشک رفت. خاطرات انقلاب شیرین است. طاووس و طوطی دو پرنده ی زیبا هستند." },
+                        { type: 'dictation', text: "صدای سوت قطار از دور می آید. طاهره در حیاط بازی می کند. خیاط برای علی یک لباس زیبا دوخت. وطن عزیز ما ایران است.شلغم غذای خوبی برای بیمار است. مرغ دانه می خورد. مادر ظرف ها را منظّم روی جا ظرفی می گذارد. با مشاهده ی دنیا به عظمت آفرینش خدا پی می بریم. من از خواهرم مواظبت می کنم.حضرت علی اصغر فرزند امام حسین (ع) است." }
                     ] }
                 ]
             }
         ];
-
         // --- DATA برای Gamification ---
         const achievementsList = [
             { id: 'champion', name: "قهرمان حروف!", description: "کامل کردن ۵ درس", icon: "trophy.png", condition: (state) => state.completedLessons >= 5 },
@@ -813,7 +1038,6 @@
             { id: 'master', name: "استاد الفبا!", description: "کامل کردن تمام ۱۹ درس", icon: "crown.png", condition: (state) => state.completedLessons >= 19 },
             { id: 'speedster', name: "سریع‌العمل!", description: "انجام ۵۰ تمرین", icon: "bolt.png", condition: (state) => state.totalExercises >= 50 }
         ];
-
         // --- STATE ---
         let currentLesson = null;
         let currentExercises = [];
@@ -828,7 +1052,6 @@
         const successSounds = ["bravo1.mp3", "bravo2.mp3", "bravo3.mp3", "bravo4.mp3"];
         let isActivated = false;
         let isDemoMode = false;
-
         // --- STATE جدید برای Gamification ---
         let playerState = {
             stars: 0,
@@ -838,7 +1061,6 @@
             wordsRead: 0,
             unlockedAchievements: []
         };
-
         // --- DOM Elements ---
         const pages = {
             activation: document.getElementById('activation-screen'),
@@ -895,6 +1117,13 @@
             fillBlankGameEl: document.getElementById('fill-blank-game'),
             sentenceBlankEl: document.getElementById('sentence-blank'),
             fillBlankOptionsContainer: document.getElementById('fill-blank-options'),
+            // --- المان‌های جدید برای املا ---
+            dictationGameEl: document.getElementById('dictation-game'),
+            dictationTextEl: document.getElementById('dictation-text'),
+            prevDictationBtn: document.getElementById('prev-dictation-btn'),
+            nextDictationBtn: document.getElementById('next-dictation-btn'),
+            dictationCounterEl: document.getElementById('dictation-counter'),
+            finishDictationBtn: document.getElementById('finish-dictation-btn'),
             // Modals
             modalWordEl: document.getElementById('modal-word'),
             modalStarsEarned: document.getElementById('modal-stars-earned'), // المان جدید
@@ -909,7 +1138,6 @@
             // --- المان جدید برای کانتینر پویا --- 
             dynamicReadGameContainer: document.getElementById('dynamic-read-game-container')
         };
-
         // --- Images/Icons Data ---
         const exerciseImages = {
             "آب": `<img src="water.png" class="w-28 h-28 object-contain" alt="آب">`,
@@ -1000,6 +1228,57 @@
             "قهوه": `<img src="coffee.png" class="w-28 h-28 object-contain" alt="قهوه">`,
             "ژیلت": `<img src="razor.png" class="w-28 h-28 object-contain" alt="ژیلت">`,
             "ژله": `<img src="jelly.png" class="w-28 h-28 object-contain" alt="ژله">`,
+            // ✅ اضافه کردن تصاویر جدید برای حرف "پ"
+            "پدر": `<img src="father.png" class="w-32 h-32 object-contain" alt="پدر">`,
+            "پا": `<img src="foot.png" class="w-28 h-28 object-contain" alt="پا">`,
+			"داور": `<img src="referee.png" class="w-28 h-28 object-contain" alt="داور">`,
+			"وزنه بردار": `<img src="weightlifter.png" class="w-28 h-28 object-contain" alt="وزنه بردار">`,
+			"میوه": `<img src="Fruit.png" class="w-28 h-28 object-contain" alt="میوه">`,
+			"سگ": `<img src="dog.png" class="w-28 h-28 object-contain" alt="سگ">`,
+			"خرما": `<img src="dates.png" class="w-28 h-28 object-contain" alt="خرما">`,
+			"برف": `<img src="Snow.png" class="w-28 h-28 object-contain" alt="برف">`,
+			"رودخانه": `<img src="river.png" class="w-28 h-28 object-contain" alt="رودخانه">`,
+			"آدم برفی": `<img src="snowman.png" class="w-28 h-28 object-contain" alt="آدم برفی">`,
+			"درخت": `<img src="tree.png" class="w-28 h-28 object-contain" alt="درخت">`,
+			"قوری": `<img src="teapot.png" class="w-28 h-28 object-contain" alt="قوری">`,
+			"قند": `<img src="sugar.png" class="w-28 h-28 object-contain" alt="قند">`,
+			"قایق": `<img src="Boat.png" class="w-28 h-28 object-contain" alt="قایق">`,
+			"خورشید": `<img src="sun.png" class="w-28 h-28 object-contain" alt="خورشید">`,
+			"نوک": `<img src="beak.png" class="w-28 h-28 object-contain" alt="نوک">`,
+			"خوراک": `<img src="food.png" class="w-28 h-28 object-contain" alt="خوراک">`,
+			"هلو": `<img src="peach.png" class="w-28 h-28 object-contain" alt="خوراک">`,
+			"آهو": `<img src="Deer.png" class="w-28 h-28 object-contain" alt="آهو">`,
+			"چوب": `<img src="Wood.png" class="w-28 h-28 object-contain" alt="چوب">`,
+			"پژمرده": `<img src="wilted.png" class="w-28 h-28 object-contain" alt="پژمرده">`,
+			"خواب": `<img src="sleep.png" class="w-28 h-28 object-contain" alt="خواب">`,
+			"خواهر": `<img src="Sister.png" class="w-28 h-28 object-contain" alt="خواهر">`,
+			"ژاله": `<img src="jale.png" class="w-28 h-28 object-contain" alt="ژاله">`,
+			"منیژه": `<img src="manije.png" class="w-28 h-28 object-contain" alt="منیژه">`,
+			"دکّان": `<img src="shop.png" class="w-28 h-28 object-contain" alt="دکّان">`,
+			"بنّا": `<img src="Builder.png" class="w-28 h-28 object-contain" alt="بنّا">`,
+			"نجّار": `<img src="carpenter.png" class="w-28 h-28 object-contain" alt="نجّار">`,
+			"تشکّر": `<img src="Thanks.png" class="w-28 h-28 object-contain" alt="تشکّر">`,
+			"اوّل": `<img src="First.png" class="w-28 h-28 object-contain" alt="اوّل">`,
+			"کفّاش": `<img src="Shoemaker.png" class="w-28 h-28 object-contain" alt="کفّاش">`,
+			"صابون": `<img src="soap.png" class="w-28 h-28 object-contain" alt="صابون">`,
+			"صدف": `<img src="Shell.png" class="w-28 h-28 object-contain" alt="صدف">`,
+			"اذان": `<img src="adhan.png" class="w-28 h-28 object-contain" alt="اذان">`,
+			"ذرّت": `<img src="corn.png" class="w-28 h-28 object-contain" alt="ذرّت">`,
+			"صورتی": `<img src="Pink.png" class="w-28 h-28 object-contain" alt="صورتی">`,
+			"ساعت": `<img src="Hour.png" class="w-28 h-28 object-contain" alt="ساعت">`,
+			"عصا": `<img src="Cane.png" class="w-28 h-28 object-contain" alt="عصا">`,
+			"عبادت": `<img src="praying.png" class="w-28 h-28 object-contain" alt="عبادت">`,
+			"ثانیه": `<img src="seconds.png" class="w-28 h-28 object-contain" alt="ثانیه">`,
+			"مبعث": `<img src="ascension.png" class="w-28 h-28 object-contain" alt="مبعث">`,
+			"صبح": `<img src="morning.png" class="w-28 h-28 object-contain" alt="صبح">`,
+			"حوله": `<img src="towel.png" class="w-28 h-28 object-contain" alt="حوله">`,
+			"حلزون": `<img src="snail.png" class="w-28 h-28 object-contain" alt="حلزون">`,
+			"حوض": `<img src="Pool.png" class="w-28 h-28 object-contain" alt="حوض">`,
+			"مریض": `<img src="sick.png" class="w-28 h-28 object-contain" alt="مریض">`,
+			"مطب": `<img src="clinic.png" class="w-28 h-28 object-contain" alt="مطب">`,
+			"چراغ": `<img src="light-bulb.png" class="w-28 h-28 object-contain" alt="چراغ">`,
+			"مرغ": `<img src="Chicken.png" class="w-28 h-28 object-contain" alt="مرغ">`,
+			"ظلم": `<img src="Injustice.png" class="w-28 h-28 object-contain" alt="ظلم">`,
             "default": `<div class="w-28 h-28 bg-gray-200 rounded-lg flex items-center justify-center text-gray-400">?</div>`
         };
         const sectionIcons = {
@@ -1007,9 +1286,9 @@
             "کلمه‌یابی": `<img src="find_word.png" class="w-10 h-10" alt="کلمه‌یابی">`,
             "روان‌خوانی": `<img src="read_aloud.png" class="w-10 h-10" alt="روان‌خوانی">`,
             "حدس تصویر": `<img src="guess_image.png" class="w-10 h-10" alt="حدس تصویر">`,
-            "کلمه گمشده": `<img src="missing_word.png" class="w-10 h-10" alt="کلمه گمشده">`
+            "کلمه گمشده": `<img src="missing_word.png" class="w-10 h-10" alt="کلمه گمشده">`,
+            "املا": `<img src="dictation.png" class="w-10 h-10" alt="املا">`
         };
-
         // --- Navigation & Render ---
         function showPage(pageName) {
             Object.values(pages).forEach(page => page.classList.remove('active'));
@@ -1026,7 +1305,6 @@
             updateStarsDisplay();
             showPage('mainMenu');
         }
-
         // --- توابع جدید برای Gamification ---
         function awardStars(stars = 1) {
             playerState.stars += stars;
@@ -1034,7 +1312,6 @@
             updateStarsDisplay();
             savePlayerState();
         }
-
         function updateStarsDisplay() {
             elements.starCount.textContent = playerState.stars;
             // بروزرسانی تابلو امتیازات
@@ -1044,7 +1321,6 @@
             if (elements.lbWordsBuilt) elements.lbWordsBuilt.textContent = playerState.wordsBuilt;
             if (elements.lbWordsRead) elements.lbWordsRead.textContent = playerState.wordsRead;
         }
-
         function checkAchievements() {
             let newAchievementUnlocked = false;
             achievementsList.forEach(achievement => {
@@ -1059,7 +1335,6 @@
                 renderAchievements();
             }
         }
-
         function renderAchievements() {
             elements.achievementsList.innerHTML = '';
             achievementsList.forEach(achievement => {
@@ -1077,17 +1352,14 @@
                 elements.achievementsList.appendChild(card);
             });
         }
-
         function showLeaderboard() {
-            updateStarsDisplay(); // مطمئن شویم داده‌ها به‌روز هستند
+            updateStarsDisplay(); // مطمئن شویم که داده‌ها به‌روز هستند
             showPage('leaderboard');
         }
-
         function showAchievements() {
             renderAchievements();
             showPage('achievements');
         }
-
         function renderMainMenu() {
             elements.lessonsGrid.innerHTML = '';
             lessons.forEach(lesson => {
@@ -1152,7 +1424,6 @@
         function loadExercise(index, sectionIndex) {
             const exercise = currentExercises[index];
             const wordKey = exercise.word || exercise.correct || exercise.image;
-            elements.wordImageContainer.innerHTML = exerciseImages[wordKey] || exerciseImages["default"];
             // --- حذف کامل #read-game از DOM در هر بار بارگذاری ---
             elements.dynamicReadGameContainer.innerHTML = '';
             // --- مخفی کردن همه بخش‌های دیگر ---
@@ -1160,21 +1431,31 @@
             elements.choiceGameEl.classList.add('hidden');
             elements.pictureGuessGameEl.classList.add('hidden');
             elements.fillBlankGameEl.classList.add('hidden');
+            elements.dictationGameEl.classList.add('hidden'); // ✅ مخفی کردن املا
             if (exercise.type === 'build') {
+                elements.wordImageContainer.innerHTML = exerciseImages[wordKey] || exerciseImages["default"]; // ✅ نمایش تصویر
                 elements.buildWordGameEl.classList.remove('hidden');
                 loadBuildExercise(exercise);
             } else if (exercise.type === 'choice') {
+                elements.wordImageContainer.innerHTML = exerciseImages[wordKey] || exerciseImages["default"]; // ✅ نمایش تصویر
                 elements.choiceGameEl.classList.remove('hidden');
                 loadChoiceExercise(exercise);
             } else if (exercise.type === 'read') {
+                elements.wordImageContainer.innerHTML = exerciseImages[wordKey] || exerciseImages["default"]; // ✅ نمایش تصویر
                 // --- ساخت و افزودن #read-game به صورت پویا فقط برای نوع 'read' ---
                 createAndLoadReadExercise(exercise, sectionIndex);
             } else if (exercise.type === 'pictureGuess') {
+                elements.wordImageContainer.innerHTML = exerciseImages[wordKey] || exerciseImages["default"]; // ✅ نمایش تصویر
                 elements.pictureGuessGameEl.classList.remove('hidden');
                 loadPictureGuessExercise(exercise);
             } else if (exercise.type === 'fillBlank') {
+                elements.wordImageContainer.innerHTML = exerciseImages[wordKey] || exerciseImages["default"]; // ✅ نمایش تصویر
                 elements.fillBlankGameEl.classList.remove('hidden');
                 loadFillBlankExercise(exercise);
+            } else if (exercise.type === 'dictation') { // ✅ بارگذاری املا
+                elements.wordImageContainer.innerHTML = ''; // ✅ حذف تصویر فقط در املا
+                elements.dictationGameEl.classList.remove('hidden');
+                loadDictationExercise(currentExercises, index); // بارگذاری کل بخش املا
             }
         }
         function loadBuildExercise(exercise) {
@@ -1501,7 +1782,7 @@
             awardStars(starsEarned); // اعطای ستاره
             const exercise = currentExercises[currentExerciseIndex];
             const word = exercise.word || exercise.correct;
-            elements.modalWordEl.textContent = `«${word}» عالی بود!`;
+            elements.modalWordEl.textContent = `«${word}» عالی بود!`; // ✅ متن فارسی
             elements.modalStarsEarned.textContent = `+${starsEarned} ⭐`; // نمایش ستاره کسب شده
             if (currentExerciseIndex >= currentExercises.length - 1) {
                 if (sectionIndex !== undefined) {
@@ -1521,6 +1802,38 @@
             } else {
                 showModal('success');
             }
+        }
+        // --- تابع جدید برای بارگذاری تمرین املا ---
+        function loadDictationExercise(exercises, startIndex = 0) {
+            let currentDictationIndex = startIndex;
+            function updateDictationUI() {
+                elements.dictationTextEl.textContent = exercises[currentDictationIndex].text;
+                elements.dictationCounterEl.textContent = `املا ${currentDictationIndex + 1} از ${exercises.length}`;
+                // فعال/غیرفعال کردن دکمه‌ها
+                elements.prevDictationBtn.disabled = currentDictationIndex === 0;
+                elements.nextDictationBtn.disabled = currentDictationIndex === exercises.length - 1;
+            }
+            // اتصال Event Listeners
+            elements.prevDictationBtn.onclick = () => {
+                if (currentDictationIndex > 0) {
+                    currentDictationIndex--;
+                    updateDictationUI();
+                }
+            };
+            elements.nextDictationBtn.onclick = () => {
+                if (currentDictationIndex < exercises.length - 1) {
+                    currentDictationIndex++;
+                    updateDictationUI();
+                }
+            };
+            elements.finishDictationBtn.onclick = () => {
+                playRandomSuccessSound();
+                awardStars(1); // اعطای 1 ستاره برای تکمیل بخش املا
+                checkAchievements();
+                setTimeout(() => showSuccessModal(undefined, 1), 1000);
+            };
+            // بارگذاری اولیه
+            updateDictationUI();
         }
         // --- Activation Logic ---
         function checkActivationStatus() {
@@ -1587,13 +1900,11 @@
             hideModal('success');
             loadExercise(currentExerciseIndex);
         });
-
         // --- Event Listeners جدید برای دکمه‌های Gamification ---
         elements.showLeaderboardBtn.addEventListener('click', showLeaderboard);
         elements.showAchievementsBtn.addEventListener('click', showAchievements);
         elements.backToMainFromLeaderboard.addEventListener('click', () => showPage('mainMenu'));
         elements.backToMainFromAchievements.addEventListener('click', () => showPage('mainMenu'));
-
         // Activation
         elements.activateBtn.addEventListener('click', () => {
             const code = elements.activationCodeInput.value.trim();
@@ -1663,7 +1974,6 @@
             }
         }
         loadProgress();
-
         // --- توابع جدید برای ذخیره و بارگذاری وضعیت بازیکن ---
         function savePlayerState() {
             try {
