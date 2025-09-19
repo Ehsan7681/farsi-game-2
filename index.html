@@ -89,11 +89,10 @@
           40%, 60% { transform: translate3d(4px, 0, 0); }
         }
         #success-modal.show > div { transform: scale(1); }
-        .choice-btn.correct { animation: correct-pulse 0.5s ease; }
-        .choice-btn.incorrect { animation: shake 0.5s ease; }
+        
         @keyframes correct-pulse {
             0% { transform: scale(1); }
-            50% { transform: scale(1.1); background-color: #4ade80; }
+            50% { transform: scale(1.1); }
             100% { transform: scale(1); }
         }
         .drag-clone {
@@ -219,7 +218,6 @@
             text-align: center;
             box-shadow: 0 10px 25px rgba(0,0,0,0.2);
         }
-        /* --- تغییرات برای بخش روان‌خوانی --- */
         #read-game {
             display: flex;
             flex-direction: column;
@@ -234,7 +232,6 @@
             align-items: center;
             justify-content: center;
         }
-        /* --- استایل برای جمله توصیه --- */
         .lesson-advice {
             text-align: center;
             font-size: 0.875rem; /* text-sm */
@@ -242,7 +239,6 @@
             margin-top: 0.5rem;
             font-weight: 300;
         }
-        /* --- استایل های جدید برای Gamification --- */
         .stars-display {
             display: flex;
             align-items: center;
@@ -300,8 +296,7 @@
             font-size: 0.75rem;
             font-weight: bold;
         }
-        /* --- استایل برای صفحه املا --- */
-        /* FIX: Only apply flex display when the element is NOT hidden */
+
         #dictation-game:not(.hidden) {
             text-align: center;
             width: 100%;
@@ -311,7 +306,7 @@
             justify-content: center;
         }
         #dictation-text {
-            font-size: 1.75rem; /* text-2xl */
+            font-size: 1.75rem;
             font-weight: bold;
             margin: 2rem 0;
             min-height: 3rem;
@@ -332,28 +327,92 @@
             margin-top: 1rem;
             direction: ltr;
         }
-        .dictation-nav-btn {
-            background-color: #6366f1;
-            color: white;
-            border: none;
-            padding: 0.5rem 1rem;
-            border-radius: 0.5rem;
-            font-weight: bold;
-            cursor: pointer;
-            transition: background-color 0.2s;
-        }
-        .dictation-nav-btn:hover {
-            background-color: #4f46e5;
-        }
-        .dictation-nav-btn:disabled {
-            background-color: #cbd5e1;
-            cursor: not-allowed;
-        }
+        
         #dictation-counter {
-            font-size: 1.125rem; /* text-lg */
+            font-size: 1.125rem;
             font-weight: bold;
             color: #475569;
         }
+
+        /* --- استایل های جدید برای دکمه ها --- */
+        .btn {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.75rem 1.5rem;
+            border-radius: 9999px; /* rounded-full */
+            font-weight: bold;
+            color: white;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+            border: 1px solid rgba(0,0,0,0.2);
+            border-bottom-width: 3px;
+            transition: all 0.15s ease-out;
+            cursor: pointer;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1), inset 0 -1px 2px rgba(255,255,255,0.3);
+            text-align: center;
+        }
+        .btn:hover {
+            filter: brightness(1.1);
+        }
+        .btn:active {
+            transform: translateY(2px);
+            box-shadow: 0 1px 2px -1px rgba(0, 0, 0, 0.1), inset 0 1px 2px rgba(0,0,0,0.2);
+            border-bottom-width: 1px;
+        }
+        .btn-green {
+            background: linear-gradient(to top, #16a34a, #22c55e); /* from green-600 to green-500 */
+            border-color: #15803d; /* green-700 */
+        }
+        .btn-blue {
+            background: linear-gradient(to top, #2563eb, #3b82f6); /* from blue-600 to blue-500 */
+            border-color: #1d4ed8; /* blue-700 */
+        }
+        .btn-amber {
+            background: linear-gradient(to top, #d97706, #f59e0b); /* from amber-600 to amber-500 */
+            border-color: #b45309; /* amber-700 */
+        }
+        .btn-purple {
+            background: linear-gradient(to top, #9333ea, #a855f7); /* from purple-600 to purple-500 */
+            border-color: #7e22ce; /* purple-700 */
+        }
+        .btn-red {
+            background: linear-gradient(to top, #dc2626, #ef4444); /* from red-600 to red-500 */
+            border-color: #b91c1c; /* red-700 */
+        }
+        .btn-gray {
+            background: linear-gradient(to top, #4b5563, #6b7280); /* from gray-600 to gray-500 */
+            border-color: #374151; /* gray-700 */
+        }
+        .btn-indigo {
+            background: linear-gradient(to top, #4338ca, #6366f1); /* from indigo-700 to indigo-500 */
+            border-color: #3730a3; /* indigo-800 */
+        }
+        
+        .choice-btn.btn {
+            border-radius: 1rem; /* rounded-xl */
+            font-size: 1.5rem; /* text-2xl */
+            padding-top: 1rem;
+            padding-bottom: 1rem;
+        }
+
+        .choice-btn.correct { animation: correct-pulse 0.5s ease; }
+        .choice-btn.incorrect { animation: shake 0.5s ease; }
+
+        .dictation-nav-btn.btn {
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+        }
+
+        .dictation-nav-btn:disabled {
+            background: #cbd5e1;
+            cursor: not-allowed;
+            filter: grayscale(80%);
+            transform: none;
+            box-shadow: none;
+            border-bottom-width: 3px;
+        }
+
     </style>
 </head>
 <body class="text-gray-800">
@@ -364,8 +423,8 @@
                 <h2 class="text-2xl font-bold text-center text-sky-700 mb-6">فعال‌سازی برنامه</h2>
                 <p class="text-center text-gray-600 mb-4">لطفاً کد فعال‌سازی خود را وارد کنید</p>
                 <input type="text" id="activation-code-input" class="w-full p-3 border border-gray-300 rounded-lg mb-4 text-center font-mono" placeholder="XXXX-XXXX-XXXX">
-                <button id="activate-btn" class="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-4 rounded-full mb-4">فعال‌سازی</button>
-                <button id="demo-btn" class="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-4 rounded-full">ورود به نسخه دمو</button>
+                <button id="activate-btn" class="w-full btn btn-green mb-4">فعال‌سازی</button>
+                <button id="demo-btn" class="w-full btn btn-blue">ورود به نسخه دمو</button>
                 <p id="activation-message" class="text-center mt-4 min-h-[1.5em]"></p>
             </div>
             <div class="creator-info">ایده و تولید: احسان شمسی</div>
@@ -385,10 +444,10 @@
                 <div id="lessons-grid" class="space-y-4 mb-6"></div>
                 <!-- دکمه‌های جدید تابلو امتیازات و دستاوردها -->
                 <div class="flex gap-4">
-                    <button id="show-leaderboard-btn" class="flex-1 bg-amber-500 hover:bg-amber-600 text-white font-bold py-3 px-4 rounded-full">
+                    <button id="show-leaderboard-btn" class="flex-1 btn btn-amber">
                         🏆 تابلو امتیازات
                     </button>
-                    <button id="show-achievements-btn" class="flex-1 bg-purple-500 hover:bg-purple-600 text-white font-bold py-3 px-4 rounded-full">
+                    <button id="show-achievements-btn" class="flex-1 btn btn-purple">
                         🎯 دستاوردها
                     </button>
                 </div>
@@ -464,7 +523,6 @@
         </div>
         <!-- --- صفحه بازی --- -->
         <div id="game-screen" class="page">
-            <!-- ✅ تغییر جدید: افزودن flex و flex-col برای چیدمان عمودی -->
             <div class="bg-white rounded-2xl shadow-lg p-6 w-full max-w-md flex flex-col">
                 <header class="flex items-center justify-between mb-6">
                     <button id="back-to-sections" class="back-button-icon">
@@ -493,11 +551,11 @@
                 <div id="dictation-game" class="hidden">
                     <div id="dictation-text">متن املا اینجا نمایش داده می‌شود.</div>
                     <div id="dictation-controls">
-                        <button id="prev-dictation-btn" class="dictation-nav-btn">◀ قبلی</button>
+                        <button id="prev-dictation-btn" class="dictation-nav-btn btn btn-indigo">◀ قبلی</button>
                         <span id="dictation-counter">املا 1 از 1</span>
-                        <button id="next-dictation-btn" class="dictation-nav-btn">بعدی ▶</button>
+                        <button id="next-dictation-btn" class="dictation-nav-btn btn btn-indigo">بعدی ▶</button>
                     </div>
-                    <button id="finish-dictation-btn" class="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-6 rounded-full mt-6">
+                    <button id="finish-dictation-btn" class="w-full btn btn-green mt-6">
                         پایان املا
                     </button>
                 </div>
@@ -512,7 +570,7 @@
                 <h3 class="text-4xl font-bold text-green-500 mb-2">آفرین!</h3>
                 <p id="modal-stars-earned" class="text-2xl text-yellow-500 font-bold mb-2">+1 ⭐</p>
                 <p id="modal-word" class="text-2xl text-gray-700 mb-6"></p>
-                <button id="next-exercise-btn" class="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-6 rounded-full">بعدی</button>
+                <button id="next-exercise-btn" class="w-full btn btn-blue">بعدی</button>
             </div>
         </div>
         <!-- --- مودال تکمیل درس --- -->
@@ -521,7 +579,7 @@
                 <div class="text-7xl mb-4"><img src="hat.png" class="w-16 h-16 mx-auto" alt="کلاه"></div>
                 <h3 class="text-4xl font-bold text-amber-500 mb-4">بخش کامل شد!</h3>
                 <p class="text-xl text-gray-600 mb-8">عالی بود! این بخش را با موفقیت تمام کردی.</p>
-                <button id="back-to-sections-from-complete" class="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-6 rounded-full">بازگشت به درس</button>
+                <button id="back-to-sections-from-complete" class="w-full btn btn-green">بازگشت به درس</button>
             </div>
         </div>
         <!-- --- مودال هشدار اشتراک‌گذاری --- -->
@@ -529,7 +587,7 @@
             <div class="bg-white rounded-2xl shadow-2xl p-6 text-center max-w-sm w-full">
                 <h3 class="text-2xl font-bold text-red-500 mb-4">هشدار!</h3>
                 <p class="text-gray-700 mb-6">لطفاً از به اشتراک‌گذاری کد فعال‌سازی خودداری کنید. در غیر این صورت، دسترسی شما به برنامه غیرفعال خواهد شد.</p>
-                <button id="close-warning-btn" class="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-full">متوجه شدم</button>
+                <button id="close-warning-btn" class="w-full btn btn-blue">متوجه شدم</button>
             </div>
         </div>
         <!-- --- مودال درس قفل شده --- -->
@@ -538,13 +596,13 @@
                 <h3 class="text-2xl font-bold text-amber-500 mb-4">🔒 درس قفل است</h3>
                 <p class="text-gray-700 mb-4">این درس در نسخه دمو در دسترس نیست. لطفاً کد فعال‌سازی خود را وارد کنید تا به تمام دروس دسترسی پیدا کنید.</p>
                 <input type="text" id="modal-activation-code" placeholder="کد فعال‌سازی" class="w-full p-3 border border-gray-300 rounded-lg mb-4 text-center font-mono">
-                <button id="modal-activate-btn" class="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-full mb-3">
+                <button id="modal-activate-btn" class="w-full btn btn-blue mb-3">
                     فعال‌سازی
                 </button>
-                <button id="modal-demo-btn" class="w-full bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded-full mb-3">
+                <button id="modal-demo-btn" class="w-full btn btn-gray mb-3">
                     بازگشت به نسخه دمو
                 </button>
-                <button id="close-locked-modal-btn" class="w-full bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-full">
+                <button id="close-locked-modal-btn" class="w-full btn btn-red">
                     لغو
                 </button>
                 <p id="modal-activation-message" class="text-center mt-4 min-h-[1.5em]"></p>
@@ -670,10 +728,10 @@
                         { type: 'fillBlank', sentence: "در خانه با ___ بازی کردم.", correct: "برادر", options: ["برادر", "خواهر", "پدر"] }
                     ] },
                     { title: "املا", exercises: [
-                        { type: 'dictation', text: " نـ - ن - نان - نا - نَم - ما - مامان - بابا - تاب" },
+                        { type: 'dictation', text: "نـ - ن - نان - نا - نش - ما - مامان - بابا - تاب " },
                         { type: 'dictation', text: "مادَر - سارا - دار - داد - اَبرو - دَرس - سَرد - آرام " },
                         { type: 'dictation', text: "مادَر آمَد - مادَر با سَبَد  آمَد - مَرد - دَر - دار - دَست - دَما " },
-                        { type: 'dictation', text: "بَرادَر با آسب آمَد. - مادَر آرام آمَد. - سارا بَرادَر دارَد. - اَبر آمَد - باران- آسمان - نَم نَم - اَنار- دندان " }
+                        { type: 'dictation', text: "بَرادَر با آَسب آمَد. - مادَر آرام آمَد. - سارا بَرادَر دارَد. - اَبر آمَد - باران- آسمان - نَم نَم - اَنار- دندان " }
                     ] }
                 ] 
             },
@@ -694,7 +752,7 @@
                         { type: 'dictation', text: "انار - اسب - دندان - آبان - من - ما " },
                         { type: 'dictation', text: "زَن - مَرد - باران - آسمان - نان - دَرس - دارَد - ای - ایـ - ی - یـ - سیب - بیدار" },
                         { type: 'dictation', text: "بیدار - سیب - ایستاد - ایران - ایرانی - اَمیر - برمی دارَد - سَرد - - سرباز - سرما - آزاد - زمین  - زیبا " },
-                        { type: 'dictation', text: "سرباز - سرد - زیبا - ایران - ایرانی - ایرانی آزاد - ایران سرسبز است .  ایران ازاد است. ما ایران را دوست داریم." }
+                        { type: 'dictation', text: "سرباز - سرد - زیبا - ایران - ایرانی - ایرانی آزاد - ایران سرسبز است . - ایران ازاد است. - ما ایران را دوست داریم." }
                     ] }
                 ]
             },
@@ -714,8 +772,8 @@
                     { title: "املا", exercises: [
                         { type: 'dictation', text: "اِمام - ساده - دانه - مِداد - اِنسان - تازه - دبِستان - مدرِسه " },
                         { type: 'dictation', text: "شب - شیر- اش - تراش - شانه - نامه ای - شانه ای - دانه ای - ستاره ای " },
-                        { type: 'dictation', text: "او ستاره را به مادرش نشان داد. شب بود. اَمین ستاره را در آسمان دید.  اَمین مِداد دارد.  مِداد من زیبا است." },
-                        { type: 'dictation', text: "آش سرد بود. با تراش مِداد را تراشیدم. مادرم زیبا است. بابا را دوست دارم. " }
+                        { type: 'dictation', text: "او سیتاره را به مادرش نیشان داد. - شب بود. اَمین ستاره را در آسمان دید. - اَمین مِداد دارد. - مِداد من زیبا است." },
+                        { type: 'dictation', text: "آش سرد بود. - با تراش مِداد را تراشیدم. - مادرم زیبا است. - بابا را دوست دارم. " }
                     ] }
                 ]
             },
@@ -735,8 +793,8 @@
                     { title: "املا", exercises: [
                         { type: 'dictation', text: "بویِ یاس – مویِ مَن – مِیمون – مِیدان – مَریَم" },
                         { type: 'dictation', text: "اُردو – بُرد – بُز - مَردُم – مُراد – دُرُست – اُستان – اُتو – سُرسُره" },
-                        { type: 'dictation', text: "دایی یاسر از یزد می آید. میمون در سایه نشسته است . از بیرون بوی یاس می آیَد.  یاسین رویَش را می شویَد." },
-                        { type: 'dictation', text: "مُدیرِ دبستان ، دانشِ آموزان را به اُردو بُرد.  مَردُم ایران در مبارزه با دشمنان می میرند. شیر برای رُشد بدن مناسب است. اُمید دانش آموزِ ممتاز دبستان شُد." }
+                        { type: 'dictation', text: "دایی یاسر از یزد می آید. - میمون در سایه نشسته است . - از بیرون بوی یاس می آیَد. - یاسین رویَش را می شویَد." },
+                        { type: 'dictation', text: "مُدیرِ دبستان ، دانشِ آموزان را به اُردو بُرد. - مَردُم ایران در مبارزه با دشمنان می میرند. - شیر برای رُشد بدن مناسب است. - اُمید دانش آموزِ ممتاز دبستان شُد." }
                     ] }
                 ]
             },
@@ -756,8 +814,8 @@
                     { title: "املا", exercises: [
                         { type: 'dictation', text: "کَبوتر – کودک – کاسه – کباب – کتاب - کُرسی – مِشکی – سِرکه – بِرکه – شَک – شِکَر – شُکر – شِکایَت - نَمَک – کَدو – تاریک – نمکدان" },
                         { type: 'dictation', text: "مِسواک – وَرزِش – سَواد – وَرزش کار- می شَوَد – مَشوِرَت" },
-                        { type: 'dictation', text: "داور به سمت دروازه می رَوَد. ورزش کار ورزش می کند. آن وانِت میوِه می آوَرَد. کودک واکسن می زند." },
-                        { type: 'dictation', text: "ای کاش من کبوتر بودم.  اکبر کاردستی درست می کند. کوسه ترسناک است.  اُردک در برکه شنا می کند." }
+                        { type: 'dictation', text: "داور به سمت دروازه می رَوَد. - ورزش کار ورزش می کند. - آن وانِت میوِه می آوَرَد. - کودک واکسن می زند." },
+                        { type: 'dictation', text: "ای کاش من کبوتر بودم. - اکبر کاردستی درست می کند. - کوسه ترسناک است. - اُردک در برکه شنا می کند." }
                     ] }
                 ]
             },
@@ -777,8 +835,8 @@
                     { title: "املا", exercises: [
                         { type: 'dictation', text: "پَر – پَرواز – پَروَرِش – پاک – پوشید – پرستو – توپ – پَروانه" },
                         { type: 'dictation', text: "گُرگ – پدر بُزُرگ – گَرم – گاو – گاری – مادر بزرگ – بزرگ" },
-                        { type: 'dictation', text: "پدر کت پوشید.  شاپرک پر کشید. پرنده در آسمان پرواز می کند.  پارسا توپ را پرت کرد.  پری با پنیر پیتزا می پزد." },
-                        { type: 'dictation', text: "مادر بزرگ نرگس در گرگان زندگی می کند. انگور در تابستان می رسد. یگانه گرسنه است و گریه می کند. آموزگار دانش آموزان را به گردش می برد." }
+                        { type: 'dictation', text: "پدر کت پوشید. - شاپرک پر کشید. - پرنده در آسمان پرواز می کند. - پارسا توپ را پرت کرد. - پری با پنیر پیتزا می پزد." },
+                        { type: 'dictation', text: "مادر بزرگ نرگس در گرگان زندگی می کند. - انگور در تابستان می رسد. - یگانه گرسنه است و گریه می کند. - آموزگار دانش آموزان را به گردش می برد." }
                     ] }
                 ]
             },
@@ -798,8 +856,8 @@
                     { title: "املا", exercises: [
                         { type: 'dictation', text: "خَر – خِرس – خُروس – خنده – خاک – خمیده – خَراب – خانواده" },
                         { type: 'dictation', text: "برف – کیف – آفتاب – دفتر – پفک - رفت – آفرین – فرشته – فانوس – نَفت" },
-                        { type: 'dictation', text: "فرید با برف آدم برفی درست می کند. فرشته در کیفش دفتر و کتاب فارسی دارد. پفک و نوشابه برای بدن مفید نیستند. افسانه و پدرش به مسافرت رفتند. فرزانه درباره ی آزمون فردا فکر می کرد." },
-                        { type: 'dictation', text: "استاد مراد با میخ و تخته تخت می سازد.  خانواده ی خانم مدیر به کنار رودخانه رفتند. خانه ی خرگوش زیر درخت است. شاخ گوزن شکسته است.  خدا بخشنده است." }
+                        { type: 'dictation', text: "فرید با برف آدم برفی درست می کند. - فرشته در کیفش دفتر و کتاب فارسی دارد. - پفک و نوشابه برای بدن مفید نیستند. - افسانه و پدرش به مسافرت رفتند. - فرزانه درباره ی آزمون فردا فکر می کرد." },
+                        { type: 'dictation', text: "استاد مراد با میخ و تخته تخت می سازد. - خانواده ی خانم مدیر به کنار رودخانه رفتند. - خانه ی خرگوش زیر درخت است. - شاخ گوزن شکسته است. - خدا بخشنده است." }
                     ] }
                 ]
             },
@@ -818,9 +876,9 @@
                     ] },
                     { title: "املا", exercises: [
                         { type: 'dictation', text: "قوری – قاشُق – قند – قدَم – قُرآن – قو – بشُقاب – اُتاق - قَشنگ – bَرق – آقا – قاب – قادر – قُدرت – قَوی – وَقتی" },
-                        { type: 'dictation', text: "وقتی به رودخانه رسیدم قوی قشنگی را دیدم. پدر وقت نماز قرآن را برداشت . قاشق روی بشقاب است. قوری روی سماور است. اگر قوی باشم در مسابقه برنده می شوم. قرآن کتاب خدا است." },
+                        { type: 'dictation', text: "وقتی به رودخانه رسیدم قوی قشنگی را دیدم. - پدر وقت نماز قرآن را برداشت . - قاشق روی بشقاب است. - قوری روی سماور است. - اگر قوی باشم در مسابقه برنده می شوم. - قرآن کتاب خدا است." },
                         { type: 'dictation', text: "گل – فیل – بال – لاله – لباس – لب – لازم – لبخند - لانه - ناله - پرتقال – زلال – بلال – میلاد - شالیزار - الفبا" },
-                        { type: 'dictation', text: "بلبل کنار گل است. گل لبخند روی لب دارد. رودخانه آب زلال و سالمی دارد. خاله لیلا در کتلت فلفل می ریزد. لانه ی لک لک روی درخت است.  میلاد وقتی به کلاس آمد سلام کرد. فیل خیلی بزرگ است." }
+                        { type: 'dictation', text: "بلبل کنار گل است. - گل لبخند روی لب دارد. - رودخانه آب زلال و سالمی دارد. - خاله لیلا در کتلت فلفل می ریزد. - لانه ی لک لک روی درخت است. - میلاد وقتی به کلاس آمد سلام کرد. - فیل خیلی بزرگ است." }
                     ] }
                 ]
             },
@@ -840,8 +898,8 @@
                     { title: "املا", exercises: [
                         { type: 'dictation', text: "جوجه – گنج – جارو – جواب – سجده – مجید – برج – جوراب - برنج – خجالت – خنجر – نارنجی – مسجد – گنجشک – تجربه - رجب – جاری – مجلس – جلسه – نجات – جنگ – جام – جان" },
                         { type: 'dictation', text: "خوش – خورشید – خوراک - دو – تو – مو تور – خوردن – نوک – کادو – مانتو- پالتو – نو – نوروز – پیانو – تکواندو – خوردنی – برخورد" },
-                        { type: 'dictation', text: "جوجه کنار درخت برنج را برمی دارد. گنج آن جا زیر پل مخفی شده است. جشن الفبا جالب و سرگرم کننده بود. جناب آقای مجاور آموزگار باتجربه ای است. جنگل پر از جانوران بزرگ است. من با مداد رنگی نارنجی پرتقال کشیدم." },
-                        { type: 'dictation', text: "ابتدای سال نو را نوروز می گوییم. خورشید در اسمان می درخشد.  موتور به جدول کنار خیابان برخورد کرد. مونا در پلو نمک ریخت.  من خوراک لوبیا را برای شام می خورم.  امین کادوی خود را باز کرد." }
+                        { type: 'dictation', text: "جوجه کنار درخت برنج را برمی دارد. - گنج آن جا زیر پل مخفی شده است. - جشن الفبا جالب و سرگرم کننده بود. - جناب آقای مجاور - آموزگار باتجربه ای است. - جنگل پر از جانوران بزرگ است. - من با مداد رنگی نارنجی پرتقال کشیدم." },
+                        { type: 'dictation', text: "ابتدای سال نو را نوروز می گوییم. خورشید در اسمان می درخشد. - موتور به جدول کنار خیابان برخورد کرد. - مونا در پلو نمک ریخت. - من خوراک لوبیا را برای شام می خورم. - امین کادوی خود را باز کرد." }
                     ] }
                 ]
             },
@@ -860,7 +918,7 @@
                     ] },
                     { title: "املا", exercises: [
                         { type: 'dictation', text: "آهو – ماه – نه - مهر – مهربان – هدایت – کوه - کوهستان – کلاه – مهتاب – سهراب – میهن – ماهر – هنر – فهیمه – می فهمد – می دهد – هادی – هدیه – هر – شهر – هلو – ناهار – نهنگ – مهین – ده – هفت – هشت – همیشه – هنوز – هرگز – همسایه" },
-                        { type: 'dictation', text: "در زمستان هوا همیشه سرد است.  هر شب ستاره ها را در کنار ماه می بینم. نباید هرگز همسایه را آزار دهیم. کوه های زیادی در کوهستان است.  هنوز هم کلاسی هایم را فراموش نکرده ام. مهر یکی از ماه های پاییز است." },
+                        { type: 'dictation', text: "در زمستان هوا همیشه سرد است. - هر شب ستاره ها را در کنار ماه می بینم. نباید هرگز همسایه را آزار دهیم. - کوه های زیادی در کوهستان است. - هنوز هم کلاسی هایم را فراموش نکرده ام. - مهر یکی از ماه های پاییز است." },
                         { type: 'dictation', text: "چراگاه – چرا – چاه – چرخ – چون – چتر – چوب – مچ – پرچم  - چادر – چپ – چیز – چسب – چاپ – چند – چاقو – چابک – کچل - چک – چه – پارچه – پارچ – چشم – چاله – چانه – چرخید – - چرخاند – می چکد – چکمه – چرم – هیچ – چلو کباب – چهار " },
                         { type: 'dictation', text: "چشم چپم آسیب دیده است. مادر پارچه را قیچی کرد و با آن چادر دوخت. چهار چرخ ماشین می چرخد. چوپان گوسفندان را به چراگاه می برد. باران روی چتر می چکد. ستاره در آسمان شب چشمک می زند." }
                     ] }
@@ -1054,6 +1112,7 @@
         const successSounds = ["bravo1.mp3", "bravo2.mp3", "bravo3.mp3", "bravo4.mp3"];
         let isActivated = false;
         let isDemoMode = false;
+        let currentSectionIndex = -1; // Add this to track the current section index
         // --- STATE جدید برای Gamification ---
         let playerState = {
             stars: 0,
@@ -1355,7 +1414,6 @@
                 card.className = `lesson-card p-6 rounded-2xl text-white font-bold text-2xl shadow-lg cursor-pointer flex justify-between items-center card ${isLocked ? 'locked' : ''}`;
                 const lockIcon = `<img src="lock.png" class="w-8 h-8" alt="قفل">`;
                 const playIcon = `<img src="play.png" class="w-8 h-8" alt="پخش">`;
-                // ✅ تغییر جدید: اصلاح ساختار برای جلوگیری از به هم ریختگی آیکون
                 card.innerHTML = `<span class="min-w-0">${lesson.title}</span><span class="flex-shrink-0">${isLocked ? lockIcon : playIcon}</span>`;
                 if (!isLocked) {
                     card.onclick = () => showLessonSections(lesson.id);
@@ -1398,8 +1456,9 @@
         function startSection(exercises, sectionIndex) {
             currentExercises = shuffle([...exercises]);
             currentExerciseIndex = 0;
+            currentSectionIndex = sectionIndex; // Set the current section index
             elements.gameLessonTitle.textContent = currentLesson.title;
-            loadExercise(currentExerciseIndex, sectionIndex);
+            loadExercise(currentExerciseIndex);
             showPage('game');
         }
         function shuffle(array) {
@@ -1409,8 +1468,7 @@
             }
             return array;
         }
-        function loadExercise(index, sectionIndex) {
-            // ✅ Reset dictation button listeners to prevent state leaks from one section to another
+        function loadExercise(index) {
             elements.prevDictationBtn.onclick = null;
             elements.nextDictationBtn.onclick = null;
             elements.finishDictationBtn.onclick = null;
@@ -1435,7 +1493,7 @@
                 loadChoiceExercise(exercise);
             } else if (exercise.type === 'read') {
                 elements.wordImageContainer.innerHTML = exerciseImages[wordKey] || exerciseImages["default"];
-                createAndLoadReadExercise(exercise, sectionIndex);
+                createAndLoadReadExercise(exercise);
             } else if (exercise.type === 'pictureGuess') {
                 elements.wordImageContainer.innerHTML = exerciseImages[wordKey] || exerciseImages["default"];
                 elements.pictureGuessGameEl.classList.remove('hidden');
@@ -1476,7 +1534,7 @@
             elements.choiceOptionsContainer.innerHTML = '';
             shuffle([...exercise.options]).forEach(option => {
                 const button = document.createElement('button');
-                button.className = 'choice-btn w-full bg-blue-400 text-white font-bold text-2xl py-4 rounded-xl shadow-md hover:bg-blue-500 transition-all card';
+                button.className = 'w-full btn btn-blue choice-btn transition-all card';
                 button.textContent = option;
                 button.onclick = (e) => handleChoiceSelection(e, option, exercise.correct);
                 elements.choiceOptionsContainer.appendChild(button);
@@ -1486,7 +1544,7 @@
             elements.pictureGuessOptionsContainer.innerHTML = '';
             shuffle([...exercise.options]).forEach(option => {
                 const button = document.createElement('button');
-                button.className = 'choice-btn w-full bg-blue-400 text-white font-bold text-2xl py-4 rounded-xl shadow-md hover:bg-blue-500 transition-all card';
+                button.className = 'w-full btn btn-blue choice-btn transition-all card';
                 button.textContent = option;
                 button.onclick = (e) => handlePictureGuessSelection(e, option, exercise.correct);
                 elements.pictureGuessOptionsContainer.appendChild(button);
@@ -1497,7 +1555,7 @@
             elements.sentenceBlankEl.textContent = exercise.sentence;
             shuffle([...exercise.options]).forEach(option => {
                 const button = document.createElement('button');
-                button.className = 'choice-btn w-full bg-blue-400 text-white font-bold text-2xl py-4 rounded-xl shadow-md hover:bg-blue-500 transition-all card';
+                button.className = 'w-full btn btn-blue choice-btn transition-all card';
                 button.textContent = option;
                 button.onclick = (e) => handleFillBlankSelection(e, option, exercise.correct);
                 elements.fillBlankOptionsContainer.appendChild(button);
@@ -1526,14 +1584,14 @@
             usedSuccessSounds.push(selectedSound);
             playSound(selectedSound);
         }
-        function createAndLoadReadExercise(exercise, sectionIndex) {
+        function createAndLoadReadExercise(exercise) {
             const readGameHTML = `
                 <div id="read-game" class="flex flex-col items-center gap-4">
                     <p class="text-5xl font-bold text-gray-800" id="read-word">${exercise.word}</p>
                     <button id="read-aloud-btn" class="bg-cyan-500 hover:bg-cyan-600 text-white p-4 rounded-full">
                         <img src="speaker.png" class="w-8 h-8" alt="بلندگو">
                     </button>
-                    <button id="reading-done-btn" class="mt-6 w-full bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-6 rounded-full">خواندم</button>
+                    <button id="reading-done-btn" class="mt-6 w-full btn btn-green">خواندم</button>
                 </div>
             `;
             elements.dynamicReadGameContainer.innerHTML = readGameHTML;
@@ -1549,7 +1607,7 @@
                     playRandomSuccessSound();
                     playerState.wordsRead++;
                     checkAchievements();
-                    setTimeout(() => showSuccessModal(sectionIndex, 1), 1000);
+                    setTimeout(() => showSuccessModal(currentSectionIndex, 1), 1000);
                 };
             }
         }
@@ -1557,14 +1615,16 @@
             const button = event.target;
             elements.choiceOptionsContainer.querySelectorAll('button').forEach(btn => btn.disabled = true);
             if (selectedOption === correctOption) {
-                button.classList.add('correct', 'bg-green-500');
+                button.classList.add('correct');
+                button.classList.remove('btn-blue');
+                button.classList.add('btn-green');
                 playRandomSuccessSound();
-                setTimeout(() => showSuccessModal(undefined, 1), 1000);
+                setTimeout(() => showSuccessModal(currentSectionIndex, 1), 1000);
             } else {
-                button.classList.add('incorrect', 'bg-red-500');
-                elements.choiceOptionsContainer.querySelectorAll('button').forEach(btn => {
-                    if (btn.textContent === correctOption) btn.classList.add('bg-green-500');
-                });
+                playSound('wrong.mp3');
+                button.classList.add('incorrect');
+                button.classList.remove('btn-blue');
+                button.classList.add('btn-red');
                 setTimeout(() => loadExercise(currentExerciseIndex), 1500);
             }
         }
@@ -1572,14 +1632,16 @@
             const button = event.target;
             elements.pictureGuessOptionsContainer.querySelectorAll('button').forEach(btn => btn.disabled = true);
             if (selectedOption === correctOption) {
-                button.classList.add('correct', 'bg-green-500');
+                button.classList.add('correct');
+                button.classList.remove('btn-blue');
+                button.classList.add('btn-green');
                 playRandomSuccessSound();
-                setTimeout(() => showSuccessModal(undefined, 1), 1000);
+                setTimeout(() => showSuccessModal(currentSectionIndex, 1), 1000);
             } else {
-                button.classList.add('incorrect', 'bg-red-500');
-                elements.pictureGuessOptionsContainer.querySelectorAll('button').forEach(btn => {
-                    if (btn.textContent === correctOption) btn.classList.add('bg-green-500');
-                });
+                playSound('wrong.mp3');
+                button.classList.add('incorrect');
+                button.classList.remove('btn-blue');
+                button.classList.add('btn-red');
                 setTimeout(() => loadExercise(currentExerciseIndex), 1500);
             }
         }
@@ -1587,14 +1649,16 @@
             const button = event.target;
             elements.fillBlankOptionsContainer.querySelectorAll('button').forEach(btn => btn.disabled = true);
             if (selectedOption === correctOption) {
-                button.classList.add('correct', 'bg-green-500');
+                button.classList.add('correct');
+                button.classList.remove('btn-blue');
+                button.classList.add('btn-green');
                 playRandomSuccessSound();
-                setTimeout(() => showSuccessModal(undefined, 1), 1000);
+                setTimeout(() => showSuccessModal(currentSectionIndex, 1), 1000);
             } else {
-                button.classList.add('incorrect', 'bg-red-500');
-                elements.fillBlankOptionsContainer.querySelectorAll('button').forEach(btn => {
-                    if (btn.textContent === correctOption) btn.classList.add('bg-green-500');
-                });
+                playSound('wrong.mp3');
+                button.classList.add('incorrect');
+                button.classList.remove('btn-blue');
+                button.classList.add('btn-red');
                 setTimeout(() => loadExercise(currentExerciseIndex), 1500);
             }
         }
@@ -1762,7 +1826,7 @@
                 playRandomSuccessSound();
                 playerState.wordsBuilt++;
                 checkAchievements();
-                setTimeout(() => showSuccessModal(undefined, 2), 1000);
+                setTimeout(() => showSuccessModal(currentSectionIndex, 2), 1000);
             }
         }
         function showSuccessModal(sectionIndex, starsEarned = 1) {
@@ -1775,15 +1839,23 @@
                 elements.modalWordEl.textContent = `«${word}» عالی بود!`;
             }
             elements.modalStarsEarned.textContent = `+${starsEarned} ⭐`;
-            if (currentExerciseIndex >= currentExercises.length - 1) {
-                if (sectionIndex !== undefined) {
+
+            if (currentExerciseIndex >= currentExercises.length - 1) { // Last exercise
+                if (sectionIndex !== undefined && sectionIndex > -1) {
                     currentLesson.sections[sectionIndex].completed = true;
                     saveProgress();
-                    const allSectionsCompleted = currentLesson.sections.every(s => s.completed);
-                    if (allSectionsCompleted) {
-                        playerState.completedLessons++;
-                        checkAchievements();
+
+                    // Recalculate total completed lessons to prevent bugs
+                    const completedCount = lessons.filter(lesson =>
+                        lesson.sections.every(section => section.completed)
+                    ).length;
+                    
+                    // Only update and save if the count has changed
+                    if(playerState.completedLessons !== completedCount) {
+                        playerState.completedLessons = completedCount;
+                        savePlayerState();
                     }
+                    checkAchievements();
                 }
                 setTimeout(() => {
                     hideModal('success');
@@ -1816,10 +1888,8 @@
             };
             elements.finishDictationBtn.onclick = () => {
                 playRandomSuccessSound();
-                // We consider finishing the dictation as completing the current exercise index.
-                // The success modal will then advance to the next exercise if available.
-                const sectionIndex = currentLesson.sections.findIndex(sec => sec.title === "املا");
-                showSuccessModal(sectionIndex, 1);
+                // Use the globally tracked section index for accuracy
+                showSuccessModal(currentSectionIndex, 1);
             };
             updateDictationUI();
         }
@@ -1986,3 +2056,4 @@
     </script>
 </body>
 </html>
+
