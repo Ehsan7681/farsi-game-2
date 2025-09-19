@@ -301,9 +301,14 @@
             font-weight: bold;
         }
         /* --- استایل برای صفحه املا --- */
-        #dictation-game {
+        /* FIX: Only apply flex display when the element is NOT hidden */
+        #dictation-game:not(.hidden) {
             text-align: center;
             width: 100%;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
         }
         #dictation-text {
             font-size: 1.75rem; /* text-2xl */
@@ -315,6 +320,9 @@
             border-radius: 1rem;
             border: 2px dashed #94a3b8;
             line-height: 1.8;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
         #dictation-controls {
             display: flex;
@@ -322,7 +330,7 @@
             align-items: center;
             width: 100%;
             margin-top: 1rem;
-            direction: ltr; /* ✅ جابه‌جایی دکمه‌ها */
+            direction: ltr;
         }
         .dictation-nav-btn {
             background-color: #6366f1;
@@ -403,7 +411,7 @@
                     </div>
                     <div class="leaderboard-item">
                         <span>دروس کامل شده:</span>
-                        <span id="lb-completed-lessons" class="font-bold text-green-500">0/19</span>
+                        <span id="lb-completed-lessons" class="font-bold text-green-500">0/20</span>
                     </div>
                     <div class="leaderboard-item">
                         <span>تمرین‌های انجام شده:</span>
@@ -437,7 +445,6 @@
             </div>
             <div class="creator-info">ایده و تولید: احسان شمسی</div>
         </div>
-        <!-- --- صفحه منوی اصلی --- (بقیه صفحات بدون تغییر) -->
         <!-- --- صفحه بخش‌های درس --- -->
         <div id="lesson-sections-screen" class="page">
             <div class="bg-white rounded-2xl shadow-lg p-6 w-full max-w-md">
@@ -457,7 +464,8 @@
         </div>
         <!-- --- صفحه بازی --- -->
         <div id="game-screen" class="page">
-            <div class="bg-white rounded-2xl shadow-lg p-6 w-full max-w-md">
+            <!-- ✅ تغییر جدید: افزودن flex و flex-col برای چیدمان عمودی -->
+            <div class="bg-white rounded-2xl shadow-lg p-6 w-full max-w-md flex flex-col">
                 <header class="flex items-center justify-between mb-6">
                     <button id="back-to-sections" class="back-button-icon">
                         <img src="back_arrow.png" alt="بازگشت">
@@ -474,7 +482,6 @@
                     <p class="text-xl text-gray-600 mb-6">کدام کلمه درست است؟</p>
                     <div id="choice-options" class="grid grid-cols-1 gap-4"></div>
                 </div>
-                <!-- --- #read-game از اینجا حذف شده است --- -->
                 <div id="picture-guess-game" class="hidden">
                     <p class="text-xl text-gray-600 mb-6">کدام کلمه مربوط به تصویر است؟</p>
                     <div id="picture-guess-options" class="grid grid-cols-1 gap-4"></div>
@@ -483,11 +490,9 @@
                     <p class="text-2xl font-bold text-gray-800 mb-6" id="sentence-blank"></p>
                     <div id="fill-blank-options" class="grid grid-cols-1 gap-4"></div>
                 </div>
-                <!-- --- صفحه املا --- -->
                 <div id="dictation-game" class="hidden">
                     <div id="dictation-text">متن املا اینجا نمایش داده می‌شود.</div>
                     <div id="dictation-controls">
-                        <!-- ✅ دکمه‌ها جابه‌جا شده‌اند -->
                         <button id="prev-dictation-btn" class="dictation-nav-btn">◀ قبلی</button>
                         <span id="dictation-counter">املا 1 از 1</span>
                         <button id="next-dictation-btn" class="dictation-nav-btn">بعدی ▶</button>
@@ -496,18 +501,15 @@
                         پایان املا
                     </button>
                 </div>
-                <!-- --- محل جدید برای درج #read-game به صورت پویا --- -->
                 <div id="dynamic-read-game-container"></div>
             </div>
             <div class="creator-info">ایده و تولید: احسان شمسی</div>
         </div>
         <!-- --- مودال موفقیت --- -->
         <div id="success-modal" class="modal">
-            <!-- ✅ transform scale-95 حذف شد -->
             <div class="bg-white rounded-2xl shadow-2xl p-8 text-center scale-95 transition-transform duration-300">
                 <div class="text-7xl mb-4"><img src="star.png" class="w-16 h-16 mx-auto" alt="ستاره"></div>
                 <h3 class="text-4xl font-bold text-green-500 mb-2">آفرین!</h3>
-                <!-- نمایش ستاره کسب شده -->
                 <p id="modal-stars-earned" class="text-2xl text-yellow-500 font-bold mb-2">+1 ⭐</p>
                 <p id="modal-word" class="text-2xl text-gray-700 mb-6"></p>
                 <button id="next-exercise-btn" class="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-6 rounded-full">بعدی</button>
@@ -589,7 +591,7 @@
                     ] },
                     { title: "املا", exercises: [
                         { type: 'dictation', text: "آ - آب - با - بابا " },
-                        { type: 'dictation', text: "آب - بابا _ با _ ب - آ - بابا آب " }
+                        { type: 'dictation', text: "آب - بابا _ با _ b - آ - بابا آب " }
                     ] }
                 ]
             },
@@ -760,23 +762,23 @@
                 ]
             },
             {
-                id: 10, title: "درس دهم : پـ پ ، گـ گ", unlocked: true, // ✅ تغییر عنوان درس
+                id: 10, title: "درس دهم : پـ پ ، گـ گ", unlocked: true,
                 sections: [
-                    { title: "ترکیب صداها", exercises: [ { type: 'build', word: "گاو" }, { type: 'build', word: "سگ" }, { type: 'build', word: "پدر" }, { type: 'build', word: "پا" } ] }, // ✅ تغییر تمرین‌ها
-                    { title: "کلمه‌یابی", exercises: [ { type: 'choice', correct: "سگ", options: ["سگ", "سک", "بگ"] }, { type: 'choice', correct: "پدر", options: ["پدر", "پسر", "کدر"] } ] }, // ✅ تغییر تمرین‌ها
-                    { title: "روان‌خوانی", exercises: [ { type: 'read', word: "سگ" }, { type: 'read', word: "گاو" }, { type: 'read', word: "پدر" }, { type: 'read', word: "پا" } ] }, // ✅ تغییر تمرین‌ها
-                    { title: "حدس تصویر", exercises: [ { type: 'pictureGuess', image: "گاو", correct: "گاو", options: ["نمک", "گاو", "کبوتر"] }, { type: 'pictureGuess', image: "پدر", correct: "پدر", options: ["پدر", "مادر", "برادر"] }] }, // ✅ تغییر تمرین‌ها
+                    { title: "ترکیب صداها", exercises: [ { type: 'build', word: "گاو" }, { type: 'build', word: "سگ" }, { type: 'build', word: "پدر" }, { type: 'build', word: "پا" } ] },
+                    { title: "کلمه‌یابی", exercises: [ { type: 'choice', correct: "سگ", options: ["سگ", "سک", "بگ"] }, { type: 'choice', correct: "پدر", options: ["پدر", "پسر", "کدر"] } ] },
+                    { title: "روان‌خوانی", exercises: [ { type: 'read', word: "سگ" }, { type: 'read', word: "گاو" }, { type: 'read', word: "پدر" }, { type: 'read', word: "پا" } ] },
+                    { title: "حدس تصویر", exercises: [ { type: 'pictureGuess', image: "گاو", correct: "گاو", options: ["نمک", "گاو", "کبوتر"] }, { type: 'pictureGuess', image: "پدر", correct: "پدر", options: ["پدر", "مادر", "برادر"] }] },
                     { title: "کلمه گمشده", exercises: [ 
                         { type: 'fillBlank', sentence: "در باغ ___ دیدم.", correct: "سگ", options: ["لاله", "ماه", "سگ"] }, 
-                        { type: 'fillBlank', sentence: "___ مرا به مدرسه برد.", correct: "پدر", options: ["پدر", "مادر", "برادر"] }, // ✅ تغییر جمله
+                        { type: 'fillBlank', sentence: "___ مرا به مدرسه برد.", correct: "پدر", options: ["پدر", "مادر", "برادر"] },
                         { type: 'fillBlank', sentence: "____ به ما شیر می دهد.", correct: "گاو", options: ["گاو", "ماه", "گل"] },
-                        { type: 'fillBlank', sentence: "با ___ راه رفتم.", correct: "پا", options: ["پا", "دست", "سر"] } // ✅ تغییر جمله
+                        { type: 'fillBlank', sentence: "با ___ راه رفتم.", correct: "پا", options: ["پا", "دست", "سر"] }
                     ] },
                     { title: "املا", exercises: [
-                        { type: 'dictation', text: "پَر – پَرواز – پَروَرِش – پاک – پوشید – پرستو – توپ – پَروانه" }, // ✅ تغییر متن
-                        { type: 'dictation', text: "گُرگ – پدر بُزُرگ – گَرم – گاو – گاری – مادر بزرگ – بزرگ" }, // ✅ تغییر متن
+                        { type: 'dictation', text: "پَر – پَرواز – پَروَرِش – پاک – پوشید – پرستو – توپ – پَروانه" },
+                        { type: 'dictation', text: "گُرگ – پدر بُزُرگ – گَرم – گاو – گاری – مادر بزرگ – بزرگ" },
                         { type: 'dictation', text: "پدر کت پوشید. - شاپرک پر کشید. - پرنده در آسمان پرواز می کند. - پارسا توپ را پرت کرد. - پری با پنیر پیتزا می پزد." },
-                        { type: 'dictation', text: "مادر بزرگ نرگس در گرگان زندگی می کند. - انگور در تابستان می رسد. - یگانه گرسنه است و گریه می کند. - آموزگار دانش آموزان را به گردش می برد." } // ✅ تغییر متن
+                        { type: 'dictation', text: "مادر بزرگ نرگس در گرگان زندگی می کند. - انگور در تابستان می رسد. - یگانه گرسنه است و گریه می کند. - آموزگار دانش آموزان را به گردش می برد." }
                     ] }
                 ]
             },
@@ -815,7 +817,7 @@
                         { type: 'fillBlank', sentence: "او به من ___ زیبایی داد .", correct: "گل", options: ["گل", "قایق", "درخت"] }
                     ] },
                     { title: "املا", exercises: [
-                        { type: 'dictation', text: "قوری – قاشُق – قند – قدَم – قُرآن – قو – بشُقاب – اُتاق - قَشنگ – بَرق – آقا – قاب – قادر – قُدرت – قَوی – وَقتی" },
+                        { type: 'dictation', text: "قوری – قاشُق – قند – قدَم – قُرآن – قو – بشُقاب – اُتاق - قَشنگ – bَرق – آقا – قاب – قادر – قُدرت – قَوی – وَقتی" },
                         { type: 'dictation', text: "وقتی به رودخانه رسیدم قوی قشنگی را دیدم. - پدر وقت نماز قرآن را برداشت . - قاشق روی بشقاب است. - قوری روی سماور است. - اگر قوی باشم در مسابقه برنده می شوم. - قرآن کتاب خدا است." },
                         { type: 'dictation', text: "گل – فیل – بال – لاله – لباس – لب – لازم – لبخند - لانه - ناله - پرتقال – زلال – بلال – میلاد - شالیزار - الفبا" },
                         { type: 'dictation', text: "بلبل کنار گل است. - گل لبخند روی لب دارد. - رودخانه آب زلال و سالمی دارد. - خاله لیلا در کتلت فلفل می ریزد. - لانه ی لک لک روی درخت است. - میلاد وقتی به کلاس آمد سلام کرد. - فیل خیلی بزرگ است." }
@@ -1035,7 +1037,7 @@
             { id: 'champion', name: "قهرمان حروف!", description: "کامل کردن ۵ درس", icon: "trophy.png", condition: (state) => state.completedLessons >= 5 },
             { id: 'wordBuilder', name: "کلمه‌ساز حرفه‌ای!", description: "ساختن ۲۰ کلمه", icon: "hammer.png", condition: (state) => state.wordsBuilt >= 20 },
             { id: 'reader', name: "خواننده بی‌نظیر!", description: "خواندن ۱۰ کلمه", icon: "book.png", condition: (state) => state.wordsRead >= 10 },
-            { id: 'master', name: "استاد الفبا!", description: "کامل کردن تمام ۱۹ درس", icon: "crown.png", condition: (state) => state.completedLessons >= 19 },
+            { id: 'master', name: "استاد الفبا!", description: "کامل کردن تمام ۲۰ درس", icon: "crown.png", condition: (state) => state.completedLessons >= 20 },
             { id: 'speedster', name: "سریع‌العمل!", description: "انجام ۵۰ تمرین", icon: "bolt.png", condition: (state) => state.totalExercises >= 50 }
         ];
         // --- STATE ---
@@ -1067,7 +1069,6 @@
             mainMenu: document.getElementById('main-menu'),
             lessonSections: document.getElementById('lesson-sections-screen'),
             game: document.getElementById('game-screen'),
-            // --- صفحات جدید ---
             leaderboard: document.getElementById('leaderboard-screen'),
             achievements: document.getElementById('achievements-screen')
         };
@@ -1078,31 +1079,25 @@
             lockedLesson: document.getElementById('locked-lesson-modal')
         };
         const elements = {
-            // Activation
             activationCodeInput: document.getElementById('activation-code-input'),
             activateBtn: document.getElementById('activate-btn'),
             demoBtn: document.getElementById('demo-btn'),
             activationMessage: document.getElementById('activation-message'),
-            // Main Menu
             lessonsGrid: document.getElementById('lessons-grid'),
-            starCount: document.getElementById('star-count'), // المان جدید
-            showLeaderboardBtn: document.getElementById('show-leaderboard-btn'), // المان جدید
-            showAchievementsBtn: document.getElementById('show-achievements-btn'), // المان جدید
-            // Leaderboard
+            starCount: document.getElementById('star-count'),
+            showLeaderboardBtn: document.getElementById('show-leaderboard-btn'),
+            showAchievementsBtn: document.getElementById('show-achievements-btn'),
             lbTotalStars: document.getElementById('lb-total-stars'),
             lbCompletedLessons: document.getElementById('lb-completed-lessons'),
             lbTotalExercises: document.getElementById('lb-total-exercises'),
             lbWordsBuilt: document.getElementById('lb-words-built'),
             lbWordsRead: document.getElementById('lb-words-read'),
             backToMainFromLeaderboard: document.getElementById('back-to-main-from-leaderboard'),
-            // Achievements
             achievementsList: document.getElementById('achievements-list'),
             backToMainFromAchievements: document.getElementById('back-to-main-from-achievements'),
-            // Lesson Sections
             backToMainMenuBtn: document.getElementById('back-to-main-menu'),
             sectionsLessonTitle: document.getElementById('sections-lesson-title'),
             sectionsGrid: document.getElementById('sections-grid'),
-            // Game
             backToSectionsBtn: document.getElementById('back-to-sections'),
             gameLessonTitle: document.getElementById('game-lesson-title'),
             wordImageContainer: document.getElementById('word-image-container'),
@@ -1111,22 +1106,19 @@
             letterBubblesContainer: document.getElementById('letter-bubbles'),
             choiceGameEl: document.getElementById('choice-game'),
             choiceOptionsContainer: document.getElementById('choice-options'),
-            // --- #read-game از اینجا حذف شد --- 
             pictureGuessGameEl: document.getElementById('picture-guess-game'),
             pictureGuessOptionsContainer: document.getElementById('picture-guess-options'),
             fillBlankGameEl: document.getElementById('fill-blank-game'),
             sentenceBlankEl: document.getElementById('sentence-blank'),
             fillBlankOptionsContainer: document.getElementById('fill-blank-options'),
-            // --- المان‌های جدید برای املا ---
             dictationGameEl: document.getElementById('dictation-game'),
             dictationTextEl: document.getElementById('dictation-text'),
             prevDictationBtn: document.getElementById('prev-dictation-btn'),
             nextDictationBtn: document.getElementById('next-dictation-btn'),
             dictationCounterEl: document.getElementById('dictation-counter'),
             finishDictationBtn: document.getElementById('finish-dictation-btn'),
-            // Modals
             modalWordEl: document.getElementById('modal-word'),
-            modalStarsEarned: document.getElementById('modal-stars-earned'), // المان جدید
+            modalStarsEarned: document.getElementById('modal-stars-earned'),
             nextExerciseBtn: document.getElementById('next-exercise-btn'),
             backToSectionsFromCompleteBtn: document.getElementById('back-to-sections-from-complete'),
             closeWarningBtn: document.getElementById('close-warning-btn'),
@@ -1135,7 +1127,6 @@
             modalDemoBtn: document.getElementById('modal-demo-btn'),
             closeLockedModalBtn: document.getElementById('close-locked-modal-btn'),
             modalActivationMessage: document.getElementById('modal-activation-message'),
-            // --- المان جدید برای کانتینر پویا --- 
             dynamicReadGameContainer: document.getElementById('dynamic-read-game-container')
         };
         // --- Images/Icons Data ---
@@ -1228,7 +1219,6 @@
             "قهوه": `<img src="coffee.png" class="w-28 h-28 object-contain" alt="قهوه">`,
             "ژیلت": `<img src="razor.png" class="w-28 h-28 object-contain" alt="ژیلت">`,
             "ژله": `<img src="jelly.png" class="w-28 h-28 object-contain" alt="ژله">`,
-            // ✅ اضافه کردن تصاویر جدید برای حرف "پ"
             "پدر": `<img src="father.png" class="w-32 h-32 object-contain" alt="پدر">`,
             "پا": `<img src="foot.png" class="w-28 h-28 object-contain" alt="پا">`,
 			"داور": `<img src="referee.png" class="w-28 h-28 object-contain" alt="داور">`,
@@ -1305,7 +1295,6 @@
             updateStarsDisplay();
             showPage('mainMenu');
         }
-        // --- توابع جدید برای Gamification ---
         function awardStars(stars = 1) {
             playerState.stars += stars;
             playerState.totalExercises++;
@@ -1314,9 +1303,8 @@
         }
         function updateStarsDisplay() {
             elements.starCount.textContent = playerState.stars;
-            // بروزرسانی تابلو امتیازات
             if (elements.lbTotalStars) elements.lbTotalStars.textContent = playerState.stars;
-            if (elements.lbCompletedLessons) elements.lbCompletedLessons.textContent = `${playerState.completedLessons}/19`;
+            if (elements.lbCompletedLessons) elements.lbCompletedLessons.textContent = `${playerState.completedLessons}/${lessons.length}`;
             if (elements.lbTotalExercises) elements.lbTotalExercises.textContent = playerState.totalExercises;
             if (elements.lbWordsBuilt) elements.lbWordsBuilt.textContent = playerState.wordsBuilt;
             if (elements.lbWordsRead) elements.lbWordsRead.textContent = playerState.wordsRead;
@@ -1327,7 +1315,6 @@
                 if (!playerState.unlockedAchievements.includes(achievement.id) && achievement.condition(playerState)) {
                     playerState.unlockedAchievements.push(achievement.id);
                     newAchievementUnlocked = true;
-                    console.log(`دستاورد جدید: ${achievement.name}`);
                 }
             });
             if (newAchievementUnlocked) {
@@ -1353,7 +1340,7 @@
             });
         }
         function showLeaderboard() {
-            updateStarsDisplay(); // مطمئن شویم که داده‌ها به‌روز هستند
+            updateStarsDisplay();
             showPage('leaderboard');
         }
         function showAchievements() {
@@ -1368,7 +1355,8 @@
                 card.className = `lesson-card p-6 rounded-2xl text-white font-bold text-2xl shadow-lg cursor-pointer flex justify-between items-center card ${isLocked ? 'locked' : ''}`;
                 const lockIcon = `<img src="lock.png" class="w-8 h-8" alt="قفل">`;
                 const playIcon = `<img src="play.png" class="w-8 h-8" alt="پخش">`;
-                card.innerHTML = `<span>${lesson.title}</span> <span>${isLocked ? lockIcon : playIcon}</span>`;
+                // ✅ تغییر جدید: اصلاح ساختار برای جلوگیری از به هم ریختگی آیکون
+                card.innerHTML = `<span class="min-w-0">${lesson.title}</span><span class="flex-shrink-0">${isLocked ? lockIcon : playIcon}</span>`;
                 if (!isLocked) {
                     card.onclick = () => showLessonSections(lesson.id);
                 } else {
@@ -1422,40 +1410,44 @@
             return array;
         }
         function loadExercise(index, sectionIndex) {
+            // ✅ Reset dictation button listeners to prevent state leaks from one section to another
+            elements.prevDictationBtn.onclick = null;
+            elements.nextDictationBtn.onclick = null;
+            elements.finishDictationBtn.onclick = null;
+            
             const exercise = currentExercises[index];
             const wordKey = exercise.word || exercise.correct || exercise.image;
-            // --- حذف کامل #read-game از DOM در هر بار بارگذاری ---
             elements.dynamicReadGameContainer.innerHTML = '';
-            // --- مخفی کردن همه بخش‌های دیگر ---
+            
+            elements.wordImageContainer.classList.remove('hidden');
             elements.buildWordGameEl.classList.add('hidden');
             elements.choiceGameEl.classList.add('hidden');
             elements.pictureGuessGameEl.classList.add('hidden');
             elements.fillBlankGameEl.classList.add('hidden');
-            elements.dictationGameEl.classList.add('hidden'); // ✅ مخفی کردن املا
+            elements.dictationGameEl.classList.add('hidden');
             if (exercise.type === 'build') {
-                elements.wordImageContainer.innerHTML = exerciseImages[wordKey] || exerciseImages["default"]; // ✅ نمایش تصویر
+                elements.wordImageContainer.innerHTML = exerciseImages[wordKey] || exerciseImages["default"];
                 elements.buildWordGameEl.classList.remove('hidden');
                 loadBuildExercise(exercise);
             } else if (exercise.type === 'choice') {
-                elements.wordImageContainer.innerHTML = exerciseImages[wordKey] || exerciseImages["default"]; // ✅ نمایش تصویر
+                elements.wordImageContainer.innerHTML = exerciseImages[wordKey] || exerciseImages["default"];
                 elements.choiceGameEl.classList.remove('hidden');
                 loadChoiceExercise(exercise);
             } else if (exercise.type === 'read') {
-                elements.wordImageContainer.innerHTML = exerciseImages[wordKey] || exerciseImages["default"]; // ✅ نمایش تصویر
-                // --- ساخت و افزودن #read-game به صورت پویا فقط برای نوع 'read' ---
+                elements.wordImageContainer.innerHTML = exerciseImages[wordKey] || exerciseImages["default"];
                 createAndLoadReadExercise(exercise, sectionIndex);
             } else if (exercise.type === 'pictureGuess') {
-                elements.wordImageContainer.innerHTML = exerciseImages[wordKey] || exerciseImages["default"]; // ✅ نمایش تصویر
+                elements.wordImageContainer.innerHTML = exerciseImages[wordKey] || exerciseImages["default"];
                 elements.pictureGuessGameEl.classList.remove('hidden');
                 loadPictureGuessExercise(exercise);
             } else if (exercise.type === 'fillBlank') {
-                elements.wordImageContainer.innerHTML = exerciseImages[wordKey] || exerciseImages["default"]; // ✅ نمایش تصویر
+                elements.wordImageContainer.innerHTML = exerciseImages[wordKey] || exerciseImages["default"];
                 elements.fillBlankGameEl.classList.remove('hidden');
                 loadFillBlankExercise(exercise);
-            } else if (exercise.type === 'dictation') { // ✅ بارگذاری املا
-                elements.wordImageContainer.innerHTML = ''; // ✅ حذف تصویر فقط در املا
+            } else if (exercise.type === 'dictation') {
+                elements.wordImageContainer.classList.add('hidden');
                 elements.dictationGameEl.classList.remove('hidden');
-                loadDictationExercise(currentExercises, index); // بارگذاری کل بخش املا
+                loadDictationExercise(currentExercises, index);
             }
         }
         function loadBuildExercise(exercise) {
@@ -1511,7 +1503,6 @@
                 elements.fillBlankOptionsContainer.appendChild(button);
             });
         }
-        // --- Audio Playback Logic ---
         function playSound(filename) {
             if (!audioContext) {
                 audioContext = new (window.AudioContext || window.webkitAudioContext)();
@@ -1535,9 +1526,7 @@
             usedSuccessSounds.push(selectedSound);
             playSound(selectedSound);
         }
-        // --- Read Exercise Logic (نسخه جدید با ساخت پویا) ---
         function createAndLoadReadExercise(exercise, sectionIndex) {
-            // --- ساخت HTML کامل بخش روان‌خوانی ---
             const readGameHTML = `
                 <div id="read-game" class="flex flex-col items-center gap-4">
                     <p class="text-5xl font-bold text-gray-800" id="read-word">${exercise.word}</p>
@@ -1547,9 +1536,7 @@
                     <button id="reading-done-btn" class="mt-6 w-full bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-6 rounded-full">خواندم</button>
                 </div>
             `;
-            // --- افزودن به کانتینر پویا ---
             elements.dynamicReadGameContainer.innerHTML = readGameHTML;
-            // --- اتصال Event Listeners به المان‌های جدید ---
             const readAloudBtn = document.getElementById('read-aloud-btn');
             const readingDoneBtn = document.getElementById('reading-done-btn');
             if (readAloudBtn) {
@@ -1560,9 +1547,9 @@
             if (readingDoneBtn) {
                 readingDoneBtn.onclick = () => {
                     playRandomSuccessSound();
-                    playerState.wordsRead++; // آمار خواندن کلمه
+                    playerState.wordsRead++;
                     checkAchievements();
-                    setTimeout(() => showSuccessModal(sectionIndex, 1), 1000); // اعطای 1 ستاره
+                    setTimeout(() => showSuccessModal(sectionIndex, 1), 1000);
                 };
             }
         }
@@ -1572,7 +1559,7 @@
             if (selectedOption === correctOption) {
                 button.classList.add('correct', 'bg-green-500');
                 playRandomSuccessSound();
-                setTimeout(() => showSuccessModal(undefined, 1), 1000); // اعطای 1 ستاره
+                setTimeout(() => showSuccessModal(undefined, 1), 1000);
             } else {
                 button.classList.add('incorrect', 'bg-red-500');
                 elements.choiceOptionsContainer.querySelectorAll('button').forEach(btn => {
@@ -1587,7 +1574,7 @@
             if (selectedOption === correctOption) {
                 button.classList.add('correct', 'bg-green-500');
                 playRandomSuccessSound();
-                setTimeout(() => showSuccessModal(undefined, 1), 1000); // اعطای 1 ستاره
+                setTimeout(() => showSuccessModal(undefined, 1), 1000);
             } else {
                 button.classList.add('incorrect', 'bg-red-500');
                 elements.pictureGuessOptionsContainer.querySelectorAll('button').forEach(btn => {
@@ -1602,7 +1589,7 @@
             if (selectedOption === correctOption) {
                 button.classList.add('correct', 'bg-green-500');
                 playRandomSuccessSound();
-                setTimeout(() => showSuccessModal(undefined, 1), 1000); // اعطای 1 ستاره
+                setTimeout(() => showSuccessModal(undefined, 1), 1000);
             } else {
                 button.classList.add('incorrect', 'bg-red-500');
                 elements.fillBlankOptionsContainer.querySelectorAll('button').forEach(btn => {
@@ -1773,22 +1760,25 @@
             const isComplete = Array.from(elements.dropZonesContainer.children).every(z => z.classList.contains('filled'));
             if (isComplete) {
                 playRandomSuccessSound();
-                playerState.wordsBuilt++; // آمار ساخت کلمه
+                playerState.wordsBuilt++;
                 checkAchievements();
-                setTimeout(() => showSuccessModal(undefined, 2), 1000); // اعطای 2 ستاره برای ساخت کلمه
+                setTimeout(() => showSuccessModal(undefined, 2), 1000);
             }
         }
         function showSuccessModal(sectionIndex, starsEarned = 1) {
-            awardStars(starsEarned); // اعطای ستاره
+            awardStars(starsEarned);
             const exercise = currentExercises[currentExerciseIndex];
-            const word = exercise.word || exercise.correct;
-            elements.modalWordEl.textContent = `«${word}» عالی بود!`; // ✅ متن فارسی
-            elements.modalStarsEarned.textContent = `+${starsEarned} ⭐`; // نمایش ستاره کسب شده
+            if (exercise.type === 'dictation') {
+                elements.modalWordEl.textContent = "املا عالی بود!";
+            } else {
+                const word = exercise.word || exercise.correct;
+                elements.modalWordEl.textContent = `«${word}» عالی بود!`;
+            }
+            elements.modalStarsEarned.textContent = `+${starsEarned} ⭐`;
             if (currentExerciseIndex >= currentExercises.length - 1) {
                 if (sectionIndex !== undefined) {
                     currentLesson.sections[sectionIndex].completed = true;
                     saveProgress();
-                    // بررسی اینکه آیا کل درس کامل شده است
                     const allSectionsCompleted = currentLesson.sections.every(s => s.completed);
                     if (allSectionsCompleted) {
                         playerState.completedLessons++;
@@ -1803,17 +1793,15 @@
                 showModal('success');
             }
         }
-        // --- تابع جدید برای بارگذاری تمرین املا ---
-        function loadDictationExercise(exercises, startIndex = 0) {
+        function loadDictationExercise(exercises, startIndex) {
             let currentDictationIndex = startIndex;
             function updateDictationUI() {
-                elements.dictationTextEl.textContent = exercises[currentDictationIndex].text;
+                const currentText = exercises[currentDictationIndex] ? exercises[currentDictationIndex].text : "";
+                elements.dictationTextEl.textContent = currentText;
                 elements.dictationCounterEl.textContent = `املا ${currentDictationIndex + 1} از ${exercises.length}`;
-                // فعال/غیرفعال کردن دکمه‌ها
                 elements.prevDictationBtn.disabled = currentDictationIndex === 0;
                 elements.nextDictationBtn.disabled = currentDictationIndex === exercises.length - 1;
             }
-            // اتصال Event Listeners
             elements.prevDictationBtn.onclick = () => {
                 if (currentDictationIndex > 0) {
                     currentDictationIndex--;
@@ -1828,11 +1816,11 @@
             };
             elements.finishDictationBtn.onclick = () => {
                 playRandomSuccessSound();
-                awardStars(1); // اعطای 1 ستاره برای تکمیل بخش املا
-                checkAchievements();
-                setTimeout(() => showSuccessModal(undefined, 1), 1000);
+                // We consider finishing the dictation as completing the current exercise index.
+                // The success modal will then advance to the next exercise if available.
+                const sectionIndex = currentLesson.sections.findIndex(sec => sec.title === "املا");
+                showSuccessModal(sectionIndex, 1);
             };
-            // بارگذاری اولیه
             updateDictationUI();
         }
         // --- Activation Logic ---
@@ -1872,11 +1860,12 @@
                     showModal('shareWarning');
                 }
             } else {
+                const message = "کد فعال‌سازی نامعتبر است.";
                 if (isFromModal) {
-                    elements.modalActivationMessage.textContent = "کد فعال‌سازی نامعتبر است.";
+                    elements.modalActivationMessage.textContent = message;
                     elements.modalActivationMessage.className = "text-center mt-4 min-h-[1.5em] text-red-500";
                 } else {
-                    elements.activationMessage.textContent = "کد فعال‌سازی نامعتبر است.";
+                    elements.activationMessage.textContent = message;
                     elements.activationMessage.className = "text-center text-red-500 mt-4";
                 }
             }
@@ -1900,12 +1889,10 @@
             hideModal('success');
             loadExercise(currentExerciseIndex);
         });
-        // --- Event Listeners جدید برای دکمه‌های Gamification ---
         elements.showLeaderboardBtn.addEventListener('click', showLeaderboard);
         elements.showAchievementsBtn.addEventListener('click', showAchievements);
         elements.backToMainFromLeaderboard.addEventListener('click', () => showPage('mainMenu'));
         elements.backToMainFromAchievements.addEventListener('click', () => showPage('mainMenu'));
-        // Activation
         elements.activateBtn.addEventListener('click', () => {
             const code = elements.activationCodeInput.value.trim();
             if (code) {
@@ -1920,7 +1907,6 @@
             hideModal('shareWarning');
             showMainMenu();
         });
-        // Locked Lesson Modal
         elements.modalActivateBtn.addEventListener('click', () => {
             const code = elements.modalActivationCode.value.trim();
             if (code) {
@@ -1939,10 +1925,9 @@
         });
         // --- Initialization ---
         document.addEventListener('DOMContentLoaded', () => {
-            loadPlayerState(); // بارگذاری پیشرفت بازیکن
+            loadPlayerState();
             checkActivationStatus();
         });
-        // Simple progress saving
         function saveProgress() {
             try {
                 localStorage.setItem('alphabetApp_progress', JSON.stringify(lessons));
@@ -1962,7 +1947,6 @@
                             }
                         }
                     }
-                    // محاسبه مجدد تعداد دروس کامل شده
                     playerState.completedLessons = lessons.filter(lesson => 
                         lesson.sections.every(section => section.completed)
                     ).length;
@@ -1974,7 +1958,6 @@
             }
         }
         loadProgress();
-        // --- توابع جدید برای ذخیره و بارگذاری وضعیت بازیکن ---
         function savePlayerState() {
             try {
                 localStorage.setItem('alphabetApp_playerState', JSON.stringify(playerState));
@@ -1987,7 +1970,6 @@
                 const savedState = localStorage.getItem('alphabetApp_playerState');
                 if (savedState) {
                     playerState = JSON.parse(savedState);
-                    // مطمئن شویم که تمام فیلدها وجود دارند
                     playerState.stars = playerState.stars || 0;
                     playerState.completedLessons = playerState.completedLessons || 0;
                     playerState.totalExercises = playerState.totalExercises || 0;
